@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selene智能陪伴平台 - 跨文化演练</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { 50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE', 300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8', 800: '#1E40AF', 900: '#1E3A8A' },
+        accent: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E' }
+      },
+      fontFamily: {
+        sans: ['Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
+.glass { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px rgba(30, 58, 138, 0.05); }
+
+/* 左侧导航交互样式 */
+.nav-item { transition: all 0.3s; }
+.nav-item:hover { background: rgba(255, 255, 255, 0.7); transform: translateX(8px); }
+.nav-item.active { background: #FFFFFF; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); border-color: rgba(59, 130, 246, 0.2); transform: none; }
+
+/* 场景卡片交互 */
+.scenario-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.scenario-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 16px 40px rgba(30, 58, 138, 0.1); }
+.choice-btn { transition: all 0.3s; }
+.choice-btn:hover { transform: translateX(8px); background: rgba(255, 255, 255, 0.95); box-shadow: 0 8px 20px rgba(30, 58, 138, 0.05); }
+
+/* 动画效果 */
+@keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+.slide-in { animation: slideIn 0.4s ease-out forwards; }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+.scale-in { animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* PC端细滚动条 */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+</style>
+</head>
+<body class="h-screen flex">
+
+<aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
+  <div class="p-8 pb-4 flex items-center space-x-3">
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
+      <i class="fas fa-heart-pulse text-white"></i>
+    </div>
+    <div>
+      <h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1>
+      <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
+    </div>
+  </div>
+
+  <nav class="flex-1 px-4 mt-6 space-y-2">
+    <button onclick="navigateTo('chat')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-comments text-lg w-6 text-center"></i>
+      <span class="font-medium">情感陪伴</span>
+    </button>
+    <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-chart-line text-lg w-6 text-center"></i>
+      <span class="font-medium">心境轨迹</span>
+    </button>
+    <button onclick="navigateTo('simulator')" class="nav-item active w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-800 border">
+      <i class="fas fa-theater-masks text-lg w-6 text-center text-blue-600"></i>
+      <span class="font-bold">跨文化演练</span>
+    </button>
+    <button onclick="navigateTo('guide')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-compass text-lg w-6 text-center"></i>
+      <span class="font-medium">沪上指南</span>
+    </button>
+    <button onclick="navigateTo('user')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-user text-lg w-6 text-center"></i>
+      <span class="font-medium">个人中心</span>
+    </button>
+  </nav>
+
+  <div class="p-4 border-t border-slate-200/50">
+    <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>退出登录</span>
+    </button>
+  </div>
+</aside>
+
+<main class="flex-1 ml-64 p-8 h-screen flex flex-col">
+  
+  <div id="scenarioListView" class="flex flex-col lg:flex-row gap-8 h-full overflow-y-auto custom-scrollbar pr-2">
+    
+    <div class="flex-1 space-y-6">
+      <div class="glass rounded-3xl p-8 flex items-center space-x-6">
+        <div class="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
+          <i class="fas fa-brain text-white text-3xl"></i>
+        </div>
+        <div>
+          <h2 class="text-slate-800 text-2xl font-bold mb-2">跨文化社交情境模拟训练</h2>
+          <p class="text-slate-600 font-medium">在无压力的虚拟环境中进行真实场景演练，帮助您掌握沟通技巧，提升跨文化社交自信心。</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-slate-800 font-bold text-lg mb-4 px-1">选择演练场景</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          
+          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('classroom')">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-700">
+                <i class="fas fa-chalkboard-teacher text-2xl"></i>
+              </div>
+              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：初级</span>
+            </div>
+            <h4 class="text-slate-800 text-lg font-bold mb-2">课堂小组讨论</h4>
+            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">如何在小组讨论中得体地表达自己的不同观点并融入团队合作？</p>
+            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
+              <span class="text-sm font-bold text-blue-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 5分钟</span>
+              <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                <i class="fas fa-play text-xs"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('restaurant')">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-700">
+                <i class="fas fa-utensils text-2xl"></i>
+              </div>
+              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：初级</span>
+            </div>
+            <h4 class="text-slate-800 text-lg font-bold mb-2">餐厅点餐沟通</h4>
+            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">在餐厅遇到菜品上错或口味不合等问题时，如何得体地与服务员沟通？</p>
+            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
+              <span class="text-sm font-bold text-amber-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 5分钟</span>
+              <div class="w-8 h-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-600 hover:text-white transition-colors">
+                <i class="fas fa-play text-xs"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('invitation')">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-14 h-14 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-700">
+                <i class="fas fa-envelope-open-text text-2xl"></i>
+              </div>
+              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：中级</span>
+            </div>
+            <h4 class="text-slate-800 text-lg font-bold mb-2">接受与婉拒邀请</h4>
+            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">如何礼貌且不伤和气地接受或婉拒中国朋友的热情社交邀请？</p>
+            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
+              <span class="text-sm font-bold text-rose-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 8分钟</span>
+              <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors">
+                <i class="fas fa-play text-xs"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('conflict')">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-700">
+                <i class="fas fa-handshake text-2xl"></i>
+              </div>
+              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：中级</span>
+            </div>
+            <h4 class="text-slate-800 text-lg font-bold mb-2">化解文化误解</h4>
+            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">当遇到文化差异、习惯不同导致的社交误解时，应该如何妥善处理？</p>
+            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
+              <span class="text-sm font-bold text-indigo-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 10分钟</span>
+              <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors">
+                <i class="fas fa-play text-xs"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('presentation')">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700">
+                <i class="fas fa-presentation-screen text-2xl"></i>
+              </div>
+              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：高级</span>
+            </div>
+            <h4 class="text-slate-800 text-lg font-bold mb-2">学术汇报答辩</h4>
+            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">在学术汇报中如何自信地展示研究成果，并得体地回应导师和同学的提问？</p>
+            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
+              <span class="text-sm font-bold text-emerald-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 12分钟</span>
+              <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors">
+                <i class="fas fa-play text-xs"></i>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <aside class="w-full lg:w-80 flex-shrink-0">
+      <div class="glass rounded-3xl p-6 h-full flex flex-col">
+        <h3 class="text-slate-800 font-bold text-lg mb-6">总体演练进度</h3>
+        
+        <div class="mb-8">
+          <div class="flex items-end justify-between mb-2">
+            <span class="text-slate-500 font-bold text-sm">已完成 3/8 个场景</span>
+            <span class="text-blue-600 font-bold text-xl">37%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden shadow-inner">
+            <div class="w-[37%] h-full bg-blue-600 rounded-full relative">
+              <div class="absolute top-0 right-0 bottom-0 w-8 bg-white/30 skew-x-[-45deg] animate-[slideIn_2s_infinite]"></div>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="text-slate-800 font-bold mb-4">最近完成</h4>
+        <div class="space-y-4 flex-1">
+          <div class="flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 flex-shrink-0">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-slate-800 text-sm font-bold">课堂小组讨论</p>
+              <div class="w-full h-1.5 bg-slate-200 rounded-full mt-2">
+                <div class="w-full h-full bg-blue-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-slate-800 text-sm font-bold">餐厅点餐沟通</p>
+              <div class="w-full h-1.5 bg-slate-200 rounded-full mt-2">
+                <div class="w-full h-full bg-amber-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-700 flex-shrink-0">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-slate-800 text-sm font-bold">接受与婉拒邀请</p>
+              <div class="w-full h-1.5 bg-slate-200 rounded-full mt-2">
+                <div class="w-full h-full bg-rose-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="dialogueView" class="hidden h-full flex flex-col">
+    <div class="mb-4">
+      <button onclick="backToList()" class="flex items-center space-x-2 text-slate-500 hover:text-slate-800 font-bold transition-colors bg-white/60 px-4 py-2 rounded-xl border border-white shadow-sm inline-flex">
+        <i class="fas fa-arrow-left"></i>
+        <span>返回场景列表</span>
+      </button>
+    </div>
+
+    <div class="flex-1 flex flex-col lg:flex-row gap-6 min-h-0">
+      
+      <div class="w-full lg:w-96 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-2 pb-2">
+        <div class="glass rounded-3xl p-6 border-l-4 border-l-blue-600 flex-shrink-0">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-700">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h3 class="text-slate-800 font-bold text-lg" id="scenarioTitle">课堂小组讨论</h3>
+          </div>
+          <p class="text-slate-600 text-sm font-medium leading-relaxed" id="scenarioDesc">您正在参加一门课程的小组讨论，其他三位成员都是中国学生。讨论主题是关于项目方案的优化建议。当您想表达一个不同的观点时，应该如何得体地表达？</p>
+        </div>
+
+        <div id="feedbackContainer" class="hidden flex flex-col gap-4">
+          <div class="glass rounded-3xl p-6 scale-in flex-shrink-0">
+            <h4 class="text-slate-800 font-bold mb-4 text-center">应对策略评分</h4>
+            <div class="flex justify-center mb-6">
+              <canvas id="feedbackRadar" width="240" height="240"></canvas>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-center">
+              <div class="bg-white/80 rounded-xl p-3 border border-slate-100">
+                <div class="text-blue-700 font-bold text-sm">沟通效果</div>
+                <div class="text-slate-600 font-bold text-xs mt-1" id="scoreComm">85分</div>
+              </div>
+              <div class="bg-white/80 rounded-xl p-3 border border-slate-100">
+                <div class="text-amber-600 font-bold text-sm">文化适应</div>
+                <div class="text-slate-600 font-bold text-xs mt-1" id="scoreCult">90分</div>
+              </div>
+              <div class="bg-white/80 rounded-xl p-3 border border-slate-100">
+                <div class="text-rose-600 font-bold text-sm">情绪管理</div>
+                <div class="text-slate-600 font-bold text-xs mt-1" id="scoreEmot">88分</div>
+              </div>
+              <div class="bg-white/80 rounded-xl p-3 border border-slate-100">
+                <div class="text-emerald-600 font-bold text-sm">自信表达</div>
+                <div class="text-slate-600 font-bold text-xs mt-1" id="scoreConf">82分</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-6 scale-in flex-shrink-0" style="animation-delay: 0.2s;">
+            <div class="flex items-start space-x-4">
+              <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-md">
+                <i class="fas fa-lightbulb text-white text-lg"></i>
+              </div>
+              <div>
+                <p class="text-slate-500 text-xs font-bold mb-1">专家点评</p>
+                <p class="text-slate-800 text-sm leading-relaxed font-medium">这是一个很好的选择！在中国文化中，先肯定他人再提出不同意见是一种尊重的表现。这种方式既能表达您的观点，又不会让对方感到被否定，有助于建立良好的团队氛围。</p>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="continueDialogue()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-md hover:shadow-lg hover:bg-slate-700 transition-all flex-shrink-0 mt-2">
+            继续演练
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 glass rounded-3xl flex flex-col overflow-hidden shadow-md">
+        
+        <div class="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar bg-white/30" id="dialogueContainer">
+          </div>
+
+        <div class="p-6 bg-white/60 border-t border-slate-200/50 backdrop-blur-md" id="choiceContainer">
+          <h4 class="text-slate-800 font-bold mb-4 flex items-center"><i class="fas fa-hand-pointer text-blue-500 mr-2"></i> 请选择您的回应方式：</h4>
+          <div class="space-y-3" id="choicesList">
+            </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+// 场景数据
+const scenarios = {
+  classroom: {
+    title: '课堂小组讨论',
+    desc: '您正在参加一门课程的小组讨论，其他三位成员都是中国学生。讨论主题是关于项目方案的优化建议。当您想表达一个不同的观点时，应该如何得体地表达？',
+    dialogues: [
+      { speaker: '小组长 小王', text: '我觉得我们可以按照原来的方案继续进行，这样比较稳妥，大家觉得呢？' },
+      { speaker: '您', text: '...' }
+    ],
+    choices: [
+      { id: 1, text: '直接打断说出自己的不同观点，因为讨论需要多元意见', scores: { communication: 60, culture: 55, emotion: 75, confidence: 90 } },
+      { id: 2, text: '先肯定对方的想法，再委婉提出自己的建议', scores: { communication: 90, culture: 95, emotion: 88, confidence: 85 } },
+      { id: 3, text: '保持沉默，不想在小组中制造分歧或引起注意', scores: { communication: 40, culture: 60, emotion: 50, confidence: 30 } }
+    ]
+  },
+  restaurant: {
+    title: '餐厅点餐沟通',
+    desc: '您在一家上海本帮菜餐厅用餐，发现上来的菜品与您点的不符，而且口味偏甜。您应该如何与服务员沟通？',
+    dialogues: [
+      { speaker: '服务员', text: '您好，这是您点的红烧肉，请慢用。' },
+      { speaker: '您', text: '...' }
+    ],
+    choices: [
+      { id: 1, text: '大声指出菜品有问题，要求立刻更换', scores: { communication: 50, culture: 45, emotion: 40, confidence: 85 } },
+      { id: 2, text: '礼貌地叫服务员过来询问是否上错了，并表达感谢', scores: { communication: 92, culture: 88, emotion: 90, confidence: 85 } },
+      { id: 3, text: '算了，将就着吃吧，不想惹麻烦', scores: { communication: 30, culture: 50, emotion: 55, confidence: 25 } }
+    ]
+  },
+  invitation: {
+    title: '接受与婉拒邀请',
+    desc: '您的中国同学邀请您周末参加一个家庭聚餐，但您那天已经安排了其他事情。您应该如何回应？',
+    dialogues: [
+      { speaker: '同学 小李', text: '这周末我家有个聚餐，我爸妈很想见见我的留学生朋友，你能来吗？' },
+      { speaker: '您', text: '...' }
+    ],
+    choices: [
+      { id: 1, text: '直接说不行，那天有事去不了', scores: { communication: 55, culture: 40, emotion: 60, confidence: 80 } },
+      { id: 2, text: '表达感谢和遗憾，说明原因并主动提出改天再约', scores: { communication: 95, culture: 98, emotion: 90, confidence: 85 } },
+      { id: 3, text: '勉强答应，到时候再发微信找借口不去', scores: { communication: 35, culture: 30, emotion: 45, confidence: 40 } }
+    ]
+  },
+  conflict: {
+    title: '化解文化误解',
+    desc: '您的室友未经同意使用了您的个人物品，在中国寝室文化中有时界限比较模糊，您该如何沟通？',
+    dialogues: [
+      { speaker: '室友 小陈', text: '哎呀，我刚才找不到剪刀，借用了一下桌上的，没关系吧？' },
+      { speaker: '您', text: '...' }
+    ],
+    choices: [
+      { id: 1, text: '非常生气，严厉警告他以后绝对不能碰我的东西', scores: { communication: 45, culture: 40, emotion: 35, confidence: 90 } },
+      { id: 2, text: '微笑着说没关系，但明确表示希望下次用之前能先说一声', scores: { communication: 90, culture: 85, emotion: 88, confidence: 85 } },
+      { id: 3, text: '心里很不舒服，但不说话，自己生闷气', scores: { communication: 30, culture: 55, emotion: 30, confidence: 25 } }
+    ]
+  },
+  presentation: {
+    title: '学术汇报答辩',
+    desc: '在课堂汇报后，老师提出了一个非常犀利且您并未准备充分的问题。',
+    dialogues: [
+      { speaker: '指导老师', text: '你的这个数据模型，有没有考虑过样本偏差对最终结果的影响？' },
+      { speaker: '您', text: '...' }
+    ],
+    choices: [
+      { id: 1, text: '强行辩解，认为自己的模型绝对没有问题', scores: { communication: 50, culture: 60, emotion: 65, confidence: 85 } },
+      { id: 2, text: '坦诚承认自己未充分考虑，感谢老师指出，并尝试给出一个初步的思考方向', scores: { communication: 95, culture: 90, emotion: 92, confidence: 88 } },
+      { id: 3, text: '紧张到语无伦次，直接说“我不知道”', scores: { communication: 40, culture: 50, emotion: 35, confidence: 20 } }
+    ]
+  }
+};
+
+let currentScenario = null;
+let selectedChoiceScores = null;
+
+function startScenario(scenarioId) {
+  currentScenario = scenarios[scenarioId];
+  if (!currentScenario) return;
+  
+  document.getElementById('scenarioListView').classList.add('hidden');
+  document.getElementById('dialogueView').classList.remove('hidden');
+  
+  document.getElementById('scenarioTitle').textContent = currentScenario.title;
+  document.getElementById('scenarioDesc').textContent = currentScenario.desc;
+  
+  renderDialogue();
+  renderChoices();
+}
+
+function renderDialogue() {
+  const container = document.getElementById('dialogueContainer');
+  container.innerHTML = '';
+  
+  currentScenario.dialogues.forEach((dialogue, index) => {
+    const isPlayer = dialogue.speaker === '您';
+    
+    const alignClass = isPlayer ? 'flex-row-reverse space-x-reverse' : '';
+    const iconBgClass = isPlayer ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-slate-800 text-white border-slate-700';
+    const textAlignment = isPlayer ? 'flex flex-col items-end' : '';
+    const bubbleBgClass = isPlayer ? 'bg-white border-amber-200 rounded-tr-sm' : 'bg-white border-blue-200 rounded-tl-sm';
+    
+    const html = `<div class="flex items-start space-x-4 ${alignClass} slide-in" style="animation-delay: ${index * 0.2}s;">
+      <div class="w-12 h-12 rounded-2xl ${iconBgClass} border flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
+        <i class="${isPlayer ? 'fas fa-user' : 'fas fa-comment-dots'} text-lg"></i>
+      </div>
+      <div class="flex-1 max-w-2xl ${textAlignment}">
+        <p class="text-slate-400 font-bold text-xs mb-1.5 mx-1">${dialogue.speaker}</p>
+        <div class="${bubbleBgClass} border rounded-2xl p-5 shadow-sm inline-block">
+          <p class="text-slate-800 text-[15px] font-medium leading-relaxed">${dialogue.text}</p>
+        </div>
+      </div>
+    </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+  });
+}
+
+function renderChoices() {
+  const container = document.getElementById('choicesList');
+  container.innerHTML = '';
+  
+  const labels = ['A', 'B', 'C'];
+  const bgClasses = ['bg-blue-50', 'bg-amber-50', 'bg-rose-50'];
+  const borderClasses = ['border-blue-200', 'border-amber-200', 'border-rose-200'];
+  const textClasses = ['text-blue-700', 'text-amber-700', 'text-rose-700'];
+  
+  currentScenario.choices.forEach((choice, index) => {
+    const html = `<button class="choice-btn w-full text-left bg-white border border-slate-200 hover:border-slate-300 rounded-2xl p-4 shadow-sm flex items-center space-x-4" onclick="selectChoice(${choice.id})">
+      <span class="w-10 h-10 flex-shrink-0 rounded-xl ${bgClasses[index]} border ${borderClasses[index]} flex items-center justify-center ${textClasses[index]} text-sm font-bold shadow-inner">${labels[index]}</span>
+      <span class="text-slate-800 font-bold text-[15px] leading-snug">${choice.text}</span>
+    </button>`;
+    container.insertAdjacentHTML('beforeend', html);
+  });
+}
+
+function selectChoice(choiceId) {
+  const choice = currentScenario.choices.find(c => c.id === choiceId);
+  if (!choice) return;
+  
+  selectedChoiceScores = choice.scores;
+  
+  // 更新分数显示
+  document.getElementById('scoreComm').textContent = choice.scores.communication + '分';
+  document.getElementById('scoreCult').textContent = choice.scores.culture + '分';
+  document.getElementById('scoreEmot').textContent = choice.scores.emotion + '分';
+  document.getElementById('scoreConf').textContent = choice.scores.confidence + '分';
+  
+  // 在对话区追加玩家的选择气泡
+  const container = document.getElementById('dialogueContainer');
+  const html = `<div class="flex items-start space-x-4 flex-row-reverse space-x-reverse slide-in">
+      <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 border border-amber-200 flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
+        <i class="fas fa-user text-lg"></i>
+      </div>
+      <div class="flex-1 max-w-2xl flex flex-col items-end">
+        <p class="text-slate-400 font-bold text-xs mb-1.5 mx-1">您</p>
+        <div class="bg-white border border-amber-300 rounded-2xl rounded-tr-sm p-5 shadow-sm inline-block ring-2 ring-amber-100">
+          <p class="text-slate-800 text-[15px] font-medium leading-relaxed">${choice.text}</p>
+        </div>
+      </div>
+    </div>`;
+  
+  // 移除原来的占位气泡
+  const bubbles = container.children;
+  if(bubbles.length > 0) {
+     const lastBubble = bubbles[bubbles.length - 1];
+     if(lastBubble.innerHTML.includes('...')) {
+         lastBubble.remove();
+     }
+  }
+  
+  container.insertAdjacentHTML('beforeend', html);
+  container.scrollTop = container.scrollHeight;
+  
+  document.getElementById('choiceContainer').classList.add('hidden');
+  document.getElementById('feedbackContainer').classList.remove('hidden');
+  
+  drawFeedbackRadar();
+}
+
+function drawFeedbackRadar() {
+  const canvas = document.getElementById('feedbackRadar');
+  const ctx = canvas.getContext('2d');
+  
+  // 处理高分屏模糊
+  const dpr = window.devicePixelRatio || 1;
+  const size = 240;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = `${size}px`;
+  canvas.style.height = `${size}px`;
+  ctx.scale(dpr, dpr);
+  
+  const centerX = size / 2;
+  const centerY = size / 2;
+  const radius = (size / 2) - 30;
+  
+  const labels = ['沟通效果', '文化适应', '情绪管理', '自信表达'];
+  const values = [
+    selectedChoiceScores.communication,
+    selectedChoiceScores.culture,
+    selectedChoiceScores.emotion,
+    selectedChoiceScores.confidence
+  ];
+  
+  ctx.clearRect(0, 0, size, size);
+  
+  // 绘制背景
+  for (let i = 1; i <= 4; i++) {
+    ctx.beginPath();
+    const r = (radius / 4) * i;
+    for (let j = 0; j <= 4; j++) {
+      const angle = (Math.PI * 2 / 4) * j - Math.PI / 2;
+      const x = centerX + Math.cos(angle) * r;
+      const y = centerY + Math.sin(angle) * r;
+      if (j === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(30, 41, 59, 0.08)';
+    ctx.stroke();
+  }
+  
+  // 绘制轴线
+  for (let i = 0; i < 4; i++) {
+    const angle = (Math.PI * 2 / 4) * i - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+    ctx.strokeStyle = 'rgba(30, 41, 59, 0.1)';
+    ctx.stroke();
+  }
+  
+  // 绘制数据区域
+  ctx.beginPath();
+  values.forEach((value, index) => {
+    const angle = (Math.PI * 2 / 4) * index - Math.PI / 2;
+    const r = (value / 100) * radius;
+    const x = centerX + Math.cos(angle) * r;
+    const y = centerY + Math.sin(angle) * r;
+    if (index === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  
+  const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+  gradient.addColorStop(0, 'rgba(245, 158, 11, 0.4)');
+  gradient.addColorStop(1, 'rgba(59, 130, 246, 0.3)'); 
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.strokeStyle = '#3B82F6';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // 绘制数据点
+  values.forEach((value, index) => {
+    const angle = (Math.PI * 2 / 4) * index - Math.PI / 2;
+    const r = (value / 100) * radius;
+    const x = centerX + Math.cos(angle) * r;
+    const y = centerY + Math.sin(angle) * r;
+    
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+    ctx.strokeStyle = '#3B82F6';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+  
+  // 绘制标签
+  ctx.font = 'bold 12px Noto Sans SC';
+  ctx.fillStyle = '#475569';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  labels.forEach((label, index) => {
+    const angle = (Math.PI * 2 / 4) * index - Math.PI / 2;
+    const labelRadius = radius + 15;
+    const x = centerX + Math.cos(angle) * labelRadius;
+    const y = centerY + Math.sin(angle) * labelRadius;
+    
+    let align = 'center';
+    if (Math.abs(Math.cos(angle)) > 0.5) {
+        align = Math.cos(angle) > 0 ? 'left' : 'right';
+    }
+    ctx.textAlign = align;
+    ctx.fillText(label, x, y);
+  });
+}
+
+function continueDialogue() {
+  document.getElementById('feedbackContainer').classList.add('hidden');
+  document.getElementById('choiceContainer').classList.remove('hidden');
+  
+  showToast('演练记录已保存！正在返回场景列表...');
+  setTimeout(() => {
+    backToList();
+  }, 1500);
+}
+
+function backToList() {
+  document.getElementById('dialogueView').classList.add('hidden');
+  document.getElementById('scenarioListView').classList.remove('hidden');
+  document.getElementById('feedbackContainer').classList.add('hidden');
+  document.getElementById('choiceContainer').classList.remove('hidden');
+  currentScenario = null;
+}
+
+// 页面导航函数
+function navigateTo(page) {
+  window.location.href = page + '.html';
+}
+
+// 退出登录
+function handleLogout() {
+  if (confirm('确定要退出登录吗？')) {
+    localStorage.removeItem('isLoggedIn');
+    window.location.href = 'login.html';
+  }
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-50 text-sm font-bold flex items-center space-x-2';
+  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.5s ease-out';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 500);
+  }, 2000);
+}
+</script>
+</body>
+</html>

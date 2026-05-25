@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selene智能陪伴平台 - 个人中心</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { 50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE', 300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8', 800: '#1E40AF', 900: '#1E3A8A' },
+        accent: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E' }
+      },
+      fontFamily: {
+        sans: ['Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; }
+.glass { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px rgba(30, 58, 138, 0.05); }
+.menu-item { transition: all 0.3s; }
+.menu-item:hover { background: rgba(255, 255, 255, 0.6); transform: translateX(8px); }
+.avatar-ring { animation: pulse 3s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); } 50% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } }
+.stat-card { transition: all 0.3s; }
+.stat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(30, 58, 138, 0.1); }
+.nav-item { transition: all 0.3s; }
+.nav-item:hover { background: rgba(255, 255, 255, 0.7); }
+.nav-item.active { background: #FFFFFF; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); border-color: rgba(59, 130, 246, 0.2); }
+/* 隐藏滚动条但保留滚动功能 */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="min-h-screen flex">
+
+<aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
+  <div class="p-8 pb-4 flex items-center space-x-3">
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
+      <i class="fas fa-heart-pulse text-white"></i>
+    </div>
+    <div>
+      <h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1>
+      <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
+    </div>
+  </div>
+
+  <nav class="flex-1 px-4 mt-6 space-y-2">
+    <button onclick="navigateTo('chat')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-comments text-lg w-6 text-center"></i>
+      <span class="font-medium">情感陪伴</span>
+    </button>
+    <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-chart-line text-lg w-6 text-center"></i>
+      <span class="font-medium">心境轨迹</span>
+    </button>
+    <button onclick="navigateTo('simulator')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-theater-masks text-lg w-6 text-center"></i>
+      <span class="font-medium">跨文化演练</span>
+    </button>
+    <button onclick="navigateTo('guide')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-compass text-lg w-6 text-center"></i>
+      <span class="font-medium">沪上指南</span>
+    </button>
+    <button onclick="navigateTo('user')" class="nav-item active w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-800 border">
+      <i class="fas fa-user text-lg w-6 text-center text-blue-600"></i>
+      <span class="font-bold">个人中心</span>
+    </button>
+  </nav>
+
+  <div class="p-4 border-t border-slate-200/50">
+    <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>退出登录</span>
+    </button>
+  </div>
+</aside>
+
+<main class="flex-1 ml-64 p-8 h-screen overflow-y-auto no-scrollbar relative">
+  <div class="max-w-6xl mx-auto space-y-6">
+    
+    <header class="mb-8">
+      <h2 class="text-3xl font-bold text-slate-800">早上好，<span id="userGreeting">留学生朋友</span>！</h2>
+      <p class="text-slate-500 font-medium mt-2">在这里管理您的个人信息与系统偏好。</p>
+    </header>
+
+    <div class="glass rounded-3xl p-8 flex flex-col lg:flex-row items-center justify-between gap-8">
+      
+      <div class="flex items-center space-x-6">
+        <div class="relative flex-shrink-0">
+          <div class="avatar-ring w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 to-blue-500 p-1 shadow-md">
+            <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjEwMCIgZmlsbD0iI0UwRjJGRSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjgwIiByPSIzNSIgZmlsbD0iIzNCODJGNiIvPjxwYXRoIGQ9Ik0xMDAgMTI1Yy00MCAwLTcwIDI1LTcwIDU1djIwaDE0MHYtMjBjMC0zMC0zMC01NS03MC01NXoiIGZpbGw9IiMzQjgyRjYiLz48L3N2Zz4=" alt="Avatar" class="w-full h-full object-cover">
+            </div>
+          </div>
+          <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer z-10">
+            <i class="fas fa-camera text-sm"></i>
+          </button>
+        </div>
+        
+        <div>
+          <h1 class="text-slate-800 text-2xl font-bold mb-2" id="userNickname">留学生朋友</h1>
+          <p class="text-slate-500 font-medium text-sm mb-4">来沪6个月 · Selene会员</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200">平静</span>
+            <span class="px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 font-bold text-xs border border-amber-200">积极</span>
+            <span class="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs border border-emerald-200">成长中</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-4 w-full lg:w-auto">
+        <div class="stat-card bg-white/80 border border-white rounded-2xl p-5 shadow-sm text-center min-w-[120px]">
+          <div class="text-3xl font-bold text-slate-800">28</div>
+          <div class="text-slate-500 font-medium text-sm mt-1">陪伴天数</div>
+        </div>
+        <div class="stat-card bg-white/80 border border-white rounded-2xl p-5 shadow-sm text-center min-w-[120px]">
+          <div class="text-3xl font-bold text-blue-600">15</div>
+          <div class="text-slate-500 font-medium text-sm mt-1">对话次数</div>
+        </div>
+        <div class="stat-card bg-white/80 border border-white rounded-2xl p-5 shadow-sm text-center min-w-[120px]">
+          <div class="text-3xl font-bold text-amber-500">3</div>
+          <div class="text-slate-500 font-medium text-sm mt-1">演练完成</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <div class="space-y-6">
+        <div class="glass rounded-3xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-slate-800 font-bold text-lg">我的成就</h2>
+            <button class="text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors">查看全部</button>
+          </div>
+          <div class="flex justify-between items-center px-2">
+            <div class="text-center group cursor-pointer">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-300 to-rose-400 flex items-center justify-center mb-2 shadow-sm transition-transform group-hover:scale-110">
+                <i class="fas fa-fire text-white text-2xl"></i>
+              </div>
+              <span class="text-slate-600 font-bold text-xs">坚持者</span>
+            </div>
+            <div class="text-center group cursor-pointer">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-blue-300 to-indigo-400 flex items-center justify-center mb-2 shadow-sm transition-transform group-hover:scale-110">
+                <i class="fas fa-comments text-white text-2xl"></i>
+              </div>
+              <span class="text-slate-600 font-bold text-xs">倾诉者</span>
+            </div>
+            <div class="text-center group cursor-pointer">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-300 to-blue-400 flex items-center justify-center mb-2 shadow-sm transition-transform group-hover:scale-110">
+                <i class="fas fa-seedling text-white text-2xl"></i>
+              </div>
+              <span class="text-slate-600 font-bold text-xs">成长者</span>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-white/50 border-2 border-dashed border-slate-300 flex items-center justify-center mb-2">
+                <i class="fas fa-lock text-slate-300 text-xl"></i>
+              </div>
+              <span class="text-slate-400 font-medium text-xs">待解锁</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl overflow-hidden py-2">
+          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('个人资料功能开发中')">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center shadow-sm">
+                <i class="fas fa-user-edit text-blue-600 text-lg"></i>
+              </div>
+              <div>
+                <span class="text-slate-800 font-bold block">个人资料</span>
+                <span class="text-slate-500 text-xs font-medium mt-1 block">编辑昵称、时长与基本信息</span>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-slate-400"></i>
+          </div>
+          
+          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('心情日记功能开发中')">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center shadow-sm">
+                <i class="fas fa-book text-amber-600 text-lg"></i>
+              </div>
+              <div>
+                <span class="text-slate-800 font-bold block">心情日记</span>
+                <span class="text-slate-500 text-xs font-medium mt-1 block">回顾您过往的心境记录</span>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-slate-400"></i>
+          </div>
+          
+          <div class="menu-item flex items-center justify-between p-5 cursor-pointer mx-2" onclick="showToast('收藏内容功能开发中')">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center shadow-sm">
+                <i class="fas fa-bookmark text-rose-600 text-lg"></i>
+              </div>
+              <div>
+                <span class="text-slate-800 font-bold block">我的收藏</span>
+                <span class="text-slate-500 text-xs font-medium mt-1 block">查看保存的文章与演练</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="bg-slate-100 text-slate-500 font-bold text-xs px-2 py-1 rounded-lg">12项</span>
+              <i class="fas fa-chevron-right text-slate-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="glass rounded-3xl overflow-hidden py-2 h-full">
+          <div class="p-6 pb-2">
+            <h2 class="text-slate-800 font-bold text-lg">系统偏好</h2>
+          </div>
+          
+          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('提醒设置功能开发中')">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shadow-sm">
+                <i class="fas fa-bell text-emerald-600 text-lg"></i>
+              </div>
+              <div>
+                <span class="text-slate-800 font-bold block">消息与提醒</span>
+                <span class="text-slate-500 text-xs font-medium mt-1 block">每日问候与互动通知</span>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-slate-400"></i>
+          </div>
+          
+          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('隐私设置功能开发中')">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center shadow-sm">
+                <i class="fas fa-shield-halved text-indigo-600 text-lg"></i>
+              </div>
+              <div>
+                <span class="text-slate-800 font-bold block">隐私与安全</span>
+                <span class="text-slate-500 text-xs font-medium mt-1 block">账号绑定与数据管理</span>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-slate-400"></i>
+          </div>
+
+          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('帮助中心功能开发中')">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                <i class="fas fa-circle-question text-slate-500 text-lg"></i>
+              </div>
+              <div>
+                <span class="text-slate-800 font-bold block">帮助中心</span>
+                <span class="text-slate-500 text-xs font-medium mt-1 block">常见问题与在线客服</span>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-slate-400"></i>
+          </div>
+          
+          <div class="menu-item flex items-center justify-between p-5 cursor-pointer mx-2" onclick="showToast('关于我们功能开发中')">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                <i class="fas fa-info-circle text-slate-500 text-lg"></i>
+              </div>
+              <div>
+                <span class="text-slate-800 font-bold block">关于 Selene</span>
+                <span class="text-slate-500 text-xs font-medium mt-1 block">版本日志与服务条款</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-slate-400 font-bold text-xs">v1.0.0</span>
+              <i class="fas fa-chevron-right text-slate-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center pt-8 pb-4">
+      <p class="text-slate-400 font-medium text-sm">© 2026 Selene 智能陪伴平台. All rights reserved.</p>
+      <p class="text-slate-400/60 font-medium text-xs mt-2">上海留学生心理陪伴服务专属平台</p>
+    </div>
+  </div>
+</main>
+
+<script>
+// 页面导航函数
+function navigateTo(page) {
+  window.location.href = page + '.html';
+}
+
+// 显示提示
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-50 text-sm font-bold flex items-center space-x-2';
+  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.5s ease-out';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 500);
+  }, 2000);
+}
+
+// 退出登录
+function handleLogout() {
+  if (confirm('确定要退出登录吗？')) {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userNickname');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userDuration');
+    localStorage.removeItem('userEmotion');
+    
+    // 返回登录页
+    window.location.href = 'login.html';
+  }
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
+  /*
+  if (!localStorage.getItem('isLoggedIn')) {
+    window.location.href = 'login.html';
+    return;
+  }
+  */
+  
+  // 加载用户信息
+  const nickname = localStorage.getItem('userNickname');
+  if (nickname) {
+    document.getElementById('userNickname').textContent = nickname;
+    document.getElementById('userGreeting').textContent = nickname;
+  }
+});
+</script>
+</body>
+</html>

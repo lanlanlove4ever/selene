@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selene智能陪伴平台 - 沪上指南</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { 50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE', 300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8', 800: '#1E40AF', 900: '#1E3A8A' },
+        accent: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E' }
+      },
+      fontFamily: {
+        sans: ['Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
+.glass { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px rgba(30, 58, 138, 0.05); }
+
+/* 左侧导航交互样式 */
+.nav-item { transition: all 0.3s; }
+.nav-item:hover { background: rgba(255, 255, 255, 0.7); transform: translateX(8px); }
+.nav-item.active { background: #FFFFFF; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); border-color: rgba(59, 130, 246, 0.2); transform: none; }
+
+/* 瀑布流卡片与搜索框样式 */
+.masonry-item { opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.masonry-item.visible { opacity: 1; transform: translateY(0); }
+.card-hover { transition: all 0.3s; }
+.card-hover:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(30, 58, 138, 0.1); }
+.search-container:focus-within { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); border-color: #93C5FD; }
+.tag-btn { transition: all 0.3s; }
+.tag-btn:hover { transform: scale(1.05); }
+
+/* PC端细滚动条 */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+</style>
+</head>
+<body class="h-screen flex">
+
+<aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
+  <div class="p-8 pb-4 flex items-center space-x-3">
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
+      <i class="fas fa-heart-pulse text-white"></i>
+    </div>
+    <div>
+      <h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1>
+      <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
+    </div>
+  </div>
+
+  <nav class="flex-1 px-4 mt-6 space-y-2">
+    <button onclick="navigateTo('chat')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-comments text-lg w-6 text-center"></i>
+      <span class="font-medium">情感陪伴</span>
+    </button>
+    <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-chart-line text-lg w-6 text-center"></i>
+      <span class="font-medium">心境轨迹</span>
+    </button>
+    <button onclick="navigateTo('simulator')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-theater-masks text-lg w-6 text-center"></i>
+      <span class="font-medium">跨文化演练</span>
+    </button>
+    <button onclick="navigateTo('guide')" class="nav-item active w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-800 border">
+      <i class="fas fa-compass text-lg w-6 text-center text-blue-600"></i>
+      <span class="font-bold">沪上指南</span>
+    </button>
+    <button onclick="navigateTo('user')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
+      <i class="fas fa-user text-lg w-6 text-center"></i>
+      <span class="font-medium">个人中心</span>
+    </button>
+  </nav>
+
+  <div class="p-4 border-t border-slate-200/50">
+    <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>退出登录</span>
+    </button>
+  </div>
+</aside>
+
+<main class="flex-1 ml-64 p-8 h-screen overflow-y-auto custom-scrollbar relative">
+  <div class="max-w-7xl mx-auto">
+    
+    <header class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-6">
+      <div>
+        <h2 class="text-3xl font-bold text-slate-800">沪上生活指南</h2>
+        <p class="text-slate-500 font-medium mt-2">探索上海的每一个精彩角落，发现本地生活方式。</p>
+      </div>
+      
+      <div class="relative w-full lg:w-96 search-container bg-white/80 border border-slate-200 rounded-2xl shadow-inner transition-all flex items-center">
+        <i class="fas fa-search absolute left-4 text-slate-400"></i>
+        <input type="text" id="searchInput" placeholder="搜索美食、景点、交通..." class="w-full bg-transparent py-3.5 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none text-sm font-medium" oninput="handleSearch()">
+      </div>
+    </header>
+
+    <div class="flex flex-wrap gap-3 mb-8" id="tagContainer">
+      <button class="tag-btn bg-slate-800 text-white shadow-md px-5 py-2.5 rounded-xl text-sm font-bold" onclick="filterByTag('all', this)">全部</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('food', this)">美食探店</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('transport', this)">交通出行</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('culture', this)">文化活动</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('life', this)">生活服务</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('study', this)">学习资源</button>
+    </div>
+
+    <div class="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6" id="masonryContainer">
+      
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="food">
+        <div class="h-36 bg-gradient-to-br from-amber-100 to-rose-100 flex items-center justify-center border-b border-white/50">
+          <i class="fas fa-bowl-food text-amber-500 text-5xl drop-shadow-sm"></i>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs">美食探店</span>
+            <span class="text-slate-400 font-medium text-xs">3分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">上海本帮菜入门指南</h3>
+          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">从红烧肉到小笼包，带你了解上海本地美食的独特魅力与最佳品尝地点。</p>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center">
+                <i class="fas fa-user text-amber-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">美食达人小李</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="transport">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">交通出行</span>
+            <span class="text-slate-400 font-medium text-xs">5分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">上海地铁全攻略</h3>
+          <p class="text-slate-600 text-sm font-medium mb-4 leading-relaxed">上海地铁线路图详解，换乘技巧与省钱攻略，让您的出行更加便捷高效。</p>
+          <div class="bg-blue-50/80 border border-blue-100 rounded-xl p-3 mb-5 shadow-sm">
+            <div class="flex items-center space-x-2 text-sm">
+              <i class="fas fa-lightbulb text-amber-500"></i>
+              <span class="text-slate-700 font-bold">使用交通卡可享9折优惠</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fas fa-user text-blue-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">出行专家小王</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="culture">
+        <div class="h-44 bg-gradient-to-br from-rose-100 to-blue-100 flex items-center justify-center border-b border-white/50">
+          <i class="fas fa-masks-theater text-rose-500 text-6xl drop-shadow-md"></i>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold text-xs">文化活动</span>
+            <span class="text-slate-400 font-medium text-xs">8分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">上海博物馆免费预约指南</h3>
+          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">上海各大博物馆预约入口与参观攻略，感受海派文化的深厚底蕴。</p>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center">
+                <i class="fas fa-user text-rose-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">文化爱好者小张</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="life">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs">生活服务</span>
+            <span class="text-slate-400 font-medium text-xs">4分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">留学生租房避坑指南</h3>
+          <p class="text-slate-600 text-sm font-medium mb-4 leading-relaxed">在上海租房需要注意的事项，从签约到入住的全流程指南。</p>
+          <div class="space-y-2 mb-5 bg-white/50 rounded-xl p-4 border border-slate-100 shadow-sm">
+            <div class="flex items-center space-x-2 text-sm">
+              <i class="fas fa-check-circle text-emerald-500"></i>
+              <span class="text-slate-700 font-medium">确认房产证与房东身份</span>
+            </div>
+            <div class="flex items-center space-x-2 text-sm">
+              <i class="fas fa-check-circle text-emerald-500"></i>
+              <span class="text-slate-700 font-medium">仔细阅读合同条款</span>
+            </div>
+            <div class="flex items-center space-x-2 text-sm">
+              <i class="fas fa-check-circle text-emerald-500"></i>
+              <span class="text-slate-700 font-medium">检查房屋设施状况</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
+                <i class="fas fa-user text-emerald-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">租房达人小陈</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="food">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs">美食探店</span>
+            <span class="text-slate-400 font-medium text-xs">6分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">静安寺周边咖啡地图</h3>
+          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">精选静安寺商圈10家特色咖啡馆，适合学习与社交的好去处。</p>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center">
+                <i class="fas fa-user text-amber-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">咖啡控小林</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="study">
+        <div class="h-40 bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center border-b border-white/50">
+          <i class="fas fa-book-open text-indigo-500 text-5xl drop-shadow-sm"></i>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-700 font-bold text-xs">学习资源</span>
+            <span class="text-slate-400 font-medium text-xs">10分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">上海图书馆办证攻略</h3>
+          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">如何办理上海图书馆借书证，电子资源使用指南与自习室预约方法。</p>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center">
+                <i class="fas fa-user text-indigo-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">学霸小周</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="culture">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold text-xs">文化活动</span>
+            <span class="text-slate-400 font-medium text-xs">7分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">外滩夜景最佳观赏点</h3>
+          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">除了外滩观景台，这些小众地点也能欣赏到绝美的浦江夜景。</p>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center">
+                <i class="fas fa-user text-rose-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">摄影师小吴</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="life">
+        <div class="h-32 bg-gradient-to-br from-emerald-100 to-amber-100 flex items-center justify-center border-b border-white/50">
+          <i class="fas fa-hospital text-emerald-500 text-4xl drop-shadow-sm"></i>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs">生活服务</span>
+            <span class="text-slate-400 font-medium text-xs">5分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">留学生就医指南</h3>
+          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">上海留学生医保使用方法与推荐医院，让您在沪就医无忧。</p>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
+                <i class="fas fa-user text-emerald-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">健康顾问小刘</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="transport">
+        <div class="p-5">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">交通出行</span>
+            <span class="text-slate-400 font-medium text-xs">4分钟阅读</span>
+          </div>
+          <h3 class="text-slate-800 font-bold text-lg mb-2">浦东机场往返市区攻略</h3>
+          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">磁悬浮、地铁、机场大巴多种方式对比，选择最适合您的出行方案。</p>
+          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fas fa-user text-blue-600 text-xs"></i>
+              </div>
+              <span class="text-slate-500 font-bold text-xs">旅行达人小赵</span>
+            </div>
+            <button class="text-slate-400 hover:text-blue-600 transition-colors">
+              <i class="far fa-bookmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-10 mb-8">
+      <button onclick="loadMore()" class="bg-white/80 border border-slate-200 text-slate-600 font-bold px-10 py-3.5 rounded-2xl hover:bg-white hover:text-blue-600 shadow-sm hover:shadow transition-all text-sm">
+        <i class="fas fa-plus mr-2"></i>加载更多内容
+      </button>
+    </div>
+    
+    <div class="text-center pt-6 pb-2 border-t border-slate-200/50">
+      <p class="text-slate-400 font-medium text-sm">© 2026 Selene 智能陪伴平台. All rights reserved.</p>
+    </div>
+    
+  </div>
+</main>
+
+<script>
+// 滚动动画观察器
+let observer = null;
+
+// 初始化滚动动画
+function initScrollAnimation() {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, index * 80);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.masonry-item').forEach(item => {
+    observer.observe(item);
+  });
+}
+
+// 搜索处理
+function handleSearch() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const items = document.querySelectorAll('.masonry-item');
+  
+  items.forEach(item => {
+    const title = item.querySelector('h3').textContent.toLowerCase();
+    const desc = item.querySelector('p').textContent.toLowerCase();
+    
+    if (title.includes(query) || desc.includes(query) || query === '') {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// 标签筛选
+function filterByTag(tag, btn) {
+  const container = document.getElementById('tagContainer');
+  const allBtns = container.querySelectorAll('.tag-btn');
+  
+  allBtns.forEach(b => {
+    b.className = 'tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm';
+  });
+  
+  btn.className = 'tag-btn bg-slate-800 text-white shadow-md px-5 py-2.5 rounded-xl text-sm font-bold';
+  
+  const items = document.querySelectorAll('.masonry-item');
+  items.forEach(item => {
+    if (tag === 'all' || item.dataset.tag === tag) {
+      item.style.display = 'block';
+      item.classList.remove('visible');
+      setTimeout(() => item.classList.add('visible'), 50);
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// 加载更多
+function loadMore() {
+  const container = document.getElementById('masonryContainer');
+  const newCards = [
+    { tag: 'food', title: '田子坊美食探秘', desc: '漫步田子坊，发现藏在弄堂里的美味小店。', category: '美食探店', color: 'amber' },
+    { tag: 'culture', title: '上海话剧观演指南', desc: '上海话剧艺术中心购票攻略与观演礼仪。', category: '文化活动', color: 'rose' }
+  ];
+  
+  newCards.forEach((card, index) => {
+    const html = `<div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="${card.tag}">
+      <div class="p-5">
+        <div class="flex items-center space-x-2 mb-3">
+          <span class="px-2.5 py-1 rounded-lg bg-${card.color}-100 text-${card.color}-700 font-bold text-xs">${card.category}</span>
+          <span class="text-slate-400 font-medium text-xs">新内容</span>
+        </div>
+        <h3 class="text-slate-800 font-bold text-lg mb-2">${card.title}</h3>
+        <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">${card.desc}</p>
+        <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-full bg-${card.color}-100 flex items-center justify-center">
+              <i class="fas fa-user text-${card.color}-600 text-xs"></i>
+            </div>
+            <span class="text-slate-500 font-bold text-xs">Selene小编</span>
+          </div>
+          <button class="text-slate-400 hover:text-blue-600 transition-colors">
+            <i class="far fa-bookmark text-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>`;
+    
+    setTimeout(() => {
+      container.insertAdjacentHTML('beforeend', html);
+      const newItem = container.lastElementChild;
+      observer.observe(newItem);
+      setTimeout(() => newItem.classList.add('visible'), 50);
+    }, index * 200);
+  });
+  
+  showToast('已加载更多内容');
+}
+
+// 页面导航函数
+function navigateTo(page) {
+  window.location.href = page + '.html';
+}
+
+// 退出登录
+function handleLogout() {
+  if (confirm('确定要退出登录吗？')) {
+    localStorage.removeItem('isLoggedIn');
+    window.location.href = 'login.html';
+  }
+}
+
+// 显示提示
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-50 text-sm font-bold flex items-center space-x-2';
+  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.5s ease-out';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 500);
+  }, 2000);
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
+  /*
+  if (!localStorage.getItem('isLoggedIn')) {
+    window.location.href = 'login.html';
+    return;
+  }
+  */
+  
+  initScrollAnimation();
+});
+</script>
+</body>
+</html>
