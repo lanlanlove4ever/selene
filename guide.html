@@ -445,6 +445,47 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
   }
 }
 
+
+/* ===== Mobile drawer close fix: put the close button inside the opened sidebar ===== */
+.mobile-sidebar-close { display: none; }
+
+@media (max-width: 768px) {
+  body.mobile-nav-open .mobile-nav-toggle {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: scale(0.92) !important;
+  }
+
+  body > aside.glass {
+    position: fixed !important;
+  }
+
+  body.mobile-nav-open > aside.glass .mobile-sidebar-close {
+    display: flex !important;
+  }
+
+  .mobile-sidebar-close {
+    position: absolute !important;
+    top: calc(12px + env(safe-area-inset-top)) !important;
+    right: 14px !important;
+    z-index: 95 !important;
+    width: 40px !important;
+    height: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 15px !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 8px 20px rgba(30, 58, 138, 0.12) !important;
+    color: #1E293B !important;
+    cursor: pointer !important;
+  }
+
+  .mobile-sidebar-close:active {
+    transform: scale(0.96) !important;
+  }
+}
+
 </style>
 </head>
 <body class="h-screen flex">
@@ -452,6 +493,7 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
 <div class="mobile-nav-backdrop" aria-hidden="true" onclick="toggleMobileNav(false)"></div>
 
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
+  <button type="button" class="mobile-sidebar-close" aria-label="关闭导航菜单" onclick="toggleMobileNav(false)"><i class="fas fa-times"></i></button>
   <div class="p-8 pb-4 flex items-center space-x-3">
     <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0"><i class="fas fa-heart-pulse text-white"></i></div>
     <div><h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1><p class="text-slate-500 font-medium text-xs">智能陪伴平台</p></div>
@@ -471,7 +513,7 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
     <header class="flex flex-col lg:flex-row lg:items-center justify-between mb-7 gap-5">
       <div>
         <h2 class="text-3xl font-bold text-slate-800">沪上生活指南</h2>
-        <p class="text-slate-500 font-medium mt-2">像刷小红书一样发现上海生活攻略，点开卡片查看完整内容。</p>
+        <p class="text-slate-500 font-medium mt-2">探索上海的每一个精彩角落，发现本地生活方式。</p>
       </div>
       <div class="relative w-full lg:w-96 search-container bg-white/80 border border-slate-200 rounded-2xl shadow-inner transition-all flex items-center">
         <i class="fas fa-search absolute left-4 text-slate-400"></i>

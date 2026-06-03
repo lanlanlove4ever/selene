@@ -457,6 +457,47 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
   justify-content: center;
 }
 
+
+/* ===== Mobile drawer close fix: put the close button inside the opened sidebar ===== */
+.mobile-sidebar-close { display: none; }
+
+@media (max-width: 768px) {
+  body.mobile-nav-open .mobile-nav-toggle {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: scale(0.92) !important;
+  }
+
+  body > aside.glass {
+    position: fixed !important;
+  }
+
+  body.mobile-nav-open > aside.glass .mobile-sidebar-close {
+    display: flex !important;
+  }
+
+  .mobile-sidebar-close {
+    position: absolute !important;
+    top: calc(12px + env(safe-area-inset-top)) !important;
+    right: 14px !important;
+    z-index: 95 !important;
+    width: 40px !important;
+    height: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 15px !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 8px 20px rgba(30, 58, 138, 0.12) !important;
+    color: #1E293B !important;
+    cursor: pointer !important;
+  }
+
+  .mobile-sidebar-close:active {
+    transform: scale(0.96) !important;
+  }
+}
+
 </style>
 </head>
 <body class="h-screen flex">
@@ -465,6 +506,7 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
 
 
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
+  <button type="button" class="mobile-sidebar-close" aria-label="关闭导航菜单" onclick="toggleMobileNav(false)"><i class="fas fa-times"></i></button>
   <div class="p-8 pb-4 flex items-center space-x-3">
     <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
       <i class="fas fa-heart-pulse text-white"></i>
@@ -512,9 +554,6 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
     
     <div class="flex-1 space-y-6">
       <div class="glass rounded-3xl p-8 flex items-center space-x-6">
-        <div class="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
-          <i class="fas fa-brain text-white text-3xl"></i>
-        </div>
         <div>
           <h2 class="text-slate-800 text-2xl font-bold mb-2">跨文化社交情境模拟训练</h2>
           <p class="text-slate-600 font-medium">在无压力的虚拟环境中进行真实场景演练，帮助您掌握沟通技巧，提升跨文化社交自信心。</p>
