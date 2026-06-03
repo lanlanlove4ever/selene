@@ -49,9 +49,420 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+
+
+/* 小红书风格双栏瀑布流 */
+.xhs-masonry {
+  column-count: 2;
+  column-gap: 18px;
+}
+.xhs-card {
+  display: inline-block;
+  width: 100%;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin: 0 0 18px;
+  overflow: hidden;
+  padding: 0 !important;
+  vertical-align: top;
+}
+.xhs-card .xhs-cover {
+  min-height: 132px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+}
+.xhs-card:nth-child(2n) .xhs-cover { min-height: 168px; }
+.xhs-card:nth-child(3n) .xhs-cover { min-height: 146px; }
+.xhs-card:nth-child(5n) .xhs-cover { min-height: 190px; }
+.xhs-card .xhs-content { padding: 16px 16px 14px; }
+.xhs-card .xhs-meta { padding-top: 12px; margin-top: 14px; border-top: 1px solid rgba(226, 232, 240, 0.55); }
+.xhs-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(30, 58, 138, 0.10); }
+.xhs-progress-card { break-inside: avoid; -webkit-column-break-inside: avoid; }
+
+@media (min-width: 1280px) {
+  .xhs-masonry { column-gap: 20px; }
+}
+@media (max-width: 768px) {
+  .xhs-masonry { column-count: 2; column-gap: 10px; }
+  .xhs-card { margin-bottom: 10px; border-radius: 20px !important; }
+  .xhs-card .xhs-cover { min-height: 104px; padding: 12px; }
+  .xhs-card:nth-child(2n) .xhs-cover { min-height: 134px; }
+  .xhs-card:nth-child(3n) .xhs-cover { min-height: 116px; }
+  .xhs-card:nth-child(5n) .xhs-cover { min-height: 150px; }
+  .xhs-card .xhs-content { padding: 12px; }
+  .xhs-card h4 { font-size: 0.92rem !important; line-height: 1.25 !important; }
+  .xhs-card p { font-size: 0.75rem !important; line-height: 1.45 !important; margin-bottom: 12px !important; }
+  .xhs-card .xhs-meta span { font-size: 0.72rem !important; }
+  .xhs-card .w-14 { width: 2.55rem !important; height: 2.55rem !important; border-radius: 1rem !important; }
+  .xhs-card .text-2xl { font-size: 1.15rem !important; }
+}
+
+
+/* 演练进度卡片：在平板/手机端占满可用宽度，避免内容挤在左侧 */
+.progress-card { width: 100%; }
+.progress-summary { width: 100%; }
+.progress-recent-list { width: 100%; }
+.progress-recent-item { width: 100%; }
+
+@media (max-width: 1023px) {
+  #scenarioListView { display: block !important; }
+  .progress-panel { width: 100% !important; margin-top: 24px; }
+  .progress-card { height: auto !important; min-height: 0; }
+  .progress-card-inner {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .progress-card h3 { grid-column: 1 / -1; }
+  .progress-summary { margin-bottom: 0 !important; }
+  .progress-recent-section { min-width: 0; }
+  .progress-recent-list {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .progress-recent-list > .progress-recent-item { margin-top: 0 !important; }
+  .progress-recent-item { min-width: 0; }
+}
+
+@media (max-width: 600px) {
+  .progress-card-inner { display: block; }
+  .progress-summary { margin-bottom: 24px !important; }
+  .progress-recent-list { grid-template-columns: 1fr !important; gap: 12px; }
+}
+
+
+/* ===== Mobile adaptation for iPhone-size screens ===== */
+.mobile-nav-toggle,
+.mobile-nav-backdrop { display: none; }
+
+@media (max-width: 768px) {
+  html, body { width: 100%; min-height: 100dvh; }
+  body { overflow: hidden; -webkit-text-size-adjust: 100%; }
+
+  .mobile-nav-toggle {
+    display: flex;
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top));
+    left: 14px;
+    z-index: 80;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12);
+    color: #1E293B;
+  }
+
+  .mobile-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(15, 23, 42, 0.28);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+
+  body.mobile-nav-open .mobile-nav-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body > aside.glass {
+    width: min(82vw, 320px) !important;
+    height: 100dvh !important;
+    transform: translateX(-105%);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 70;
+    padding-top: env(safe-area-inset-top);
+    border-radius: 0 28px 28px 0;
+  }
+
+  body.mobile-nav-open > aside.glass { transform: translateX(0); }
+
+  body > aside.glass .nav-item:hover { transform: none; }
+  body > aside.glass nav { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+
+  body > main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100dvh !important;
+    padding: calc(70px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) !important;
+    overflow-x: hidden !important;
+  }
+
+  main header { gap: 14px; }
+  main header h2 { font-size: 1.55rem !important; line-height: 1.2 !important; }
+  main header p { font-size: 0.9rem !important; }
+  main .glass { border-radius: 24px !important; }
+  main .grid { min-width: 0; }
+  main img, main svg, main canvas { max-width: 100%; }
+  input, textarea, select, button { font-size: 16px; }
+
+  /* Chat page: turn desktop two-column layout into stacked mobile panels. */
+  main > aside.w-80 {
+    width: 100% !important;
+    max-height: 30dvh;
+    min-height: 190px;
+    flex-shrink: 0 !important;
+  }
+  main > aside.w-80 + section,
+  main > section { min-width: 0; width: 100%; }
+
+  /* Dashboard / guide / user pages: allow action buttons and cards to wrap cleanly. */
+  header .flex.items-center.space-x-3,
+  header .flex.items-center.space-x-2 { flex-wrap: wrap; gap: 8px; }
+  header .space-x-3 > :not([hidden]) ~ :not([hidden]),
+  header .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0 !important; }
+
+  /* Simulator page: avoid horizontal crowding in the intro card. */
+  #scenarioListView { padding-right: 0 !important; }
+  #scenarioListView .glass:first-child { flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px !important; }
+
+  /* Keep charts and wide visual blocks usable on narrow screens. */
+  .chart-container { min-height: 220px; }
+  table, .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 430px) {
+  body > main { padding-left: 12px !important; padding-right: 12px !important; }
+  body > aside.glass { width: 84vw !important; }
+  main header h2 { font-size: 1.4rem !important; }
+  .stat-card, .scenario-card, .card-hover { transform: none !important; }
+}
+
+
+
+/* ===== Dialogue view mobile optimization: stable chat-style detail page ===== */
+@media (max-width: 768px) {
+  body > main {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #dialogueView {
+    height: auto !important;
+    min-height: calc(100dvh - 92px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    overflow: visible !important;
+    gap: 12px !important;
+  }
+  #dialogueView.hidden { display: none !important; }
+
+  #dialogueView > .mb-4 {
+    margin-bottom: 10px !important;
+    position: sticky;
+    top: calc(4px + env(safe-area-inset-top));
+    z-index: 35;
+  }
+  #dialogueView > .mb-4 button {
+    padding: 10px 14px !important;
+    border-radius: 18px !important;
+    font-size: 0.98rem !important;
+  }
+
+  #dialogueView > .flex-1 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Top scenario card: compact, so it will not cover the dialogue bubbles. */
+  #dialogueView > .flex-1 > .w-full.lg\:w-96 {
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+    gap: 12px !important;
+  }
+  #dialogueView > .flex-1 > .w-full.lg\:w-96 > .glass:first-child {
+    padding: 16px !important;
+    border-radius: 24px !important;
+    border-left-width: 4px !important;
+  }
+  #dialogueView > .flex-1 > .w-full.lg\:w-96 > .glass:first-child .w-10 {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 1rem !important;
+  }
+  #scenarioTitle {
+    font-size: 1.12rem !important;
+    line-height: 1.25 !important;
+  }
+  #scenarioDesc {
+    font-size: 0.88rem !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Chat shell: always visible with its own top padding and border. */
+  #dialogueView > .flex-1 > .flex-1.glass {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-height: 560px !important;
+    max-height: none !important;
+    border-radius: 26px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background: rgba(255,255,255,0.68) !important;
+  }
+
+  #dialogueContainer {
+    flex: 1 1 auto !important;
+    min-height: 260px !important;
+    max-height: none !important;
+    padding: 18px 16px 20px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    background: rgba(255,255,255,0.30) !important;
+    scroll-padding-top: 18px;
+  }
+  #dialogueContainer:empty::before {
+    content: '情境对话加载中…';
+    display: block;
+    color: #94A3B8;
+    font-weight: 700;
+    text-align: center;
+    padding: 36px 0;
+  }
+
+  #dialogueContainer > div {
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
+  }
+  #dialogueContainer .w-12 {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    border-radius: 0.95rem !important;
+  }
+  #dialogueContainer .max-w-2xl {
+    max-width: calc(100% - 3rem) !important;
+    min-width: 0 !important;
+  }
+  #dialogueContainer .p-5 {
+    padding: 14px !important;
+  }
+  #dialogueContainer p {
+    font-size: 0.9rem !important;
+  }
+  .pending-user-bubble {
+    min-width: 150px !important;
+    text-align: center !important;
+  }
+
+  #choiceContainer {
+    flex-shrink: 0 !important;
+    padding: 16px !important;
+    background: rgba(255,255,255,0.82) !important;
+    border-top: 1px solid rgba(226,232,240,0.75) !important;
+  }
+  #choiceContainer h4 {
+    font-size: 1rem !important;
+    margin-bottom: 12px !important;
+  }
+  #choicesList {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  #choicesList .choice-btn {
+    padding: 13px !important;
+    border-radius: 18px !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  #choicesList .choice-btn:hover { transform: none !important; }
+  #choicesList .choice-btn span:first-child {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    border-radius: 0.9rem !important;
+  }
+  #choicesList .choice-btn span:last-child {
+    font-size: 0.9rem !important;
+    line-height: 1.45 !important;
+  }
+
+  #feedbackContainer .glass { padding: 18px !important; }
+  #feedbackRadar { width: 210px !important; height: 210px !important; }
+}
+
+@media (max-width: 430px) {
+  #dialogueView > .flex-1 > .flex-1.glass { min-height: 540px !important; }
+  #dialogueContainer { min-height: 250px !important; padding: 16px 14px 18px !important; }
+  #choiceContainer { padding: 14px !important; }
+}
+
+
+
+/* ===== Final fix: remove mobile top clipping and keep dialogue detail clean ===== */
+@media (max-width: 768px) {
+  body > main {
+    padding-top: calc(88px + env(safe-area-inset-top)) !important;
+  }
+
+  #dialogueView {
+    padding-top: 0 !important;
+  }
+
+  /* The sticky back button caused clipped/ghost content at the very top on iPhone.
+     Keep it in normal document flow so nothing is hidden behind it. */
+  #dialogueView > .mb-4 {
+    position: relative !important;
+    top: auto !important;
+    z-index: 1 !important;
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+  }
+
+  #dialogueView > .mb-4 button {
+    max-width: max-content;
+  }
+
+  #dialogueView > .flex-1 > .w-full.lg\:w-96 > .glass:first-child {
+    margin-top: 0 !important;
+  }
+
+  #dialogueView > .flex-1 > .flex-1.glass {
+    margin-top: 0 !important;
+  }
+
+  #scenarioTitle,
+  #scenarioDesc,
+  #dialogueContainer,
+  #choiceContainer {
+    transform: translateZ(0);
+  }
+}
+
+/* Ensure every icon class used by the cards exists in Font Awesome 6. */
+.scenario-icon-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 </style>
 </head>
 <body class="h-screen flex">
+<button type="button" class="mobile-nav-toggle" aria-label="打开导航菜单" aria-expanded="false" onclick="toggleMobileNav(true)"><i class="fas fa-bars"></i></button>
+<div class="mobile-nav-backdrop" aria-hidden="true" onclick="toggleMobileNav(false)"></div>
+
 
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
   <div class="p-8 pb-4 flex items-center space-x-3">
@@ -111,90 +522,106 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
       </div>
 
       <div>
-        <h3 class="text-slate-800 font-bold text-lg mb-4 px-1">选择演练场景</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div class="xhs-masonry">
           
-          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('classroom')">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-700">
+          <div class="scenario-card xhs-card glass rounded-3xl cursor-pointer" onclick="startScenario('classroom')">
+            <div class="xhs-cover bg-blue-50/70">
+              <div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-700 shadow-sm">
                 <i class="fas fa-chalkboard-teacher text-2xl"></i>
               </div>
-              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：初级</span>
+              <span class="px-3 py-1 bg-white/70 rounded-xl text-xs text-slate-500 font-bold border border-blue-100">初级</span>
             </div>
-            <h4 class="text-slate-800 text-lg font-bold mb-2">课堂小组讨论</h4>
-            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">如何在小组讨论中得体地表达自己的不同观点并融入团队合作？</p>
-            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
-              <span class="text-sm font-bold text-blue-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 5分钟</span>
-              <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
-                <i class="fas fa-play text-xs"></i>
+            <div class="xhs-content">
+              <h4 class="text-slate-800 text-lg font-bold mb-2">课堂小组讨论</h4>
+              <p class="text-slate-500 text-sm font-medium mb-4 leading-relaxed">如何在小组讨论中得体地表达自己的不同观点并融入团队合作？</p>
+              <div class="xhs-meta flex items-center justify-between">
+                <span class="text-sm font-bold text-blue-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 5分钟</span>
+                <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"><i class="fas fa-play text-xs"></i></div>
               </div>
             </div>
           </div>
 
-          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('restaurant')">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-700">
+          <div class="scenario-card xhs-card glass rounded-3xl cursor-pointer" onclick="startScenario('restaurant')">
+            <div class="xhs-cover bg-amber-50/70">
+              <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-700 shadow-sm">
                 <i class="fas fa-utensils text-2xl"></i>
               </div>
-              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：初级</span>
+              <span class="px-3 py-1 bg-white/70 rounded-xl text-xs text-slate-500 font-bold border border-amber-100">初级</span>
             </div>
-            <h4 class="text-slate-800 text-lg font-bold mb-2">餐厅点餐沟通</h4>
-            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">在餐厅遇到菜品上错或口味不合等问题时，如何得体地与服务员沟通？</p>
-            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
-              <span class="text-sm font-bold text-amber-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 5分钟</span>
-              <div class="w-8 h-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-600 hover:text-white transition-colors">
-                <i class="fas fa-play text-xs"></i>
+            <div class="xhs-content">
+              <h4 class="text-slate-800 text-lg font-bold mb-2">餐厅点餐沟通</h4>
+              <p class="text-slate-500 text-sm font-medium mb-4 leading-relaxed">在餐厅遇到菜品上错或口味不合等问题时，如何得体地与服务员沟通？</p>
+              <div class="xhs-meta flex items-center justify-between">
+                <span class="text-sm font-bold text-amber-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 5分钟</span>
+                <div class="w-8 h-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-600 hover:text-white transition-colors"><i class="fas fa-play text-xs"></i></div>
               </div>
             </div>
           </div>
 
-          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('invitation')">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-14 h-14 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-700">
+          <div class="scenario-card xhs-card glass rounded-3xl cursor-pointer" onclick="startScenario('invitation')">
+            <div class="xhs-cover bg-rose-50/70">
+              <div class="w-14 h-14 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-700 shadow-sm">
                 <i class="fas fa-envelope-open-text text-2xl"></i>
               </div>
-              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：中级</span>
+              <span class="px-3 py-1 bg-white/70 rounded-xl text-xs text-slate-500 font-bold border border-rose-100">中级</span>
             </div>
-            <h4 class="text-slate-800 text-lg font-bold mb-2">接受与婉拒邀请</h4>
-            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">如何礼貌且不伤和气地接受或婉拒中国朋友的热情社交邀请？</p>
-            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
-              <span class="text-sm font-bold text-rose-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 8分钟</span>
-              <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors">
-                <i class="fas fa-play text-xs"></i>
+            <div class="xhs-content">
+              <h4 class="text-slate-800 text-lg font-bold mb-2">接受与婉拒邀请</h4>
+              <p class="text-slate-500 text-sm font-medium mb-4 leading-relaxed">如何礼貌且不伤和气地接受或婉拒中国朋友的热情社交邀请？</p>
+              <div class="xhs-meta flex items-center justify-between">
+                <span class="text-sm font-bold text-rose-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 8分钟</span>
+                <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors"><i class="fas fa-play text-xs"></i></div>
               </div>
             </div>
           </div>
 
-          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('conflict')">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-700">
+          <div class="scenario-card xhs-card glass rounded-3xl cursor-pointer" onclick="startScenario('conflict')">
+            <div class="xhs-cover bg-indigo-50/70">
+              <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-700 shadow-sm">
                 <i class="fas fa-handshake text-2xl"></i>
               </div>
-              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：中级</span>
+              <span class="px-3 py-1 bg-white/70 rounded-xl text-xs text-slate-500 font-bold border border-indigo-100">中级</span>
             </div>
-            <h4 class="text-slate-800 text-lg font-bold mb-2">化解文化误解</h4>
-            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">当遇到文化差异、习惯不同导致的社交误解时，应该如何妥善处理？</p>
-            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
-              <span class="text-sm font-bold text-indigo-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 10分钟</span>
-              <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors">
-                <i class="fas fa-play text-xs"></i>
+            <div class="xhs-content">
+              <h4 class="text-slate-800 text-lg font-bold mb-2">化解文化误解</h4>
+              <p class="text-slate-500 text-sm font-medium mb-4 leading-relaxed">当遇到文化差异、习惯不同导致的社交误解时，应该如何妥善处理？</p>
+              <div class="xhs-meta flex items-center justify-between">
+                <span class="text-sm font-bold text-indigo-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 10分钟</span>
+                <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors"><i class="fas fa-play text-xs"></i></div>
               </div>
             </div>
           </div>
 
-          <div class="scenario-card glass rounded-3xl p-6 cursor-pointer flex flex-col" onclick="startScenario('presentation')">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700">
-                <i class="fas fa-presentation-screen text-2xl"></i>
+          <div class="scenario-card xhs-card glass rounded-3xl cursor-pointer" onclick="startScenario('presentation')">
+            <div class="xhs-cover bg-emerald-50/70">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-sm">
+                <i class="fas fa-person-chalkboard text-2xl"></i>
               </div>
-              <span class="px-3 py-1 bg-white/60 rounded-xl text-xs text-slate-500 font-bold border border-slate-100">难度：高级</span>
+              <span class="px-3 py-1 bg-white/70 rounded-xl text-xs text-slate-500 font-bold border border-emerald-100">高级</span>
             </div>
-            <h4 class="text-slate-800 text-lg font-bold mb-2">学术汇报答辩</h4>
-            <p class="text-slate-500 text-sm font-medium mb-6 flex-1 leading-relaxed">在学术汇报中如何自信地展示研究成果，并得体地回应导师和同学的提问？</p>
-            <div class="flex items-center justify-between border-t border-slate-200/50 pt-4">
-              <span class="text-sm font-bold text-emerald-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 12分钟</span>
-              <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors">
-                <i class="fas fa-play text-xs"></i>
+            <div class="xhs-content">
+              <h4 class="text-slate-800 text-lg font-bold mb-2">学术汇报答辩</h4>
+              <p class="text-slate-500 text-sm font-medium mb-4 leading-relaxed">在学术汇报中如何自信地展示研究成果，并得体地回应导师和同学的提问？</p>
+              <div class="xhs-meta flex items-center justify-between">
+                <span class="text-sm font-bold text-emerald-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 12分钟</span>
+                <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors"><i class="fas fa-play text-xs"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-card xhs-card glass rounded-3xl cursor-pointer" onclick="startScenario('club')">
+            <div class="xhs-cover bg-sky-50/70">
+              <div class="w-14 h-14 rounded-2xl bg-sky-100 flex items-center justify-center text-sky-700 shadow-sm">
+                <i class="fas fa-people-group text-2xl"></i>
+              </div>
+              <span class="px-3 py-1 bg-white/70 rounded-xl text-xs text-slate-500 font-bold border border-sky-100">中级</span>
+            </div>
+            <div class="xhs-content">
+              <h4 class="text-slate-800 text-lg font-bold mb-2">校园社团破冰</h4>
+              <p class="text-slate-500 text-sm font-medium mb-4 leading-relaxed">第一次参加社团活动时，如何自然地开启话题、介绍自己并加入大家的交流？</p>
+              <div class="xhs-meta flex items-center justify-between">
+                <span class="text-sm font-bold text-sky-600 flex items-center"><i class="fas fa-clock mr-1.5 opacity-70"></i> 7分钟</span>
+                <div class="w-8 h-8 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center hover:bg-sky-600 hover:text-white transition-colors"><i class="fas fa-play text-xs"></i></div>
               </div>
             </div>
           </div>
@@ -203,25 +630,27 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
       </div>
     </div>
 
-    <aside class="w-full lg:w-80 flex-shrink-0">
-      <div class="glass rounded-3xl p-6 h-full flex flex-col">
+    <aside class="progress-panel w-full lg:w-80 flex-shrink-0">
+      <div class="progress-card glass rounded-3xl p-6 h-full flex flex-col">
+        <div class="progress-card-inner">
         <h3 class="text-slate-800 font-bold text-lg mb-6">总体演练进度</h3>
         
-        <div class="mb-8">
+        <div class="progress-summary mb-8">
           <div class="flex items-end justify-between mb-2">
-            <span class="text-slate-500 font-bold text-sm">已完成 3/8 个场景</span>
-            <span class="text-blue-600 font-bold text-xl">37%</span>
+            <span class="text-slate-500 font-bold text-sm">已完成 3/6 个场景</span>
+            <span class="text-blue-600 font-bold text-xl">50%</span>
           </div>
           <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden shadow-inner">
-            <div class="w-[37%] h-full bg-blue-600 rounded-full relative">
+            <div class="w-[50%] h-full bg-blue-600 rounded-full relative">
               <div class="absolute top-0 right-0 bottom-0 w-8 bg-white/30 skew-x-[-45deg] animate-[slideIn_2s_infinite]"></div>
             </div>
           </div>
         </div>
 
+        <div class="progress-recent-section">
         <h4 class="text-slate-800 font-bold mb-4">最近完成</h4>
-        <div class="space-y-4 flex-1">
-          <div class="flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
+        <div class="progress-recent-list space-y-4 flex-1">
+          <div class="progress-recent-item flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
             <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 flex-shrink-0">
               <i class="fas fa-check"></i>
             </div>
@@ -233,7 +662,7 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
             </div>
           </div>
           
-          <div class="flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
+          <div class="progress-recent-item flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
             <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
               <i class="fas fa-check"></i>
             </div>
@@ -245,7 +674,7 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
             </div>
           </div>
           
-          <div class="flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
+          <div class="progress-recent-item flex items-center space-x-3 bg-white/50 p-3 rounded-2xl border border-white shadow-sm">
             <div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-700 flex-shrink-0">
               <i class="fas fa-check"></i>
             </div>
@@ -256,6 +685,8 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
               </div>
             </div>
           </div>
+        </div>
+        </div>
         </div>
       </div>
     </aside>
@@ -275,7 +706,7 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
         <div class="glass rounded-3xl p-6 border-l-4 border-l-blue-600 flex-shrink-0">
           <div class="flex items-center space-x-3 mb-4">
             <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-700">
-              <i class="fas fa-chalkboard-teacher"></i>
+              <i id="scenarioIcon" class="fas fa-chalkboard-teacher"></i>
             </div>
             <h3 class="text-slate-800 font-bold text-lg" id="scenarioTitle">课堂小组讨论</h3>
           </div>
@@ -410,7 +841,29 @@ const scenarios = {
       { id: 2, text: '坦诚承认自己未充分考虑，感谢老师指出，并尝试给出一个初步的思考方向', scores: { communication: 95, culture: 90, emotion: 92, confidence: 88 } },
       { id: 3, text: '紧张到语无伦次，直接说“我不知道”', scores: { communication: 40, culture: 50, emotion: 35, confidence: 20 } }
     ]
+  },
+  club: {
+    title: '校园社团破冰',
+    desc: '您第一次参加学校社团活动，现场大多数同学已经互相认识。您希望自然地加入聊天，而不是尴尬地站在旁边。',
+    dialogues: [
+      { speaker: '社团同学 小周', text: '我们正准备分组做一个小游戏，你是第一次来参加活动吗？' },
+      { speaker: '您', text: '...' }
+    ],
+    choices: [
+      { id: 1, text: '只点头说“嗯”，然后等别人继续问自己问题', scores: { communication: 45, culture: 55, emotion: 50, confidence: 35 } },
+      { id: 2, text: '微笑回应并简单介绍自己，再主动询问活动规则或大家平时做什么', scores: { communication: 92, culture: 90, emotion: 88, confidence: 86 } },
+      { id: 3, text: '为了显得很合群，立刻开很多玩笑并打断大家原来的聊天', scores: { communication: 58, culture: 50, emotion: 72, confidence: 88 } }
+    ]
   }
+};
+
+const scenarioIcons = {
+  classroom: 'fas fa-chalkboard-teacher',
+  restaurant: 'fas fa-utensils',
+  invitation: 'fas fa-envelope-open-text',
+  conflict: 'fas fa-handshake',
+  presentation: 'fas fa-person-chalkboard',
+  club: 'fas fa-people-group'
 };
 
 let currentScenario = null;
@@ -428,6 +881,15 @@ function startScenario(scenarioId) {
   
   renderDialogue();
   renderChoices();
+
+  // Reset scroll positions so the first dialogue bubble is always visible.
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    const main = document.querySelector('body > main');
+    if (main) main.scrollTop = 0;
+    const box = document.getElementById('dialogueContainer');
+    if (box) box.scrollTop = 0;
+  });
 }
 
 function renderDialogue() {
@@ -448,8 +910,8 @@ function renderDialogue() {
       </div>
       <div class="flex-1 max-w-2xl ${textAlignment}">
         <p class="text-slate-400 font-bold text-xs mb-1.5 mx-1">${dialogue.speaker}</p>
-        <div class="${bubbleBgClass} border rounded-2xl p-5 shadow-sm inline-block">
-          <p class="text-slate-800 text-[15px] font-medium leading-relaxed">${dialogue.text}</p>
+        <div class="${bubbleBgClass} border rounded-2xl p-5 shadow-sm inline-block ${isPlayer && dialogue.text === '...' ? 'pending-user-bubble' : ''}">
+          <p class="text-slate-800 text-[15px] font-medium leading-relaxed">${isPlayer && dialogue.text === '...' ? '请选择下方回应' : dialogue.text}</p>
         </div>
       </div>
     </div>`;
@@ -505,7 +967,7 @@ function selectChoice(choiceId) {
   const bubbles = container.children;
   if(bubbles.length > 0) {
      const lastBubble = bubbles[bubbles.length - 1];
-     if(lastBubble.innerHTML.includes('...')) {
+     if(lastBubble.querySelector('.pending-user-bubble')) {
          lastBubble.remove();
      }
   }
@@ -672,6 +1134,33 @@ function showToast(message) {
     setTimeout(() => toast.remove(), 500);
   }, 2000);
 }
+</script>
+<script>
+
+// Mobile navigation drawer: only affects narrow screens and keeps existing navigation logic intact.
+function toggleMobileNav(force) {
+  const shouldOpen = typeof force === 'boolean' ? force : !document.body.classList.contains('mobile-nav-open');
+  document.body.classList.toggle('mobile-nav-open', shouldOpen);
+  const btn = document.querySelector('.mobile-nav-toggle');
+  if (btn) {
+    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    const icon = btn.querySelector('i');
+    if (icon) icon.className = shouldOpen ? 'fas fa-times' : 'fas fa-bars';
+  }
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') toggleMobileNav(false);
+});
+
+document.querySelectorAll('body > aside.glass .nav-item').forEach(function(item) {
+  item.addEventListener('click', function() { toggleMobileNav(false); });
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768) toggleMobileNav(false);
+});
+
 </script>
 </body>
 </html>

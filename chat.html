@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Selene智能陪伴平台 - 情感陪伴</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -23,38 +23,103 @@ tailwind.config = {
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; box-sizing: border-box; }
+:root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+html, body { width: 100%; height: 100%; }
 body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
 .glass { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px rgba(30, 58, 138, 0.05); }
 
-/* 左侧导航交互样式 */
-.nav-item { transition: all 0.3s; }
+.nav-item, .history-item { transition: all 0.3s; }
 .nav-item:hover { background: rgba(255, 255, 255, 0.7); }
 .nav-item.active { background: #FFFFFF; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); border-color: rgba(59, 130, 246, 0.2); }
+.history-item:hover:not(.active) { background: rgba(255, 255, 255, 0.55); transform: translateX(4px); }
+.history-item.active { background: #FFFFFF; border-color: rgba(59, 130, 246, 0.2); box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); }
 
-/* 聊天相关动画与样式 */
-.chat-bubble { animation: bubbleIn 0.3s ease-out; }
-@keyframes bubbleIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+
+.mobile-nav-toggle, .mobile-history-toggle, .mobile-nav-backdrop, .mobile-history-backdrop { display: none; }
+
+.chat-shell { height: 100dvh; margin-left: 16rem; padding: 1.5rem; display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 1.5rem; }
+.history-panel { min-height: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 1.5rem; }
+.chat-panel { min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; border-radius: 1.5rem; }
+.chat-header { background: rgba(255,255,255,0.42); border-bottom: 1px solid rgba(226,232,240,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.chat-messages { min-height: 0; overflow-y: auto; padding: 1.5rem; scroll-behavior: smooth; }
+.message-row { animation: bubbleIn 0.28s ease-out; }
+@keyframes bubbleIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.message-bubble { max-width: min(720px, 78%); }
 .typing-indicator span { animation: typing 1.4s infinite; }
 .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
 .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
-.message-enter { animation: messageEnter 0.4s ease-out; }
-@keyframes messageEnter { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+.composer-wrap { background: rgba(255,255,255,0.42); border-top: 1px solid rgba(226,232,240,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.composer { background: #FFFFFF; border: 1px solid rgba(203,213,225,0.95); box-shadow: inset 0 1px 2px rgba(15,23,42,0.04); }
+textarea { font-size: 16px; }
 
-/* 历史记录列表交互 */
-.sidebar-item { transition: all 0.3s; border: 1px solid transparent; }
-.sidebar-item:hover:not(.active) { background: rgba(255, 255, 255, 0.5); transform: translateX(4px); }
-.sidebar-item.active { background: #FFFFFF; border-color: rgba(59, 130, 246, 0.2); box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); }
+@media (max-width: 1024px) {
+  .chat-shell { grid-template-columns: 280px minmax(0, 1fr); gap: 1rem; padding: 1rem; }
+}
 
-/* 自定义PC端细滚动条 */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+@media (max-width: 768px) {
+  body { overflow: hidden; -webkit-text-size-adjust: 100%; }
+  .mobile-nav-toggle, .mobile-history-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; border-radius: 16px;
+    background: rgba(255, 255, 255, 0.78); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12); color: #1E293B;
+  }
+  .mobile-nav-toggle { position: fixed; top: calc(10px + var(--safe-top)); left: 12px; z-index: 90; }
+  .mobile-nav-backdrop, .mobile-history-backdrop { display: block; position: fixed; inset: 0; background: rgba(15,23,42,0.28); opacity: 0; pointer-events: none; transition: opacity .28s ease; }
+  .mobile-nav-backdrop { z-index: 55; }
+  .mobile-history-backdrop { z-index: 58; }
+  body.mobile-nav-open .mobile-nav-backdrop, body.mobile-history-open .mobile-history-backdrop { opacity: 1; pointer-events: auto; }
+
+  body > aside.glass {
+    width: min(82vw, 320px) !important; height: 100dvh !important; transform: translateX(-105%);
+    transition: transform .32s cubic-bezier(.4,0,.2,1); z-index: 70; padding-top: var(--safe-top); border-radius: 0 28px 28px 0;
+  }
+  body.mobile-nav-open > aside.glass { transform: translateX(0); }
+
+  .chat-shell { margin-left: 0; height: 100dvh; padding: 0; display: block; }
+  .history-panel {
+    position: fixed; top: 0; bottom: 0; right: 0; width: min(88vw, 360px); height: 100dvh;
+    border-radius: 28px 0 0 28px; z-index: 75; transform: translateX(105%);
+    transition: transform .32s cubic-bezier(.4,0,.2,1); padding-top: var(--safe-top);
+  }
+  body.mobile-history-open .history-panel { transform: translateX(0); }
+
+  .chat-panel { height: 100dvh; width: 100%; border-radius: 0; border: 0; box-shadow: none; background: transparent; }
+  .chat-header {
+    min-height: calc(64px + var(--safe-top)); padding: calc(10px + var(--safe-top)) 12px 10px 68px !important;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center;
+    background: rgba(255,255,255,.62);
+  }
+  .chat-title h2 { font-size: 0.98rem !important; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chat-title p { font-size: 0.72rem !important; }
+  .header-avatar { width: 38px !important; height: 38px !important; border-radius: 14px !important; }
+  .desktop-actions { display: none !important; }
+  .chat-messages { padding: 18px 14px 14px; }
+  .message-row { gap: 10px !important; }
+  .message-avatar { width: 32px !important; height: 32px !important; border-radius: 13px !important; }
+  .message-bubble { max-width: calc(100vw - 88px); }
+  .message-bubble > div { padding: 12px 14px !important; border-radius: 18px !important; }
+  .message-bubble p { font-size: 0.92rem !important; line-height: 1.65 !important; }
+  .composer-wrap { padding: 10px 12px calc(10px + var(--safe-bottom)) !important; background: rgba(255,255,255,.62); }
+  .quick-actions { display: none !important; }
+  .composer-row { gap: 8px !important; align-items: flex-end; }
+  .composer { border-radius: 22px !important; padding: 2px 2px 2px 6px !important; }
+  #messageInput { padding: 11px 10px !important; max-height: 118px; }
+  .send-button { width: 44px !important; height: 44px !important; min-width: 44px !important; border-radius: 16px !important; }
+  .toast { top: calc(70px + var(--safe-top)) !important; width: calc(100vw - 28px); max-width: 360px; padding: 12px 16px !important; }
+}
 </style>
 </head>
 <body class="h-screen flex">
+<button type="button" class="mobile-nav-toggle" aria-label="打开导航菜单" aria-expanded="false" onclick="toggleMobileNav(true)"><i class="fas fa-bars"></i></button>
+<div class="mobile-nav-backdrop" aria-hidden="true" onclick="toggleMobileNav(false)"></div>
+<div class="mobile-history-backdrop" aria-hidden="true" onclick="toggleHistory(false)"></div>
 
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
   <div class="p-8 pb-4 flex items-center space-x-3">
@@ -67,123 +132,71 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
     </div>
   </div>
 
-  <nav class="flex-1 px-4 mt-6 space-y-2">
+  <nav class="flex-1 px-4 mt-6 space-y-2 overflow-y-auto custom-scrollbar">
     <button onclick="navigateTo('chat')" class="nav-item active w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-800 border">
-      <i class="fas fa-comments text-lg w-6 text-center text-blue-600"></i>
-      <span class="font-bold">情感陪伴</span>
+      <i class="fas fa-comments text-lg w-6 text-center text-blue-600"></i><span class="font-bold">情感陪伴</span>
     </button>
     <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-chart-line text-lg w-6 text-center"></i>
-      <span class="font-medium">心境轨迹</span>
+      <i class="fas fa-chart-line text-lg w-6 text-center"></i><span class="font-medium">心境轨迹</span>
     </button>
     <button onclick="navigateTo('simulator')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-theater-masks text-lg w-6 text-center"></i>
-      <span class="font-medium">跨文化演练</span>
+      <i class="fas fa-theater-masks text-lg w-6 text-center"></i><span class="font-medium">跨文化演练</span>
     </button>
     <button onclick="navigateTo('guide')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-compass text-lg w-6 text-center"></i>
-      <span class="font-medium">沪上指南</span>
+      <i class="fas fa-compass text-lg w-6 text-center"></i><span class="font-medium">沪上指南</span>
     </button>
     <button onclick="navigateTo('user')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-user text-lg w-6 text-center"></i>
-      <span class="font-medium">个人中心</span>
+      <i class="fas fa-user text-lg w-6 text-center"></i><span class="font-medium">个人中心</span>
     </button>
   </nav>
 
   <div class="p-4 border-t border-slate-200/50">
     <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
-      <i class="fas fa-sign-out-alt"></i>
-      <span>退出登录</span>
+      <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
     </button>
   </div>
 </aside>
 
-<main class="flex-1 ml-64 p-6 h-screen flex gap-6">
-  
-  <aside class="w-80 flex-shrink-0 flex flex-col h-full glass rounded-3xl overflow-hidden p-4">
+<main class="chat-shell">
+  <aside class="history-panel glass p-4" aria-label="对话记忆">
     <div class="flex items-center justify-between mb-4 px-2 pt-2">
-      <h2 class="text-slate-800 font-bold text-lg">对话记忆</h2>
-      <button class="w-8 h-8 rounded-xl bg-white/80 flex items-center justify-center text-slate-600 hover:bg-white shadow-sm hover:shadow transition-all text-sm" onclick="showToast('开启新对话')">
+      <div>
+        <h2 class="text-slate-800 font-bold text-lg">对话记忆</h2>
+        <p class="text-slate-400 text-xs mt-1">选择或新建一段陪伴对话</p>
+      </div>
+      <button class="w-10 h-10 rounded-xl bg-white/80 flex items-center justify-center text-slate-600 hover:bg-white shadow-sm hover:shadow transition-all text-sm" onclick="newChat()" aria-label="开启新对话">
         <i class="fas fa-pen"></i>
       </button>
     </div>
-    
-    <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2" id="chatHistory">
-      <div class="sidebar-item active p-4 rounded-2xl cursor-pointer" onclick="loadChat('chat1', this)">
-        <div class="flex items-start space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-comments text-blue-600 text-sm"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-slate-800 text-sm font-bold truncate mb-1">关于学业压力的倾诉</p>
-            <p class="text-slate-500 text-xs truncate">最近总是感觉很孤独，虽然在上海...</p>
-            <p class="text-slate-400 text-xs mt-1.5 font-medium">今天 14:30</p>
-          </div>
-        </div>
+    <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1" id="chatHistory">
+      <div class="history-item active p-4 rounded-2xl cursor-pointer border" data-chat-id="chatDefault" onclick="loadChat('chatDefault', this)">
+        <div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-pen text-slate-600 text-sm"></i></div><div class="flex-1 min-w-0"><p class="history-title text-slate-800 text-sm font-bold truncate mb-1">新的陪伴对话</p><p class="history-preview text-slate-500 text-xs truncate">可以从任何想说的话开始...</p><p class="history-time text-slate-400 text-xs mt-1.5 font-medium">刚刚</p></div></div>
       </div>
-      
-      <div class="sidebar-item p-4 rounded-2xl cursor-pointer" onclick="loadChat('chat2', this)">
-        <div class="flex items-start space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-sun text-amber-600 text-sm"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-slate-800 text-sm font-bold truncate mb-1">分享在上海的美食发现</p>
-            <p class="text-slate-500 text-xs truncate">昨天去静安寺吃了一家本帮菜...</p>
-            <p class="text-slate-400 text-xs mt-1.5 font-medium">昨天 19:20</p>
-          </div>
-        </div>
+      <div class="history-item p-4 rounded-2xl cursor-pointer border border-transparent" data-chat-id="chat1" onclick="loadChat('chat1', this)">
+        <div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-comments text-blue-600 text-sm"></i></div><div class="flex-1 min-w-0"><p class="history-title text-slate-800 text-sm font-bold truncate mb-1">关于学业压力的倾诉</p><p class="history-preview text-slate-500 text-xs truncate">最近总是感觉很孤独，虽然在上海...</p><p class="history-time text-slate-400 text-xs mt-1.5 font-medium">今天 14:30</p></div></div>
       </div>
-
-      <div class="sidebar-item p-4 rounded-2xl cursor-pointer" onclick="loadChat('chat3', this)">
-        <div class="flex items-start space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-home text-rose-600 text-sm"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-slate-800 text-sm font-bold truncate mb-1">思念家乡的对话</p>
-            <p class="text-slate-500 text-xs truncate">快过节了，有点想家里的父母...</p>
-            <p class="text-slate-400 text-xs mt-1.5 font-medium">3天前</p>
-          </div>
-        </div>
+      <div class="history-item p-4 rounded-2xl cursor-pointer border border-transparent" data-chat-id="chat2" onclick="loadChat('chat2', this)">
+        <div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-sun text-amber-600 text-sm"></i></div><div class="flex-1 min-w-0"><p class="history-title text-slate-800 text-sm font-bold truncate mb-1">分享在上海的美食发现</p><p class="history-preview text-slate-500 text-xs truncate">昨天去静安寺吃了一家本帮菜...</p><p class="history-time text-slate-400 text-xs mt-1.5 font-medium">昨天 19:20</p></div></div>
       </div>
-
-      <div class="sidebar-item p-4 rounded-2xl cursor-pointer" onclick="loadChat('chat4', this)">
-        <div class="flex items-start space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-user-friends text-indigo-600 text-sm"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-slate-800 text-sm font-bold truncate mb-1">社交焦虑的倾诉</p>
-            <p class="text-slate-500 text-xs truncate">明天要参加迎新破冰活动，很紧张...</p>
-            <p class="text-slate-400 text-xs mt-1.5 font-medium">1周前</p>
-          </div>
-        </div>
+      <div class="history-item p-4 rounded-2xl cursor-pointer border border-transparent" data-chat-id="chat3" onclick="loadChat('chat3', this)">
+        <div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-home text-rose-600 text-sm"></i></div><div class="flex-1 min-w-0"><p class="history-title text-slate-800 text-sm font-bold truncate mb-1">思念家乡的对话</p><p class="history-preview text-slate-500 text-xs truncate">快过节了，有点想家里的父母...</p><p class="history-time text-slate-400 text-xs mt-1.5 font-medium">3天前</p></div></div>
       </div>
-
-      <div class="sidebar-item p-4 rounded-2xl cursor-pointer" onclick="loadChat('chat5', this)">
-        <div class="flex items-start space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-book text-emerald-600 text-sm"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-slate-800 text-sm font-bold truncate mb-1">中文学习心得交流</p>
-            <p class="text-slate-500 text-xs truncate">中文的四个声调太难掌握了...</p>
-            <p class="text-slate-400 text-xs mt-1.5 font-medium">2周前</p>
-          </div>
-        </div>
+      <div class="history-item p-4 rounded-2xl cursor-pointer border border-transparent" data-chat-id="chat4" onclick="loadChat('chat4', this)">
+        <div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-user-friends text-indigo-600 text-sm"></i></div><div class="flex-1 min-w-0"><p class="history-title text-slate-800 text-sm font-bold truncate mb-1">社交焦虑的倾诉</p><p class="history-preview text-slate-500 text-xs truncate">明天要参加迎新破冰活动，很紧张...</p><p class="history-time text-slate-400 text-xs mt-1.5 font-medium">1周前</p></div></div>
+      </div>
+      <div class="history-item p-4 rounded-2xl cursor-pointer border border-transparent" data-chat-id="chat5" onclick="loadChat('chat5', this)">
+        <div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-book text-emerald-600 text-sm"></i></div><div class="flex-1 min-w-0"><p class="history-title text-slate-800 text-sm font-bold truncate mb-1">中文学习心得交流</p><p class="history-preview text-slate-500 text-xs truncate">中文的四个声调太难掌握了...</p><p class="history-time text-slate-400 text-xs mt-1.5 font-medium">2周前</p></div></div>
       </div>
     </div>
   </aside>
 
-  <div class="flex-1 glass rounded-3xl flex flex-col h-full overflow-hidden relative shadow-md">
-    
-    <div class="px-6 py-4 bg-white/40 border-b border-slate-200/50 flex items-center justify-between z-10 backdrop-blur-md">
-      <div class="flex items-center space-x-4">
-        <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center shadow-sm">
+  <section class="chat-panel glass" aria-label="聊天窗口">
+    <header class="chat-header px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-4 min-w-0">
+        <div class="header-avatar w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center shadow-sm flex-shrink-0">
           <i class="fas fa-heart-pulse text-white text-lg"></i>
         </div>
-        <div>
+        <div class="chat-title min-w-0">
           <h2 class="text-slate-800 font-bold text-lg">Selene - 您的专属倾听者</h2>
           <div class="flex items-center space-x-2 mt-0.5">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
@@ -191,209 +204,235 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
           </div>
         </div>
       </div>
-      <div class="flex items-center space-x-3">
-        <button class="w-10 h-10 rounded-xl bg-white/80 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-blue-600 transition-all" title="语音通话">
-          <i class="fas fa-phone"></i>
-        </button>
-        <button class="w-10 h-10 rounded-xl bg-white/80 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-slate-800 transition-all" title="更多设置">
-          <i class="fas fa-ellipsis-h"></i>
-        </button>
+      <button type="button" class="mobile-history-toggle" onclick="toggleHistory(true)" aria-label="打开对话记忆"><i class="fas fa-clock-rotate-left"></i></button>
+      <div class="desktop-actions flex items-center space-x-3">
+        <button class="w-10 h-10 rounded-xl bg-white/80 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-blue-600 transition-all" title="语音通话"><i class="fas fa-phone"></i></button>
+        <button class="w-10 h-10 rounded-xl bg-white/80 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-slate-800 transition-all" title="更多设置"><i class="fas fa-ellipsis-h"></i></button>
       </div>
-    </div>
+    </header>
 
-    <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar" id="chatMessages">
-      
-      <div class="flex justify-center">
-        <span class="bg-white/60 text-slate-400 text-xs font-bold px-3 py-1 rounded-full shadow-sm">今天 14:30</span>
-      </div>
-
-      <div class="chat-bubble flex items-start space-x-4">
-        <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-          <i class="fas fa-heart-pulse text-white text-sm"></i>
-        </div>
-        <div class="flex-1 max-w-2xl">
+    <div class="chat-messages custom-scrollbar" id="chatMessages">
+      <div class="flex justify-center mb-6"><span class="bg-white/60 text-slate-400 text-xs font-bold px-3 py-1 rounded-full shadow-sm">今天 14:30</span></div>
+      <div class="message-row flex items-start gap-4 mb-6">
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+        <div class="message-bubble">
           <p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p>
-          <div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm inline-block">
-            <p class="text-slate-800 text-sm leading-relaxed font-medium">您好，我是Selene智能陪伴平台。很高兴能陪伴您在上海的生活旅程。无论您是想倾诉心事、分享喜悦，还是寻求建议，我都会在这里倾听。今天您想聊些什么呢？</p>
-          </div>
+          <div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm"><p class="text-slate-800 text-sm leading-relaxed font-medium">我是Selene，很高兴能陪伴您在上海的生活旅程。无论是倾诉心事、分享喜悦，还是寻求建议，我都会在这里倾听。今天想聊些什么呢？</p></div>
         </div>
       </div>
-
-      <div class="chat-bubble flex items-start space-x-4 flex-row-reverse space-x-reverse message-enter">
-        <div class="w-10 h-10 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-          <i class="fas fa-user text-amber-600 text-sm"></i>
-        </div>
-        <div class="flex-1 max-w-2xl flex flex-col items-end">
+      <div class="message-row flex items-start gap-4 flex-row-reverse mb-6">
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-user text-amber-600 text-sm"></i></div>
+        <div class="message-bubble flex flex-col items-end">
           <p class="text-slate-400 text-xs mb-1.5 mr-1 font-medium">您</p>
-          <div class="bg-white border border-amber-200 rounded-2xl rounded-tr-sm p-4 shadow-sm inline-block text-left">
-            <p class="text-slate-800 text-sm leading-relaxed font-medium">最近总是感觉很孤独，虽然在上海认识了一些朋友，但总觉得很难真正融入他们的圈子。</p>
-          </div>
+          <div class="bg-white border border-amber-200 rounded-2xl rounded-tr-sm p-4 shadow-sm text-left"><p class="text-slate-800 text-sm leading-relaxed font-medium">最近总是感觉很孤独，虽然在上海认识了一些朋友，但总觉得很难真正融入他们的圈子。</p></div>
         </div>
       </div>
-
-      <div class="chat-bubble flex items-start space-x-4">
-        <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-          <i class="fas fa-heart-pulse text-white text-sm"></i>
-        </div>
-        <div class="flex-1 max-w-2xl">
+      <div class="message-row flex items-start gap-4 mb-6">
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+        <div class="message-bubble">
           <p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p>
-          <div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm inline-block">
-            <p class="text-slate-800 text-sm leading-relaxed font-medium">我理解您的感受。跨文化社交确实是一个渐进的过程，您已经很勇敢地迈出了第一步。这种孤独感是很多留学生都会经历的，您并不孤单。您愿意和我分享一些具体的困扰吗？比如是语言障碍、文化差异，还是其他方面的原因让您感觉难以融入？</p>
-          </div>
+          <div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm"><p class="text-slate-800 text-sm leading-relaxed font-medium">我理解您的感受。跨文化社交确实是一个渐进的过程，您已经很勇敢地迈出了第一步。这种孤独感是很多留学生都会经历的，您并不孤单。您愿意和我分享一些具体的困扰吗？比如是语言障碍、文化差异，还是其他方面的原因让您感觉难以融入？</p></div>
         </div>
-      </div>
-
-    </div>
-
-    <div class="p-6 bg-white/40 border-t border-slate-200/50 backdrop-blur-sm">
-      <div class="flex items-center space-x-3 mb-3">
-        <button class="px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-slate-600 text-xs font-bold hover:bg-white hover:text-blue-600 shadow-sm transition-all flex items-center">
-          <i class="fas fa-image mr-1.5"></i>发送图片
-        </button>
-        <button class="px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-slate-600 text-xs font-bold hover:bg-white hover:text-blue-600 shadow-sm transition-all flex items-center">
-          <i class="fas fa-microphone mr-1.5"></i>语音输入
-        </button>
-        <button class="px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-slate-600 text-xs font-bold hover:bg-white hover:text-amber-500 shadow-sm transition-all flex items-center">
-          <i class="fas fa-face-smile mr-1.5"></i>表情
-        </button>
-      </div>
-
-      <div class="flex items-end space-x-4">
-        <div class="flex-1 bg-white border border-slate-300 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 rounded-2xl p-1 shadow-inner transition-all flex items-center">
-          <textarea id="messageInput" placeholder="输入您想倾诉的心事... (按 Enter 发送)" rows="1" class="w-full bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none resize-none text-sm font-medium p-3 max-h-32 custom-scrollbar" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
-        </div>
-        <button onclick="sendMessage()" class="w-14 h-14 rounded-2xl bg-slate-800 flex items-center justify-center text-white hover:bg-blue-600 shadow-md hover:shadow-lg transition-all flex-shrink-0" title="发送消息">
-          <i class="fas fa-paper-plane text-lg"></i>
-        </button>
       </div>
     </div>
 
-  </div>
+    <footer class="composer-wrap p-5">
+      <div class="quick-actions flex items-center space-x-3 mb-3">
+        <button class="px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-slate-600 text-xs font-bold hover:bg-white hover:text-blue-600 shadow-sm transition-all flex items-center"><i class="fas fa-image mr-1.5"></i>发送图片</button>
+        <button class="px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-slate-600 text-xs font-bold hover:bg-white hover:text-blue-600 shadow-sm transition-all flex items-center"><i class="fas fa-microphone mr-1.5"></i>语音输入</button>
+        <button class="px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-slate-600 text-xs font-bold hover:bg-white hover:text-amber-500 shadow-sm transition-all flex items-center"><i class="fas fa-face-smile mr-1.5"></i>表情</button>
+      </div>
+      <div class="composer-row flex items-end gap-4">
+        <div class="composer flex-1 rounded-2xl p-1 flex items-end transition-all focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100">
+          <textarea id="messageInput" placeholder="输入您想倾诉的心事..." rows="1" class="w-full bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none resize-none text-sm font-medium p-3 max-h-32 custom-scrollbar" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+        </div>
+        <button onclick="sendMessage()" class="send-button w-14 h-14 rounded-2xl bg-slate-800 flex items-center justify-center text-white hover:bg-blue-600 shadow-md hover:shadow-lg transition-all flex-shrink-0" title="发送消息"><i class="fas fa-paper-plane text-lg"></i></button>
+      </div>
+    </footer>
+  </section>
 </main>
 
 <script>
-// 全局变量初始化
 let isTyping = false;
-let currentChatId = 'chat1';
+let currentChatId = 'chatDefault';
 
-// 文本框自动增高
-function autoResize(textarea) {
-  textarea.style.height = 'auto';
-  let newHeight = textarea.scrollHeight;
-  if(newHeight > 120) newHeight = 120; // 限制最大高度
-  textarea.style.height = newHeight + 'px';
+const chatData = {
+  chatDefault: {
+    title: '新的陪伴对话',
+    subtitle: '可以从任何想说的话开始...',
+    timeLabel: '新的对话',
+    mood: '自由倾诉',
+    messages: [
+      { sender: 'ai', text: '我是Selene，很高兴能陪伴您在上海的生活旅程。无论是倾诉心事、分享喜悦，还是寻求建议，我都会在这里倾听。今天想聊些什么呢？' }
+    ]
+  },
+  chat1: {
+    title: '关于学业压力的倾诉',
+    subtitle: '最近总是感觉很孤独，虽然在上海...',
+    timeLabel: '今天 14:30',
+    mood: '压力与孤独',
+    messages: [
+      { sender: 'ai', text: '您好，我是Selene。今天我会先安静地听您说，也会在合适的时候帮您一起整理压力来源。您现在最想聊哪件事？' },
+      { sender: 'user', text: '最近总是感觉很孤独，虽然在上海认识了一些朋友，但总觉得很难真正融入他们的圈子。' },
+      { sender: 'ai', text: '这种“身边有人，但心里还是隔着一层”的感觉很消耗。您不是不够合群，而是在新的文化和语言环境里，还没有找到真正安全、自然的连接方式。\n\n我们可以先不用急着解决所有问题，只先看看：让您最难融入的是聊天话题、语言表达，还是大家已有的小圈子？' }
+    ]
+  },
+  chat2: {
+    title: '分享在上海的美食发现',
+    subtitle: '昨天去静安寺吃了一家本帮菜...',
+    timeLabel: '昨天 19:20',
+    mood: '轻松分享',
+    messages: [
+      { sender: 'ai', text: '晚上好呀，今天有没有遇到什么让您觉得上海很可爱的瞬间？' },
+      { sender: 'user', text: '昨天去静安寺附近吃了一家本帮菜，红烧肉有点甜，但还挺好吃的。' },
+      { sender: 'ai', text: '听起来很有上海味道！本帮菜的甜口一开始可能会有点意外，但慢慢会发现它的酱香和米饭特别搭。\n\n下次可以试试小笼包、腌笃鲜或者葱油拌面，它们的接受度通常比较高。您更喜欢偏甜的口味，还是清淡一点的？' }
+    ]
+  },
+  chat3: {
+    title: '思念家乡的对话',
+    subtitle: '快过节了，有点想家里的父母...',
+    timeLabel: '3天前',
+    mood: '想家与安慰',
+    messages: [
+      { sender: 'ai', text: '今天想家了吗？节日前后这种感觉会更明显，很正常。' },
+      { sender: 'user', text: '快过节了，看到别人和朋友一起吃饭，我突然很想家里的父母。' },
+      { sender: 'ai', text: '想家不是脆弱，而是说明您和家人的连接很深。身在异国时，节日会把这种距离感放大。\n\n可以给自己安排一个小小的“家乡仪式”：和父母视频、做一道熟悉的菜，或者给他们发一张您在上海的日常照片。这样会让“远”变得稍微近一点。' }
+    ]
+  },
+  chat4: {
+    title: '社交焦虑的倾诉',
+    subtitle: '明天要参加迎新破冰活动，很紧张...',
+    timeLabel: '1周前',
+    mood: '社交焦虑',
+    messages: [
+      { sender: 'ai', text: '明天的活动让您有点紧张，对吗？我们可以先把最担心的部分拆小一点。' },
+      { sender: 'user', text: '我怕去了以后没人跟我说话，也怕自己英语或中文表达不好。' },
+      { sender: 'ai', text: '您担心的其实不是“不会社交”，而是害怕尴尬和被忽略。可以准备两个很轻的开场句：\n\n“你也是第一次来这个活动吗？”\n“你平时喜欢参加什么社团？”\n\n目标不是马上交到很多朋友，而是完成一次自然的开口。做到这一点，就已经很好了。' }
+    ]
+  },
+  chat5: {
+    title: '中文学习心得交流',
+    subtitle: '中文的四个声调太难掌握了...',
+    timeLabel: '2周前',
+    mood: '学习鼓励',
+    messages: [
+      { sender: 'ai', text: '今天中文学习怎么样？有没有哪个发音或表达让您觉得特别卡住？' },
+      { sender: 'user', text: '中文的四个声调太难掌握了，我说的时候总怕别人听不懂。' },
+      { sender: 'ai', text: '声调确实是中文学习里最容易让人受挫的部分，但您能意识到这个问题，已经是在进步了。\n\n可以先从高频短句练起，比如“你好”“谢谢”“我想问一下”。不要一开始追求完美，先让对方理解，再慢慢调整声调。大多数人其实会愿意耐心听您说完。' }
+    ]
+  }
+};
+
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
-// 情感分析函数 (决定气泡边框颜色)
+function autoResize(textarea) {
+  textarea.style.height = 'auto';
+  const maxHeight = window.innerWidth <= 768 ? 118 : 120;
+  textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
+}
+
 function analyzeEmotion(text) {
   const positiveWords = ['开心', '高兴', '快乐', '喜欢', '爱', '感谢', '美好', '幸福', '期待', '希望'];
   const negativeWords = ['难过', '伤心', '孤独', '焦虑', '担心', '害怕', '压力', '累', '烦', '迷茫'];
-  
-  let positiveScore = 0;
-  let negativeScore = 0;
-  
+  let positiveScore = 0, negativeScore = 0;
   positiveWords.forEach(word => { if (text.includes(word)) positiveScore++; });
   negativeWords.forEach(word => { if (text.includes(word)) negativeScore++; });
-  
   if (positiveScore > negativeScore) return 'border-emerald-200';
   if (negativeScore > positiveScore) return 'border-rose-200';
   return 'border-amber-200';
 }
 
-// 发送消息函数
 function sendMessage() {
   const input = document.getElementById('messageInput');
   const message = input.value.trim();
-  
   if (!message || isTyping) return;
-  
   addMessage(message, 'user');
   input.value = '';
-  input.style.height = 'auto'; // 重置高度
+  input.style.height = 'auto';
   showTypingIndicator();
-  
   setTimeout(() => {
     hideTypingIndicator();
-    const aiResponse = generateAIResponse(message);
-    addMessage(aiResponse, 'ai');
-  }, 1500);
+    addMessage(generateAIResponse(message), 'ai');
+  }, 900);
 }
 
-// 生成AI回复（模拟）
 function generateAIResponse(userMessage) {
-  const responses = [
-    '我能感受到您的心情。每个人在新环境中都会经历这样的阶段，您的感受是完全可以理解的。您愿意和我多聊聊具体的情况吗？',
-    '谢谢您愿意和我分享这些。在上海生活的过程中，遇到这样的困惑是很正常的。让我们一起探讨一下可能的解决方案。',
-    '您说得很有道理。跨文化适应确实需要时间和耐心。您有没有尝试过一些方法来改善这种情况呢？',
-    '我理解您的感受。作为留学生，面对学业和生活的双重压力确实不容易。请记住，随时都可以来这里找我倾诉。'
-  ];
-  return responses[Math.floor(Math.random() * responses.length)];
+  const msg = userMessage.trim();
+  const context = chatData[currentChatId]?.mood || '';
+  const contains = (words) => words.some(word => msg.includes(word));
+
+  if (contains(['孤独', '融入', '朋友', '圈子', '社交'])) {
+    return '听起来您很想靠近别人，但又担心自己始终站在圈子外面。这个感受很真实，也很常见。\n\n也许我们可以先把目标放小一点：不是马上“完全融入”，而是先找到一个可以轻松说几句话的人。您最近有没有遇到过一个让您感觉稍微舒服一点的同学或朋友？';
+  }
+  if (contains(['压力', '作业', '考试', '论文', '汇报', 'deadline', '答辩'])) {
+    return '学业压力堆在一起时，大脑会很容易进入“什么都做不完”的状态。我们可以先不评价自己，只把事情分成三类：今天必须完成、这周需要推进、可以暂时放一放。\n\n您现在最压着您的，是哪一项任务？我可以陪您一起拆成更小的步骤。';
+  }
+  if (contains(['想家', '父母', '家里', '节日', '妈妈', '爸爸'])) {
+    return '想家是一种很深的牵挂，不是您不适应，也不是您不够独立。尤其在节日前后，这种感觉会突然变强。\n\n可以给自己安排一个小小的连接：给家人发一段语音、分享今天吃了什么，或者约一个固定视频时间。这样会让距离感稍微柔软一点。';
+  }
+  if (contains(['开心', '好吃', '喜欢', '顺利', '高兴', '不错'])) {
+    return '听到这个我也替您开心！这些小小的积极体验很重要，它们会慢慢变成您和上海之间的连接。\n\n您愿意多讲一点吗？是哪个瞬间让您觉得“其实这里也挺好”的？';
+  }
+  if (contains(['中文', '语言', '听不懂', '表达', '口语'])) {
+    return '语言卡住的时候，很容易让人怀疑自己，但这不代表您交流能力差，只是还在适应新的表达系统。\n\n下次可以先用简单句表达核心意思，再补充细节。比如先说“我不太明白，可以再说一遍吗？”这已经是很自然、很礼貌的沟通了。';
+  }
+  if (contains(['焦虑', '紧张', '害怕', '担心', '心慌'])) {
+    return '我先陪您把节奏放慢一点。焦虑出现时，身体会先进入警觉状态，所以您现在的紧张并不代表事情一定会变糟。\n\n可以先试试：吸气4秒、停1秒、呼气6秒，重复三次。然后我们再一起看，您最担心的那个结果发生的可能性有多大。';
+  }
+
+  const contextualResponses = {
+    '压力与孤独': '我听见您在努力适应，也在努力不让别人担心。很多时候，孤独不是因为身边没有人，而是缺少一个真正能放松表达自己的空间。这里可以先成为这样的空间。您想从今天发生的哪件小事说起？',
+    '轻松分享': '这个分享很有生活气息。能注意到这些小发现，说明您正在慢慢和这座城市建立连接。下次也可以把喜欢的店、路线或小习惯记录下来，它们会变成属于您的上海地图。',
+    '想家与安慰': '您对家的想念很珍贵。我们可以不急着把它赶走，而是把它变成一种温柔的连接。今天有没有什么东西让您突然想到家里？',
+    '社交焦虑': '面对新的社交场合会紧张很正常。我们可以把目标定得很小：主动打一次招呼、问一个问题、待满半小时。完成其中一个，就已经是在向前走。',
+    '学习鼓励': '学习语言最难的是持续开口。您不需要一下子说得很标准，只要敢表达、能被理解，就是进步。今天我们可以一起练一句您最常用的中文表达。'
+  };
+  return contextualResponses[context] || '谢谢您愿意告诉我。您说的内容我有认真听到。我们可以慢慢来，不需要一次讲清楚所有事情。您现在最希望我做的是陪您倾听、帮您分析，还是一起想一个具体办法？';
 }
 
-// 添加消息到对话区
-function addMessage(text, sender) {
+function addMessage(text, sender, persist = true) {
   const container = document.getElementById('chatMessages');
+  const safeText = escapeHtml(text).replace(/\n/g, '<br>');
   const borderClass = sender === 'user' ? analyzeEmotion(text) : 'border-blue-200';
-  
-  const messageHtml = sender === 'user' 
-    ? `<div class="chat-bubble flex items-start space-x-4 flex-row-reverse space-x-reverse message-enter">
-        <div class="w-10 h-10 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-          <i class="fas fa-user text-amber-600 text-sm"></i>
-        </div>
-        <div class="flex-1 max-w-2xl flex flex-col items-end">
-          <p class="text-slate-400 text-xs mb-1.5 mr-1 font-medium">您</p>
-          <div class="bg-white border ${borderClass} rounded-2xl rounded-tr-sm p-4 shadow-sm inline-block text-left">
-            <p class="text-slate-800 text-sm leading-relaxed font-medium">${text}</p>
-          </div>
-        </div>
+  const html = sender === 'user'
+    ? `<div class="message-row flex items-start gap-4 flex-row-reverse mb-6">
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-user text-amber-600 text-sm"></i></div>
+        <div class="message-bubble flex flex-col items-end"><p class="text-slate-400 text-xs mb-1.5 mr-1 font-medium">您</p><div class="bg-white border ${borderClass} rounded-2xl rounded-tr-sm p-4 shadow-sm text-left"><p class="text-slate-800 text-sm leading-relaxed font-medium">${safeText}</p></div></div>
       </div>`
-    : `<div class="chat-bubble flex items-start space-x-4">
-        <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-          <i class="fas fa-heart-pulse text-white text-sm"></i>
-        </div>
-        <div class="flex-1 max-w-2xl">
-          <p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p>
-          <div class="bg-white border ${borderClass} rounded-2xl rounded-tl-sm p-4 shadow-sm inline-block">
-            <p class="text-slate-800 text-sm leading-relaxed font-medium">${text}</p>
-          </div>
-        </div>
+    : `<div class="message-row flex items-start gap-4 mb-6">
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+        <div class="message-bubble"><p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p><div class="bg-white border ${borderClass} rounded-2xl rounded-tl-sm p-4 shadow-sm"><p class="text-slate-800 text-sm leading-relaxed font-medium">${safeText}</p></div></div>
       </div>`;
-  
-  container.insertAdjacentHTML('beforeend', messageHtml);
+  container.insertAdjacentHTML('beforeend', html);
   container.scrollTop = container.scrollHeight;
+  if (persist && chatData[currentChatId]) {
+    chatData[currentChatId].messages.push({ sender, text });
+    updateHistoryPreview(currentChatId);
+  }
 }
 
-// 显示正在输入指示器
 function showTypingIndicator() {
   isTyping = true;
   const container = document.getElementById('chatMessages');
-  const indicatorHtml = `<div id="typingIndicator" class="chat-bubble flex items-start space-x-4">
-    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-      <i class="fas fa-heart-pulse text-white text-sm"></i>
-    </div>
-    <div class="flex-1 max-w-2xl">
-      <p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p>
-      <div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm inline-block">
-        <div class="typing-indicator flex space-x-1 py-1">
-          <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
-          <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
-          <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
-        </div>
-      </div>
-    </div>
+  const html = `<div id="typingIndicator" class="message-row flex items-start gap-4 mb-6">
+    <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+    <div class="message-bubble"><p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p><div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm"><div class="typing-indicator flex space-x-1 py-1"><span class="w-2 h-2 bg-slate-400 rounded-full"></span><span class="w-2 h-2 bg-slate-400 rounded-full"></span><span class="w-2 h-2 bg-slate-400 rounded-full"></span></div></div></div>
   </div>`;
-  container.insertAdjacentHTML('beforeend', indicatorHtml);
+  container.insertAdjacentHTML('beforeend', html);
   container.scrollTop = container.scrollHeight;
 }
 
-// 隐藏正在输入指示器
 function hideTypingIndicator() {
   isTyping = false;
   const indicator = document.getElementById('typingIndicator');
   if (indicator) indicator.remove();
 }
 
-// 键盘事件处理
 function handleKeyDown(event) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
@@ -401,35 +440,76 @@ function handleKeyDown(event) {
   }
 }
 
-// 切换左侧历史聊天的高亮状态
+function renderChat(chatId) {
+  const data = chatData[chatId];
+  if (!data) return;
+  const container = document.getElementById('chatMessages');
+  const headerTitle = document.querySelector('.chat-title h2');
+  const headerSub = document.querySelector('.chat-title p');
+  if (headerTitle) headerTitle.textContent = data.title;
+  if (headerSub) headerSub.textContent = `AI 在线 · ${data.mood}`;
+
+  container.innerHTML = `<div class="flex justify-center mb-6"><span class="bg-white/60 text-slate-400 text-xs font-bold px-3 py-1 rounded-full shadow-sm">${escapeHtml(data.timeLabel || '新的对话')}</span></div>`;
+  data.messages.forEach(msg => addMessage(msg.text, msg.sender, false));
+  container.scrollTop = container.scrollHeight;
+}
+
+function updateHistoryPreview(chatId) {
+  const data = chatData[chatId];
+  const item = document.querySelector(`[data-chat-id="${chatId}"]`);
+  if (!data || !item) return;
+  const lastUser = [...data.messages].reverse().find(m => m.sender === 'user');
+  const titleEl = item.querySelector('.history-title');
+  const previewEl = item.querySelector('.history-preview');
+  const timeEl = item.querySelector('.history-time');
+  if (titleEl) titleEl.textContent = data.title;
+  if (previewEl) previewEl.textContent = lastUser ? lastUser.text : data.subtitle;
+  if (timeEl) timeEl.textContent = '刚刚';
+}
+
 function loadChat(chatId, element) {
-  document.querySelectorAll('.sidebar-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  element.classList.add('active');
+  if (!chatData[chatId]) return;
+  document.querySelectorAll('.history-item').forEach(item => item.classList.remove('active'));
+  if (element) element.classList.add('active');
   currentChatId = chatId;
-  showToast('已加载历史对话记录');
+  hideTypingIndicator();
+  renderChat(chatId);
+  toggleHistory(false);
 }
 
-// 页面导航函数
-function navigateTo(page) {
-  window.location.href = page + '.html';
+function newChat() {
+  const id = 'chat' + Date.now();
+  currentChatId = id;
+  chatData[id] = {
+    title: '新的陪伴对话',
+    subtitle: '可以从任何想说的话开始...',
+    timeLabel: '新的对话',
+    mood: '自由倾诉',
+    messages: [
+      { sender: 'ai', text: '我是Selene，很高兴能陪伴您在上海的生活旅程。无论是倾诉心事、分享喜悦，还是寻求建议，我都会在这里倾听。今天想聊些什么呢？' }
+    ]
+  };
+  document.querySelectorAll('.history-item').forEach(item => item.classList.remove('active'));
+  const history = document.getElementById('chatHistory');
+  const html = `<div class="history-item active p-4 rounded-2xl cursor-pointer border" data-chat-id="${id}" onclick="loadChat('${id}', this)">
+    <div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-pen text-slate-600 text-sm"></i></div><div class="flex-1 min-w-0"><p class="history-title text-slate-800 text-sm font-bold truncate mb-1">新的陪伴对话</p><p class="history-preview text-slate-500 text-xs truncate">可以从任何想说的话开始...</p><p class="history-time text-slate-400 text-xs mt-1.5 font-medium">刚刚</p></div></div>
+  </div>`;
+  history.insertAdjacentHTML('afterbegin', html);
+  renderChat(id);
+  toggleHistory(false);
+  showToast('已开启新对话');
 }
 
-// 显示提示信息
+function navigateTo(page) { window.location.href = page + '.html'; }
+
 function showToast(message) {
   const toast = document.createElement('div');
-  toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-50 text-sm font-bold flex items-center space-x-2';
-  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`;
+  toast.className = 'toast fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-[120] text-sm font-bold flex items-center space-x-2';
+  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${escapeHtml(message)}</span>`;
   document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.style.transition = 'opacity 0.5s ease-out';
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 500);
-  }, 2000);
+  setTimeout(() => { toast.style.transition = 'opacity .5s ease-out'; toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 1600);
 }
 
-// 退出登录
 function handleLogout() {
   if (confirm('确定要退出登录吗？')) {
     localStorage.removeItem('isLoggedIn');
@@ -437,14 +517,40 @@ function handleLogout() {
   }
 }
 
-// 页面加载检查
-document.addEventListener('DOMContentLoaded', function() {
-  /*
-  const isLoggedIn = localStorage.getItem('isLoggedIn');
-  if (!isLoggedIn) {
-    window.location.href = 'login.html'; 
+function toggleMobileNav(force) {
+  const shouldOpen = typeof force === 'boolean' ? force : !document.body.classList.contains('mobile-nav-open');
+  document.body.classList.toggle('mobile-nav-open', shouldOpen);
+  if (shouldOpen) document.body.classList.remove('mobile-history-open');
+  const btn = document.querySelector('.mobile-nav-toggle');
+  if (btn) {
+    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    const icon = btn.querySelector('i');
+    if (icon) icon.className = shouldOpen ? 'fas fa-times' : 'fas fa-bars';
   }
-  */
+}
+
+function toggleHistory(force) {
+  const shouldOpen = typeof force === 'boolean' ? force : !document.body.classList.contains('mobile-history-open');
+  document.body.classList.toggle('mobile-history-open', shouldOpen);
+  if (shouldOpen) document.body.classList.remove('mobile-nav-open');
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') { toggleMobileNav(false); toggleHistory(false); }
+});
+
+document.querySelectorAll('body > aside.glass .nav-item').forEach(function(item) {
+  item.addEventListener('click', function() { toggleMobileNav(false); });
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768) { toggleMobileNav(false); toggleHistory(false); }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderChat(currentChatId);
+  const container = document.getElementById('chatMessages');
+  container.scrollTop = container.scrollHeight;
 });
 </script>
 </body>

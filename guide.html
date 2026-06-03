@@ -13,9 +13,7 @@ tailwind.config = {
         primary: { 50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE', 300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8', 800: '#1E40AF', 900: '#1E3A8A' },
         accent: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E' }
       },
-      fontFamily: {
-        sans: ['Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
-      }
+      fontFamily: { sans: ['Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'] }
     }
   }
 }
@@ -23,485 +21,766 @@ tailwind.config = {
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; box-sizing: border-box; }
 body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
 .glass { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px rgba(30, 58, 138, 0.05); }
-
-/* 左侧导航交互样式 */
 .nav-item { transition: all 0.3s; }
 .nav-item:hover { background: rgba(255, 255, 255, 0.7); transform: translateX(8px); }
 .nav-item.active { background: #FFFFFF; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); border-color: rgba(59, 130, 246, 0.2); transform: none; }
-
-/* 瀑布流卡片与搜索框样式 */
-.masonry-item { opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-.masonry-item.visible { opacity: 1; transform: translateY(0); }
-.card-hover { transition: all 0.3s; }
-.card-hover:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(30, 58, 138, 0.1); }
-.search-container:focus-within { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); border-color: #93C5FD; }
-.tag-btn { transition: all 0.3s; }
-.tag-btn:hover { transform: scale(1.05); }
-
-/* PC端细滚动条 */
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+.search-container:focus-within { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); border-color: #93C5FD; }
+.tag-btn { transition: all 0.25s ease; white-space: nowrap; }
+.tag-btn:hover { transform: translateY(-1px); }
+
+/* 小红书风格双栏瀑布流 */
+.xhs-feed { column-count: 2; column-gap: 18px; }
+.xhs-post { width: 100%; display: inline-block; break-inside: avoid; -webkit-column-break-inside: avoid; margin: 0 0 18px; overflow: hidden; cursor: pointer; padding: 0 !important; vertical-align: top; transition: transform .25s ease, box-shadow .25s ease; }
+.xhs-post:hover { transform: translateY(-6px); box-shadow: 0 18px 42px rgba(30, 58, 138, .11); }
+.xhs-cover { min-height: 138px; padding: 18px; display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.75); position: relative; overflow: hidden; }
+.xhs-post:nth-child(2n) .xhs-cover { min-height: 178px; }
+.xhs-post:nth-child(3n) .xhs-cover { min-height: 152px; }
+.xhs-post:nth-child(5n) .xhs-cover { min-height: 198px; }
+.xhs-cover::after { content: ''; position: absolute; width: 130px; height: 130px; right: -42px; bottom: -48px; background: rgba(255,255,255,.42); border-radius: 999px; }
+.xhs-icon { width: 58px; height: 58px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px rgba(30,58,138,.06); z-index: 1; }
+.xhs-content { padding: 15px 15px 14px; }
+.xhs-title { font-size: 1rem; line-height: 1.35; font-weight: 800; color: #1E293B; margin-bottom: 7px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.xhs-desc { font-size: .82rem; color: #64748B; line-height: 1.55; font-weight: 600; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.xhs-meta { padding-top: 12px; border-top: 1px solid rgba(226,232,240,.65); display:flex; align-items:center; justify-content:space-between; gap: 10px; }
+.xhs-author { min-width: 0; display:flex; align-items:center; gap:7px; }
+.xhs-author span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bookmark-btn { flex-shrink: 0; }
+.mobile-nav-toggle, .mobile-nav-backdrop { display: none; }
+
+/* 小红书详情页/弹层 */
+.detail-layer { position: fixed; inset: 0; z-index: 100; background: rgba(15, 23, 42, .34); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; padding: 28px; }
+.detail-layer.open { display: block; }
+.detail-shell { max-width: 980px; height: calc(100dvh - 56px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); overflow: hidden; border-radius: 32px; }
+.detail-visual { position: relative; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
+.detail-visual-icon { width: 96px; height: 96px; border-radius: 30px; display:flex; align-items:center; justify-content:center; box-shadow: 0 18px 44px rgba(30,58,138,.12); }
+.detail-content { background: rgba(255,255,255,.86); overflow-y: auto; padding: 26px 28px calc(28px + env(safe-area-inset-bottom)); }
+.detail-close { position: absolute; top: 18px; left: 18px; width: 42px; height: 42px; border-radius: 16px; background: rgba(255,255,255,.86); display:flex; align-items:center; justify-content:center; color:#334155; box-shadow:0 8px 22px rgba(30,58,138,.08); z-index: 2; }
+.detail-section { background: rgba(255,255,255,.65); border: 1px solid rgba(226,232,240,.78); border-radius: 22px; padding: 16px; margin-top: 14px; }
+.detail-section h4 { color:#1E293B; font-weight: 800; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+.detail-section li { margin: 8px 0; color:#475569; line-height:1.75; font-weight: 600; font-size:.93rem; }
+.detail-note { border-left: 4px solid #3B82F6; }
+.no-results { display:none; }
+.no-results.show { display:block; }
+
+@media (min-width: 1100px) { .xhs-feed { column-count: 3; } }
+@media (min-width: 1440px) { .xhs-feed { column-count: 4; } }
+
+@media (max-width: 768px) {
+  html, body { width: 100%; min-height: 100dvh; }
+  body { overflow: hidden; -webkit-text-size-adjust: 100%; }
+  .mobile-nav-toggle { display: flex; position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 14px; z-index: 80; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 16px; background: rgba(255, 255, 255, 0.78); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12); color: #1E293B; }
+  .mobile-nav-backdrop { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(15, 23, 42, 0.28); opacity: 0; pointer-events: none; transition: opacity 0.28s ease; }
+  body.mobile-nav-open .mobile-nav-backdrop { opacity: 1; pointer-events: auto; }
+  body > aside.glass { width: min(82vw, 320px) !important; height: 100dvh !important; transform: translateX(-105%); transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1); z-index: 70; padding-top: env(safe-area-inset-top); border-radius: 0 28px 28px 0; }
+  body.mobile-nav-open > aside.glass { transform: translateX(0); }
+  body > aside.glass .nav-item:hover { transform: none; }
+  body > aside.glass nav { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+  body > main { margin-left: 0 !important; width: 100% !important; min-width: 0 !important; height: 100dvh !important; padding: calc(72px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom)) !important; overflow-x: hidden !important; }
+  main header { gap: 12px; margin-bottom: 18px !important; }
+  main header h2 { font-size: 1.55rem !important; line-height: 1.2 !important; }
+  main header p { font-size: 0.9rem !important; }
+  input, textarea, select, button { font-size: 16px; }
+  #tagContainer { overflow-x: auto; flex-wrap: nowrap !important; padding-bottom: 4px; margin-bottom: 16px !important; -webkit-overflow-scrolling: touch; }
+  #tagContainer::-webkit-scrollbar { display:none; }
+  .tag-btn { padding: 9px 14px !important; font-size: .78rem !important; }
+  .xhs-feed { column-count: 2; column-gap: 10px; }
+  .xhs-post { margin-bottom: 10px; border-radius: 22px !important; }
+  .xhs-post:hover { transform: none; }
+  .xhs-cover { min-height: 104px; padding: 12px; }
+  .xhs-post:nth-child(2n) .xhs-cover { min-height: 136px; }
+  .xhs-post:nth-child(3n) .xhs-cover { min-height: 116px; }
+  .xhs-post:nth-child(5n) .xhs-cover { min-height: 152px; }
+  .xhs-icon { width: 42px; height: 42px; border-radius: 15px; }
+  .xhs-icon i { font-size: 1.18rem !important; }
+  .xhs-content { padding: 11px; }
+  .xhs-title { font-size: .9rem; margin-bottom: 6px; }
+  .xhs-desc { font-size: .72rem; line-height: 1.45; -webkit-line-clamp: 3; margin-bottom: 10px; }
+  .xhs-meta { padding-top: 9px; gap: 6px; }
+  .xhs-author span, .xhs-meta .read-time { font-size: .68rem !important; }
+  .xhs-author .avatar { width: 22px !important; height: 22px !important; }
+  .bookmark-btn { font-size: .82rem; }
+
+  .detail-layer { padding: 0; background: rgba(255,255,255,.08); }
+  .detail-shell { width: 100%; height: 100dvh; border-radius: 0; display: flex; flex-direction: column; }
+  .detail-visual { min-height: 240px; padding: calc(62px + env(safe-area-inset-top)) 22px 20px; flex: 0 0 auto; }
+  .detail-visual-icon { width: 76px; height: 76px; border-radius: 25px; }
+  .detail-content { flex: 1; border-radius: 28px 28px 0 0; margin-top: -22px; padding: 22px 18px calc(26px + env(safe-area-inset-bottom)); }
+  .detail-close { top: calc(14px + env(safe-area-inset-top)); left: 16px; }
+  .detail-content h2 { font-size: 1.35rem !important; line-height: 1.35 !important; }
+  .detail-section { padding: 14px; border-radius: 20px; }
+  .detail-section li { font-size: .88rem; }
+}
+
+@media (max-width: 430px) { body > aside.glass { width: 84vw !important; } }
+
+/* ===== Xiaohongshu detail polish + comment function ===== */
+.detail-shell { background: rgba(255,255,255,.92); }
+.xhs-detail-actions{display:flex;align-items:center;gap:18px;padding:12px 0 14px;border-bottom:1px solid rgba(226,232,240,.72);margin-bottom:14px}
+.xhs-action-btn{display:flex;align-items:center;gap:6px;color:#475569;font-size:.86rem;font-weight:800;transition:transform .2s ease,color .2s ease}
+.xhs-action-btn:hover{transform:translateY(-1px);color:#2563EB}.xhs-action-btn i{font-size:1.08rem}
+.xhs-topic-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}.xhs-topic-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:rgba(239,246,255,.88);color:#2563EB;font-size:.78rem;font-weight:800}
+.detail-section{box-shadow:0 8px 24px rgba(30,58,138,.035)}
+.comments-block{margin-top:18px;padding-top:18px;border-top:1px solid rgba(226,232,240,.75)}
+.comments-title{font-weight:900;color:#1E293B;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.comment-list{display:flex;flex-direction:column;gap:14px}.comment-item{display:flex;gap:10px;align-items:flex-start}
+.comment-avatar{width:34px;height:34px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:#FEF3C7;color:#D97706;flex-shrink:0}
+.comment-bubble{min-width:0;flex:1;background:rgba(248,250,252,.82);border:1px solid rgba(226,232,240,.72);border-radius:18px;padding:10px 12px}
+.comment-name{color:#334155;font-size:.82rem;font-weight:900;margin-bottom:4px}.comment-text{color:#475569;font-size:.88rem;line-height:1.65;font-weight:600}
+.comment-meta{color:#94A3B8;font-size:.74rem;font-weight:700;margin-top:6px;display:flex;align-items:center;gap:12px}
+.comment-input-bar{position:sticky;bottom:calc(-1px - env(safe-area-inset-bottom));z-index:8;display:flex;gap:10px;align-items:center;padding:14px 0 0;margin-top:16px;background:linear-gradient(to top,rgba(255,255,255,.96) 78%,rgba(255,255,255,0))}
+.comment-input{flex:1;min-width:0;border:1px solid rgba(203,213,225,.9);background:rgba(248,250,252,.92);border-radius:999px;padding:12px 15px;color:#1E293B;font-size:.9rem;font-weight:700;outline:none}
+.comment-input:focus{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(59,130,246,.14)}
+.comment-send-btn{width:42px;height:42px;border-radius:999px;background:#1E293B;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 8px 18px rgba(30,41,59,.15)}
+.comment-send-btn:active{transform:scale(.96)}
+@media(max-width:768px){
+.detail-layer{background:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.detail-shell{background:#fff!important;border:0!important;box-shadow:none!important}
+.detail-visual{min-height:310px!important;padding:calc(70px + env(safe-area-inset-top)) 18px 22px!important;border-radius:0 0 26px 26px;box-shadow:0 8px 24px rgba(30,58,138,.06)}
+.detail-close{width:44px!important;height:44px!important;border-radius:18px!important;background:rgba(255,255,255,.94)!important;box-shadow:0 8px 22px rgba(30,58,138,.1)!important}
+.detail-visual-icon{width:86px!important;height:86px!important;border-radius:26px!important}
+#detailVisualTitle{font-size:1.72rem!important;line-height:1.18!important;font-weight:900!important;letter-spacing:-.02em}#detailReadTime{font-size:.9rem!important;color:#64748B!important}
+#detailCategory{border-radius:999px!important;padding:9px 14px!important;font-size:.85rem!important}
+.detail-content{margin-top:0!important;border-radius:0!important;padding:18px 18px calc(18px + env(safe-area-inset-bottom))!important;background:#fff!important}
+.detail-content>.flex.items-center.justify-between.mb-4{position:sticky;top:0;z-index:6;margin:-18px -18px 12px!important;padding:12px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(226,232,240,.65)}
+.detail-content h2{font-size:1.35rem!important;margin-top:12px}#detailLead{font-size:.96rem!important;line-height:1.75!important;color:#475569!important}
+.xhs-detail-actions{justify-content:space-around;gap:8px;padding:14px 0}.xhs-action-btn{font-size:.82rem;flex-direction:column;gap:4px}.xhs-action-btn i{font-size:1.28rem}.xhs-topic-chip{font-size:.76rem;padding:6px 9px}
+.detail-section{background:#fff!important;border:1px solid rgba(226,232,240,.9)!important;border-radius:20px!important;padding:14px!important;margin-top:12px!important;box-shadow:none}.detail-section h4{font-size:1rem}.detail-section li{font-size:.9rem!important;line-height:1.78!important}
+.comments-block{margin-top:18px;padding-top:16px}.comment-bubble{background:#F8FAFC;border-radius:16px}
+.comment-input-bar{position:sticky;bottom:0;margin-left:-18px;margin-right:-18px;padding:12px 18px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(226,232,240,.72);background:rgba(255,255,255,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+}
+
+/* Mobile detail scroll behavior: hide the top cover after the note starts scrolling, keep author bar fixed like Xiaohongshu. */
+@media(max-width:768px){
+.detail-shell{overflow:hidden!important}
+.detail-visual{transition:max-height .28s ease, min-height .28s ease, padding .28s ease, opacity .18s ease, transform .28s ease; will-change:max-height,transform,opacity}
+.detail-shell.visual-collapsed .detail-visual{min-height:0!important;max-height:0!important;height:0!important;padding-top:0!important;padding-bottom:0!important;opacity:0;pointer-events:none;transform:translateY(-24px);overflow:hidden!important;box-shadow:none!important}
+.detail-shell.visual-collapsed .detail-content{flex:1 1 auto!important;border-radius:0!important;margin-top:0!important}
+.detail-shell.visual-collapsed .detail-content>.flex.items-center.justify-between.mb-4{top:0!important}
+}
+
+
+/* ===== Detail page separation: author / note content / comments ===== */
+.detail-author-bar {
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(226,232,240,.78);
+  border-radius: 22px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 28px rgba(30,58,138,.055);
+}
+.note-main-card,
+.guide-content-card,
+.comments-card {
+  background: rgba(255,255,255,.88);
+  border: 1px solid rgba(226,232,240,.82);
+  border-radius: 26px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(30,58,138,.045);
+}
+.note-main-card { margin-top: 14px; }
+.guide-content-card,
+.comments-card { margin-top: 16px; }
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1E293B;
+  font-weight: 900;
+  font-size: .98rem;
+  margin-bottom: 12px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(203,213,225,.95), rgba(203,213,225,0));
+}
+.guide-content-card .detail-section:first-of-type { margin-top: 0; }
+.guide-content-card .detail-section {
+  background: #FFFFFF;
+  border-color: rgba(226,232,240,.9);
+}
+.comments-card .comments-block {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.comments-card .comments-title {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(226,232,240,.78);
+}
+.detail-divider-gap {
+  height: 10px;
+}
+
+@media(max-width:768px){
+  .detail-content {
+    background: #F8FAFC !important;
+  }
+  .detail-author-bar {
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    box-shadow: 0 8px 22px rgba(30,58,138,.07) !important;
+  }
+  .detail-content>.detail-author-bar {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    margin: -18px -18px 14px !important;
+    padding: 12px 18px !important;
+    background: rgba(255,255,255,.96) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(226,232,240,.78) !important;
+  }
+  .note-main-card,
+  .guide-content-card,
+  .comments-card {
+    border-radius: 24px !important;
+    padding: 16px !important;
+    box-shadow: 0 8px 20px rgba(30,58,138,.035) !important;
+    background: #FFFFFF !important;
+  }
+  .note-main-card { margin-top: 0 !important; }
+  .guide-content-card,
+  .comments-card { margin-top: 14px !important; }
+  .xhs-detail-actions {
+    border-top: 1px solid rgba(226,232,240,.72);
+    border-bottom: 0 !important;
+    margin-top: 14px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .guide-content-card .detail-section {
+    background: #F8FAFC !important;
+  }
+  .comments-card .comment-input-bar {
+    position: sticky;
+    bottom: 0;
+    margin-left: -16px;
+    margin-right: -16px;
+    margin-bottom: -16px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(226,232,240,.72);
+    border-radius: 0 0 24px 24px;
+  }
+}
+
+
+/* ===== Author bar smoothing: make profile strip transition naturally into note content ===== */
+.detail-content {
+  background: linear-gradient(to bottom, rgba(255,255,255,.98) 0%, rgba(248,250,252,.96) 110px, #F8FAFC 100%) !important;
+}
+.detail-author-bar {
+  position: relative;
+  border-radius: 26px !important;
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(226,232,240,.72) !important;
+  box-shadow: 0 10px 30px rgba(30,58,138,.045) !important;
+  margin-bottom: 12px !important;
+}
+.detail-author-bar::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: -13px;
+  height: 13px;
+  background: linear-gradient(to bottom, rgba(255,255,255,.58), rgba(248,250,252,0));
+  pointer-events: none;
+}
+.note-main-card {
+  margin-top: 0 !important;
+  border-top-color: rgba(226,232,240,.66) !important;
+}
+.note-main-card,
+.guide-content-card,
+.comments-card {
+  box-shadow: 0 10px 26px rgba(30,58,138,.035) !important;
+}
+
+@media(max-width:768px){
+  .detail-content {
+    background: #F6F8FB !important;
+    padding-top: 0 !important;
+  }
+  .detail-content>.detail-author-bar {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    margin: 0 -18px 10px !important;
+    padding: 13px 18px !important;
+    border-radius: 0 0 22px 22px !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid rgba(226,232,240,.68) !important;
+    background: rgba(255,255,255,.96) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 8px 18px rgba(30,58,138,.045) !important;
+  }
+  .detail-author-bar::after {
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 10px;
+    background: linear-gradient(to bottom, rgba(255,255,255,.75), rgba(246,248,251,0));
+  }
+  .note-main-card {
+    margin-top: 10px !important;
+    border-radius: 24px !important;
+    border-color: rgba(226,232,240,.72) !important;
+  }
+  .detail-shell.visual-collapsed .detail-content>.detail-author-bar {
+    border-radius: 0 0 18px 18px !important;
+  }
+}
+
+
+/* ===== Mobile filter layout fix: keep results in two columns after tag filtering ===== */
+@media(max-width:768px){
+  .xhs-feed{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    column-count:initial!important;
+    column-gap:10px!important;
+    row-gap:10px!important;
+    align-items:start;
+  }
+  .xhs-post{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+    break-inside:auto!important;
+    -webkit-column-break-inside:auto!important;
+  }
+  #tagContainer{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:10px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    white-space:nowrap!important;
+    scroll-snap-type:x proximity;
+    padding:0 2px 8px!important;
+    margin-left:-2px;
+    margin-right:-2px;
+  }
+  #tagContainer .tag-btn{
+    flex:0 0 auto!important;
+    scroll-snap-align:start;
+    min-width:max-content;
+  }
+}
+@media(max-width:360px){
+  .xhs-feed{column-gap:8px!important;row-gap:8px!important;}
+  .xhs-title{font-size:.84rem!important;}
+  .xhs-desc{font-size:.69rem!important;}
+}
+
+
+
+/* ===== Mobile top space compact optimization ===== */
+@media (max-width: 768px) {
+  body > main {
+    padding-top: calc(14px + env(safe-area-inset-top)) !important;
+  }
+
+  /* Put each page title/intro in the real top area, next to the drawer button. */
+  body > main > .max-w-7xl > header:first-child {
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+    gap: 10px !important;
+  }
+
+  body > main > .max-w-7xl > header:first-child > div:first-child {
+    padding-left: 60px !important;
+    min-height: 52px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  body > main > .max-w-7xl > header:first-child h2 {
+    font-size: 1.34rem !important;
+    line-height: 1.16 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  body > main > .max-w-7xl > header:first-child p {
+    font-size: 0.78rem !important;
+    line-height: 1.35 !important;
+    margin-top: 4px !important;
+    max-width: 92vw !important;
+  }
+
+  .mobile-nav-toggle {
+    top: calc(12px + env(safe-area-inset-top)) !important;
+    left: 14px !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 16px !important;
+  }
+}
+
+
+/* Guide page: keep search and category chips compact below the top title. */
+@media (max-width: 768px) {
+  body > main > .max-w-7xl > header:first-child .search-container {
+    width: 100% !important;
+    margin-top: 2px !important;
+    border-radius: 20px !important;
+  }
+  #tagContainer {
+    margin-top: 8px !important;
+    margin-bottom: 12px !important;
+  }
+}
+
 </style>
 </head>
 <body class="h-screen flex">
+<button type="button" class="mobile-nav-toggle" aria-label="打开导航菜单" aria-expanded="false" onclick="toggleMobileNav(true)"><i class="fas fa-bars"></i></button>
+<div class="mobile-nav-backdrop" aria-hidden="true" onclick="toggleMobileNav(false)"></div>
 
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
   <div class="p-8 pb-4 flex items-center space-x-3">
-    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
-      <i class="fas fa-heart-pulse text-white"></i>
-    </div>
-    <div>
-      <h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1>
-      <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
-    </div>
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0"><i class="fas fa-heart-pulse text-white"></i></div>
+    <div><h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1><p class="text-slate-500 font-medium text-xs">智能陪伴平台</p></div>
   </div>
-
   <nav class="flex-1 px-4 mt-6 space-y-2">
-    <button onclick="navigateTo('chat')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-comments text-lg w-6 text-center"></i>
-      <span class="font-medium">情感陪伴</span>
-    </button>
-    <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-chart-line text-lg w-6 text-center"></i>
-      <span class="font-medium">心境轨迹</span>
-    </button>
-    <button onclick="navigateTo('simulator')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-theater-masks text-lg w-6 text-center"></i>
-      <span class="font-medium">跨文化演练</span>
-    </button>
-    <button onclick="navigateTo('guide')" class="nav-item active w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-800 border">
-      <i class="fas fa-compass text-lg w-6 text-center text-blue-600"></i>
-      <span class="font-bold">沪上指南</span>
-    </button>
-    <button onclick="navigateTo('user')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-user text-lg w-6 text-center"></i>
-      <span class="font-medium">个人中心</span>
-    </button>
+    <button onclick="navigateTo('chat')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent"><i class="fas fa-comments text-lg w-6 text-center"></i><span class="font-medium">情感陪伴</span></button>
+    <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent"><i class="fas fa-chart-line text-lg w-6 text-center"></i><span class="font-medium">心境轨迹</span></button>
+    <button onclick="navigateTo('simulator')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent"><i class="fas fa-theater-masks text-lg w-6 text-center"></i><span class="font-medium">跨文化演练</span></button>
+    <button onclick="navigateTo('guide')" class="nav-item active w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-800 border"><i class="fas fa-compass text-lg w-6 text-center text-blue-600"></i><span class="font-bold">沪上指南</span></button>
+    <button onclick="navigateTo('user')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent"><i class="fas fa-user text-lg w-6 text-center"></i><span class="font-medium">个人中心</span></button>
   </nav>
-
-  <div class="p-4 border-t border-slate-200/50">
-    <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
-      <i class="fas fa-sign-out-alt"></i>
-      <span>退出登录</span>
-    </button>
-  </div>
+  <div class="p-4 border-t border-slate-200/50"><button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium"><i class="fas fa-sign-out-alt"></i><span>退出登录</span></button></div>
 </aside>
 
-<main class="flex-1 ml-64 p-8 h-screen overflow-y-auto custom-scrollbar relative">
+<main class="flex-1 ml-64 p-8 h-screen overflow-y-auto custom-scrollbar relative" id="pageMain">
   <div class="max-w-7xl mx-auto">
-    
-    <header class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-6">
+    <header class="flex flex-col lg:flex-row lg:items-center justify-between mb-7 gap-5">
       <div>
         <h2 class="text-3xl font-bold text-slate-800">沪上生活指南</h2>
-        <p class="text-slate-500 font-medium mt-2">探索上海的每一个精彩角落，发现本地生活方式。</p>
+        <p class="text-slate-500 font-medium mt-2">像刷小红书一样发现上海生活攻略，点开卡片查看完整内容。</p>
       </div>
-      
       <div class="relative w-full lg:w-96 search-container bg-white/80 border border-slate-200 rounded-2xl shadow-inner transition-all flex items-center">
         <i class="fas fa-search absolute left-4 text-slate-400"></i>
-        <input type="text" id="searchInput" placeholder="搜索美食、景点、交通..." class="w-full bg-transparent py-3.5 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none text-sm font-medium" oninput="handleSearch()">
+        <input type="text" id="searchInput" placeholder="搜索美食、景点、交通..." class="w-full bg-transparent py-3.5 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none text-sm font-medium" oninput="applyFilters()">
       </div>
     </header>
 
-    <div class="flex flex-wrap gap-3 mb-8" id="tagContainer">
-      <button class="tag-btn bg-slate-800 text-white shadow-md px-5 py-2.5 rounded-xl text-sm font-bold" onclick="filterByTag('all', this)">全部</button>
-      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('food', this)">美食探店</button>
-      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('transport', this)">交通出行</button>
-      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('culture', this)">文化活动</button>
-      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('life', this)">生活服务</button>
-      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" onclick="filterByTag('study', this)">学习资源</button>
+    <div class="flex flex-wrap gap-3 mb-7" id="tagContainer">
+      <button class="tag-btn bg-slate-800 text-white shadow-md px-5 py-2.5 rounded-xl text-sm font-bold" data-tag="all" onclick="filterByTag('all', this)">全部</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" data-tag="food" onclick="filterByTag('food', this)">美食探店</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" data-tag="transport" onclick="filterByTag('transport', this)">交通出行</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" data-tag="culture" onclick="filterByTag('culture', this)">文化活动</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" data-tag="life" onclick="filterByTag('life', this)">生活服务</button>
+      <button class="tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm" data-tag="study" onclick="filterByTag('study', this)">学习资源</button>
     </div>
 
-    <div class="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6" id="masonryContainer">
-      
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="food">
-        <div class="h-36 bg-gradient-to-br from-amber-100 to-rose-100 flex items-center justify-center border-b border-white/50">
-          <i class="fas fa-bowl-food text-amber-500 text-5xl drop-shadow-sm"></i>
-        </div>
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs">美食探店</span>
-            <span class="text-slate-400 font-medium text-xs">3分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">上海本帮菜入门指南</h3>
-          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">从红烧肉到小笼包，带你了解上海本地美食的独特魅力与最佳品尝地点。</p>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center">
-                <i class="fas fa-user text-amber-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">美食达人小李</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
+    <div class="xhs-feed" id="masonryContainer"></div>
+    <div class="no-results text-center glass rounded-3xl p-10 mt-6" id="noResults"><i class="fas fa-magnifying-glass text-slate-300 text-4xl mb-4"></i><p class="text-slate-500 font-bold">没有找到相关指南</p></div>
 
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="transport">
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">交通出行</span>
-            <span class="text-slate-400 font-medium text-xs">5分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">上海地铁全攻略</h3>
-          <p class="text-slate-600 text-sm font-medium mb-4 leading-relaxed">上海地铁线路图详解，换乘技巧与省钱攻略，让您的出行更加便捷高效。</p>
-          <div class="bg-blue-50/80 border border-blue-100 rounded-xl p-3 mb-5 shadow-sm">
-            <div class="flex items-center space-x-2 text-sm">
-              <i class="fas fa-lightbulb text-amber-500"></i>
-              <span class="text-slate-700 font-bold">使用交通卡可享9折优惠</span>
-            </div>
-          </div>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
-                <i class="fas fa-user text-blue-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">出行专家小王</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="culture">
-        <div class="h-44 bg-gradient-to-br from-rose-100 to-blue-100 flex items-center justify-center border-b border-white/50">
-          <i class="fas fa-masks-theater text-rose-500 text-6xl drop-shadow-md"></i>
-        </div>
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold text-xs">文化活动</span>
-            <span class="text-slate-400 font-medium text-xs">8分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">上海博物馆免费预约指南</h3>
-          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">上海各大博物馆预约入口与参观攻略，感受海派文化的深厚底蕴。</p>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center">
-                <i class="fas fa-user text-rose-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">文化爱好者小张</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="life">
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs">生活服务</span>
-            <span class="text-slate-400 font-medium text-xs">4分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">留学生租房避坑指南</h3>
-          <p class="text-slate-600 text-sm font-medium mb-4 leading-relaxed">在上海租房需要注意的事项，从签约到入住的全流程指南。</p>
-          <div class="space-y-2 mb-5 bg-white/50 rounded-xl p-4 border border-slate-100 shadow-sm">
-            <div class="flex items-center space-x-2 text-sm">
-              <i class="fas fa-check-circle text-emerald-500"></i>
-              <span class="text-slate-700 font-medium">确认房产证与房东身份</span>
-            </div>
-            <div class="flex items-center space-x-2 text-sm">
-              <i class="fas fa-check-circle text-emerald-500"></i>
-              <span class="text-slate-700 font-medium">仔细阅读合同条款</span>
-            </div>
-            <div class="flex items-center space-x-2 text-sm">
-              <i class="fas fa-check-circle text-emerald-500"></i>
-              <span class="text-slate-700 font-medium">检查房屋设施状况</span>
-            </div>
-          </div>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
-                <i class="fas fa-user text-emerald-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">租房达人小陈</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="food">
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs">美食探店</span>
-            <span class="text-slate-400 font-medium text-xs">6分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">静安寺周边咖啡地图</h3>
-          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">精选静安寺商圈10家特色咖啡馆，适合学习与社交的好去处。</p>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center">
-                <i class="fas fa-user text-amber-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">咖啡控小林</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="study">
-        <div class="h-40 bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center border-b border-white/50">
-          <i class="fas fa-book-open text-indigo-500 text-5xl drop-shadow-sm"></i>
-        </div>
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-700 font-bold text-xs">学习资源</span>
-            <span class="text-slate-400 font-medium text-xs">10分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">上海图书馆办证攻略</h3>
-          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">如何办理上海图书馆借书证，电子资源使用指南与自习室预约方法。</p>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center">
-                <i class="fas fa-user text-indigo-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">学霸小周</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="culture">
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold text-xs">文化活动</span>
-            <span class="text-slate-400 font-medium text-xs">7分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">外滩夜景最佳观赏点</h3>
-          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">除了外滩观景台，这些小众地点也能欣赏到绝美的浦江夜景。</p>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center">
-                <i class="fas fa-user text-rose-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">摄影师小吴</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="life">
-        <div class="h-32 bg-gradient-to-br from-emerald-100 to-amber-100 flex items-center justify-center border-b border-white/50">
-          <i class="fas fa-hospital text-emerald-500 text-4xl drop-shadow-sm"></i>
-        </div>
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs">生活服务</span>
-            <span class="text-slate-400 font-medium text-xs">5分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">留学生就医指南</h3>
-          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">上海留学生医保使用方法与推荐医院，让您在沪就医无忧。</p>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
-                <i class="fas fa-user text-emerald-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">健康顾问小刘</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="transport">
-        <div class="p-5">
-          <div class="flex items-center space-x-2 mb-3">
-            <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">交通出行</span>
-            <span class="text-slate-400 font-medium text-xs">4分钟阅读</span>
-          </div>
-          <h3 class="text-slate-800 font-bold text-lg mb-2">浦东机场往返市区攻略</h3>
-          <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">磁悬浮、地铁、机场大巴多种方式对比，选择最适合您的出行方案。</p>
-          <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
-                <i class="fas fa-user text-blue-600 text-xs"></i>
-              </div>
-              <span class="text-slate-500 font-bold text-xs">旅行达人小赵</span>
-            </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-              <i class="far fa-bookmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="text-center mt-10 mb-8">
-      <button onclick="loadMore()" class="bg-white/80 border border-slate-200 text-slate-600 font-bold px-10 py-3.5 rounded-2xl hover:bg-white hover:text-blue-600 shadow-sm hover:shadow transition-all text-sm">
-        <i class="fas fa-plus mr-2"></i>加载更多内容
-      </button>
-    </div>
-    
-    <div class="text-center pt-6 pb-2 border-t border-slate-200/50">
-      <p class="text-slate-400 font-medium text-sm">© 2026 Selene 智能陪伴平台. All rights reserved.</p>
-    </div>
-    
+    <div class="text-center mt-8 mb-8"><button onclick="loadMore()" class="bg-white/80 border border-slate-200 text-slate-600 font-bold px-10 py-3.5 rounded-2xl hover:bg-white hover:text-blue-600 shadow-sm hover:shadow transition-all text-sm"><i class="fas fa-plus mr-2"></i>加载更多内容</button></div>
+    <div class="text-center pt-6 pb-2 border-t border-slate-200/50"><p class="text-slate-400 font-medium text-sm">© 2026 Selene 智能陪伴平台. All rights reserved.</p></div>
   </div>
 </main>
 
+<div class="detail-layer" id="detailLayer" aria-hidden="true" onclick="closeDetail(event)">
+  <article class="detail-shell glass" onclick="event.stopPropagation()">
+    <section class="detail-visual" id="detailVisual">
+      <button class="detail-close" onclick="closeDetail()" aria-label="返回指南列表"><i class="fas fa-arrow-left"></i></button>
+      <div class="flex items-start justify-between gap-4">
+        <div class="detail-visual-icon" id="detailIconWrap"><i id="detailIcon" class="fas fa-compass text-4xl"></i></div>
+        <span id="detailCategory" class="px-3 py-1.5 rounded-xl bg-white/80 text-slate-600 text-xs font-bold border border-white/80"></span>
+      </div>
+      <div class="relative z-10">
+        <p id="detailReadTime" class="text-slate-500 text-sm font-bold mb-2"></p>
+        <h3 id="detailVisualTitle" class="text-slate-800 text-2xl font-black leading-tight"></h3>
+      </div>
+    </section>
+    <section class="detail-content custom-scrollbar">
+      <div class="detail-author-bar flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div id="detailAuthorAvatar" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-user text-sm"></i></div>
+          <div class="min-w-0"><p id="detailAuthor" class="text-slate-800 font-bold text-sm truncate"></p><p class="text-slate-400 text-xs font-semibold">Selene 本地生活推荐</p></div>
+        </div>
+        <button class="px-4 py-2 rounded-full bg-slate-800 text-white text-xs font-bold shadow-sm" onclick="toggleLike(this)"><i class="far fa-heart mr-1.5"></i><span id="detailLikes">收藏</span></button>
+      </div>
+
+      <section class="note-main-card">
+        <div class="section-label"><i class="fas fa-note-sticky text-blue-500"></i><span>笔记内容</span></div>
+        <h2 id="detailTitle" class="text-slate-800 text-2xl font-black mb-3"></h2>
+        <p id="detailLead" class="text-slate-600 font-semibold leading-relaxed mb-4"></p>
+        <div class="xhs-topic-row" id="detailTopics"></div>
+        <div class="xhs-detail-actions">
+          <button class="xhs-action-btn" onclick="toggleDetailHeart(this)"><i class="far fa-heart"></i><span id="detailHeartCount">喜欢</span></button>
+          <button class="xhs-action-btn" onclick="focusCommentInput()"><i class="far fa-comment-dots"></i><span id="detailCommentCount">评论</span></button>
+          <button class="xhs-action-btn" onclick="toggleLike(document.querySelector('#detailLayer .bg-slate-800'))"><i class="far fa-bookmark"></i><span>收藏</span></button>
+          <button class="xhs-action-btn" onclick="showToast('已复制分享口令')"><i class="fas fa-share-nodes"></i><span>分享</span></button>
+        </div>
+      </section>
+
+      <section class="guide-content-card">
+        <div class="section-label"><i class="fas fa-list-check text-emerald-500"></i><span>详细指南</span></div>
+        <div id="detailBody"></div>
+      </section>
+
+      <section class="comments-card">
+        <section class="comments-block" id="commentsBlock">
+          <div class="comments-title"><span>评论区</span><span id="commentsTotal" class="text-slate-400 text-xs font-bold"></span></div>
+          <div class="comment-list" id="commentList"></div>
+          <div class="comment-input-bar">
+            <input id="commentInput" class="comment-input" type="text" maxlength="80" placeholder="说点什么，帮助后来的人..." onkeydown="handleCommentKey(event)">
+            <button class="comment-send-btn" onclick="addComment()" aria-label="发送评论"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </section>
+      </section>
+    </section>
+  </article>
+</div>
+
 <script>
-// 滚动动画观察器
-let observer = null;
+const colorMap = {
+  amber: { cover: 'bg-gradient-to-br from-amber-100 to-rose-100', iconBg: 'bg-amber-100', text: 'text-amber-600', tagBg:'bg-amber-100', tagText:'text-amber-700' },
+  blue: { cover: 'bg-gradient-to-br from-blue-100 to-sky-100', iconBg: 'bg-blue-100', text: 'text-blue-600', tagBg:'bg-blue-100', tagText:'text-blue-700' },
+  rose: { cover: 'bg-gradient-to-br from-rose-100 to-blue-100', iconBg: 'bg-rose-100', text: 'text-rose-600', tagBg:'bg-rose-100', tagText:'text-rose-700' },
+  emerald: { cover: 'bg-gradient-to-br from-emerald-100 to-amber-100', iconBg: 'bg-emerald-100', text: 'text-emerald-600', tagBg:'bg-emerald-100', tagText:'text-emerald-700' },
+  indigo: { cover: 'bg-gradient-to-br from-indigo-100 to-blue-100', iconBg: 'bg-indigo-100', text: 'text-indigo-600', tagBg:'bg-indigo-100', tagText:'text-indigo-700' },
+  sky: { cover: 'bg-gradient-to-br from-sky-100 to-emerald-100', iconBg: 'bg-sky-100', text: 'text-sky-600', tagBg:'bg-sky-100', tagText:'text-sky-700' }
+};
 
-// 初始化滚动动画
-function initScrollAnimation() {
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, index) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => {
-          entry.target.classList.add('visible');
-        }, index * 80);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+let activeTag = 'all';
+let posts = [
+  { id:'benbang', tag:'food', category:'美食探店', color:'amber', icon:'fas fa-bowl-food', read:'3分钟阅读', title:'上海本帮菜入门指南', desc:'从红烧肉到小笼包，带你了解上海本地美食的独特魅力与最佳品尝地点。', author:'美食达人小李', likes:'1.2k', sections:[
+    {h:'适合第一次尝试的菜', items:['红烧肉：口味偏甜、酱香浓，适合搭配米饭。第一次吃可以两三个人点一份，避免太腻。','小笼包：重点是先咬开小口喝汤，不要一口吞，刚上桌时汤汁很烫。','响油鳝糊、腌笃鲜也很有代表性，但口味更本地化，建议和上海同学一起尝试。']},
+    {h:'点餐小技巧', items:['本帮菜整体偏甜偏浓油赤酱，不能吃甜口可以提前问：“这道菜会不会比较甜？”','老字号排队多，周末尽量错峰；商场店更适合初来上海的留学生，沟通和支付更方便。','想体验地道风味可以从人民广场、南京西路、豫园周边开始，但注意景区店价格会略高。']},
+    {h:'推荐话术', items:['“请问这道菜是上海本地口味吗？”','“我们两个人吃，点这些会不会太多？”','“可以少甜一点吗？”']}
+  ]},
+  { id:'metro', tag:'transport', category:'交通出行', color:'blue', icon:'fas fa-train-subway', read:'5分钟阅读', title:'上海地铁全攻略', desc:'上海地铁线路图详解，换乘技巧与省钱攻略，让您的出行更加便捷高效。', author:'出行专家小王', likes:'2.4k', tip:'使用交通卡或随申行乘车码，换乘公交时更方便。', sections:[
+    {h:'先搞懂三个入口', items:['Metro大都会/随申行：适合手机扫码进站，不用买单程票。','高德/百度地图：适合看换乘时间和出口位置。','站内导向牌：上海地铁出口很多，出站前一定看清几号口。']},
+    {h:'换乘建议', items:['人民广场、世纪大道、徐家汇等大站换乘距离较长，赶时间时要预留10分钟以上。','早高峰大约7:30-9:00，晚高峰大约17:30-19:00，热门线路会比较挤。','末班车时间不同，晚上出门前一定查返程，不要只看导航预计时间。']},
+    {h:'留学生常见问题', items:['大件行李可以坐地铁，但高峰期不太方便；机场往返建议避开通勤时段。','部分站点同名出口距离很远，和朋友约见面时要说清“几号口”。','遇到不会操作的闸机，可以找站务人员说：“您好，我的乘车码刷不出来。”']}
+  ]},
+  { id:'museum', tag:'culture', category:'文化活动', color:'rose', icon:'fas fa-masks-theater', read:'8分钟阅读', title:'上海博物馆免费预约指南', desc:'上海各大博物馆预约入口与参观攻略，感受海派文化的深厚底蕴。', author:'文化爱好者小张', likes:'980', sections:[
+    {h:'预约前准备', items:['大部分热门博物馆需要提前预约，常见入口是官方公众号、小程序或官网。','预约时通常需要姓名、证件信息和参观时间段，留学生可以根据页面要求选择护照。','周末和节假日名额更紧张，建议提前几天查看。']},
+    {h:'适合入门的路线', items:['上海博物馆：适合了解中国古代艺术，青铜器、陶瓷、书画都很经典。','上海历史博物馆：适合了解城市发展和海派文化。','中华艺术宫：空间大，适合慢慢逛，也适合拍照。']},
+    {h:'参观礼仪', items:['展厅内尽量小声交流，不要开闪光灯。','热门展品前不要停留过久，拍完照可以让出位置。','看不懂中文说明时，可以用翻译软件拍照辅助理解。']}
+  ]},
+  { id:'rent', tag:'life', category:'生活服务', color:'emerald', icon:'fas fa-house-user', read:'4分钟阅读', title:'留学生租房避坑指南', desc:'在上海租房需要注意的事项，从签约到入住的全流程指南。', author:'租房达人小陈', likes:'3.1k', sections:[
+    {h:'看房时一定检查', items:['确认房东身份、房产证明或中介资质，不要只凭聊天记录转账。','拍照记录家具、电器、水电表和已有损坏，入住前发给房东确认。','确认通勤时间，不要只看直线距离，上海跨区通勤可能很久。']},
+    {h:'合同重点', items:['租金、押金、付款周期、退租条件要写清楚。','维修责任要明确，例如空调、热水器、网络由谁负责。','不要轻易签看不懂的中文合同，可以请学校老师、同学或翻译软件一起核对。']},
+    {h:'入住后建议', items:['第一天测试门锁、热水、网络、燃气和空调。','保存房东/中介联系方式，重要沟通尽量留文字记录。','遇到明显不合理收费，不要急着付款，先核对合同。']}
+  ]},
+  { id:'coffee', tag:'food', category:'美食探店', color:'amber', icon:'fas fa-mug-saucer', read:'6分钟阅读', title:'静安寺周边咖啡地图', desc:'精选静安寺商圈10家特色咖啡馆，适合学习与社交的好去处。', author:'咖啡控小林', likes:'1.6k', sections:[
+    {h:'适合学习的店', items:['优先选择座位间距大、有插座、音乐不吵的咖啡馆。','下午2点后人会变多，想学习建议上午或工作日去。','点单时可以问：“这里可以坐久一点学习吗？”']},
+    {h:'适合社交的店', items:['静安寺商圈咖啡馆密集，适合和同学约第一次见面，因为交通方便、氛围轻松。','如果怕尴尬，可以选择带甜品的店，聊天时更自然。','周末热门店排队多，建议提前收藏2-3家备选。']},
+    {h:'预算参考', items:['普通咖啡约25-45元，精品手冲会更高。','有些店低消不明显，但如果久坐建议至少点一杯饮品。','外带通常更快，堂食适合聊天和学习。']}
+  ]},
+  { id:'library', tag:'study', category:'学习资源', color:'indigo', icon:'fas fa-book-open', read:'10分钟阅读', title:'上海图书馆办证攻略', desc:'如何办理上海图书馆借书证，电子资源使用指南与自习室预约方法。', author:'学霸小周', likes:'2.0k', sections:[
+    {h:'能做什么', items:['上海图书馆不仅能借书，还能查数据库、看展览、找安静自习空间。','适合需要写论文、做课程报告或想找中文学习材料的留学生。','部分资源可能需要读者证或馆内网络访问。']},
+    {h:'办证思路', items:['先查看官方渠道的办证要求，确认是否支持护照或居留证件。','准备好证件、手机号，现场咨询台通常可以协助办理。','电子资源使用规则会变化，建议以馆方最新页面为准。']},
+    {h:'自习建议', items:['热门时段座位紧张，考试季要早点去。','保持安静，手机调静音。','需要小组讨论时，尽量预约讨论空间，不要在普通阅览区大声聊天。']}
+  ]},
+  { id:'bund', tag:'culture', category:'文化活动', color:'rose', icon:'fas fa-camera-retro', read:'7分钟阅读', title:'外滩夜景最佳观赏点', desc:'除了外滩观景台，这些小众地点也能欣赏到绝美的浦江夜景。', author:'摄影师小吴', likes:'2.8k', sections:[
+    {h:'经典视角', items:['外滩沿线适合第一次看浦江夜景，可以同时看到陆家嘴天际线。','建议日落前到达，从蓝调时刻拍到夜景，照片层次更好。','节假日人很多，注意随身物品和回程交通。']},
+    {h:'更舒服的替代点', items:['北外滩视角更开阔，人相对少一些。','滨江步道适合散步，不一定只挤在外滩核心区域。','如果和朋友约拍，可以提前选好集合点和结束后的餐厅。']},
+    {h:'拍照小技巧', items:['手机夜景模式要稳住，靠栏杆或墙面更清晰。','不要站在道路或台阶边缘拍照。','遇到人多时，低角度或侧面构图会更干净。']}
+  ]},
+  { id:'hospital', tag:'life', category:'生活服务', color:'emerald', icon:'fas fa-hospital', read:'5分钟阅读', title:'留学生就医指南', desc:'上海留学生医保使用方法与推荐医院，让您在沪就医无忧。', author:'健康顾问小刘', likes:'1.9k', sections:[
+    {h:'生病先判断去哪', items:['普通感冒、轻微不适可以先去校医院或社区医院咨询。','持续高热、剧烈疼痛、呼吸困难等情况应及时去急诊。','不确定时可以先联系学校国际学生办公室或辅导员。']},
+    {h:'就医流程', items:['带好护照、学生证、医保或保险材料。','挂号后按科室候诊，检查、缴费、取药通常分步骤完成。','医生问症状时，提前写下发病时间、体温、用过什么药，会更方便沟通。']},
+    {h:'沟通句子', items:['“我从昨天开始发烧，最高到38.5度。”','“我对某些药物过敏。”','“请问这个药怎么吃？一天几次？”']}
+  ]},
+  { id:'airport', tag:'transport', category:'交通出行', color:'blue', icon:'fas fa-plane-departure', read:'4分钟阅读', title:'浦东机场往返市区攻略', desc:'磁悬浮、地铁、机场大巴多种方式对比，选择最适合您的出行方案。', author:'旅行达人小赵', likes:'1.5k', sections:[
+    {h:'三种常见方式', items:['地铁：价格友好，但耗时较长，行李多时不太方便。','磁悬浮：速度快，适合体验或赶时间，但还需要换乘到目的地。','出租车/网约车：最省心，适合夜间、大件行李或第一次到上海。']},
+    {h:'怎么选', items:['预算优先选地铁；时间优先选磁悬浮+地铁/打车；舒适优先选网约车。','深夜航班要提前查地铁末班车，别到站后才发现停运。','多人同行时，打车分摊可能比想象中更划算。']},
+    {h:'到达提醒', items:['机场很大，预留取行李和出航站楼时间。','不要随便接受陌生人揽客，使用正规出租车排队点或官方App。','保存学校地址的中英文版本，方便给司机看。']}
+  ]}
+];
 
-  document.querySelectorAll('.masonry-item').forEach(item => {
-    observer.observe(item);
-  });
+const commentsByPost = {
+  benbang:[{name:'Lina',text:'第一次吃小笼包真的被烫到，这个提醒太有用了。',time:'2小时前',likes:18},{name:'阿然',text:'本帮菜可以先从红烧肉和腌笃鲜开始，比较容易接受。',time:'昨天',likes:31}],
+  metro:[{name:'Mina',text:'人民广场换乘真的要预留时间，我第一次差点迟到。',time:'1小时前',likes:22},{name:'小周',text:'建议把常用线路收藏在地图里，通勤会轻松很多。',time:'昨天',likes:15}],
+  museum:[{name:'Kiki',text:'上海博物馆周末名额很抢，提前预约很重要。',time:'3小时前',likes:12},{name:'Chen',text:'中华艺术宫空间很大，适合慢慢逛。',time:'2天前',likes:19}],
+  rent:[{name:'Nora',text:'拍水电表这点很重要，退租时能避免争议。',time:'刚刚',likes:9},{name:'小陈',text:'合同看不懂一定不要急着签，可以找学校老师帮忙。',time:'昨天',likes:42}],
+  coffee:[{name:'Iris',text:'静安寺附近工作日下午比较适合学习，周末人太多。',time:'4小时前',likes:11},{name:'Royi',text:'建议加一个适合小组讨论的咖啡馆合集！',time:'昨天',likes:16}],
+  library:[{name:'Lan',text:'图书馆自习氛围很好，考试季一定要早点去。',time:'5小时前',likes:14},{name:'小周',text:'电子资源对写论文很有帮助。',time:'2天前',likes:20}],
+  bund:[{name:'Wendy',text:'北外滩真的比外滩核心区舒服很多。',time:'1小时前',likes:27},{name:'摄影小白',text:'蓝调时刻拍出来超好看！',time:'昨天',likes:33}],
+  hospital:[{name:'May',text:'把症状提前写在手机备忘录里，和医生沟通会顺很多。',time:'2小时前',likes:24},{name:'Tom',text:'校医院可以先咨询，严重的话再转医院。',time:'3天前',likes:13}],
+  airport:[{name:'Alex',text:'行李多真的建议打车，地铁换乘太累了。',time:'6小时前',likes:30},{name:'小赵',text:'深夜到浦东一定提前查交通，不要临时决定。',time:'昨天',likes:21}]
+};
+let currentDetailId = null;
+
+function cardHtml(post) {
+  const c = colorMap[post.color];
+  return `<article class="xhs-post glass rounded-3xl" data-id="${post.id}" data-tag="${post.tag}" onclick="openDetail('${post.id}')">
+    <div class="xhs-cover ${c.cover}">
+      <div class="xhs-icon ${c.iconBg} ${c.text}"><i class="${post.icon} text-3xl"></i></div>
+      <span class="px-2.5 py-1 rounded-lg bg-white/70 ${c.tagText} font-bold text-xs border border-white/80">${post.category}</span>
+    </div>
+    <div class="xhs-content">
+      <div class="flex items-center gap-2 mb-2"><span class="text-slate-400 font-bold text-xs read-time">${post.read}</span><span class="text-slate-300 text-xs">·</span><span class="text-slate-400 font-bold text-xs"><i class="far fa-heart mr-1"></i>${post.likes}</span></div>
+      <h3 class="xhs-title">${post.title}</h3>
+      <p class="xhs-desc">${post.desc}</p>
+      <div class="xhs-meta">
+        <div class="xhs-author"><div class="avatar w-7 h-7 rounded-full ${c.iconBg} flex items-center justify-center flex-shrink-0"><i class="fas fa-user ${c.text} text-xs"></i></div><span class="text-slate-500 font-bold text-xs">${post.author}</span></div>
+        <button class="bookmark-btn text-slate-400 hover:text-blue-600 transition-colors" onclick="event.stopPropagation(); toggleBookmark(this)"><i class="far fa-bookmark"></i></button>
+      </div>
+    </div>
+  </article>`;
 }
 
-// 搜索处理
-function handleSearch() {
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  const items = document.querySelectorAll('.masonry-item');
-  
-  items.forEach(item => {
-    const title = item.querySelector('h3').textContent.toLowerCase();
-    const desc = item.querySelector('p').textContent.toLowerCase();
-    
-    if (title.includes(query) || desc.includes(query) || query === '') {
-      item.style.display = 'block';
-    } else {
-      item.style.display = 'none';
-    }
-  });
+function renderPosts(list = posts) {
+  const container = document.getElementById('masonryContainer');
+  container.innerHTML = list.map(cardHtml).join('');
+  document.getElementById('noResults').classList.toggle('show', list.length === 0);
 }
 
-// 标签筛选
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const filtered = posts.filter(p => (activeTag === 'all' || p.tag === activeTag) && (!q || [p.title,p.desc,p.category,p.author].join(' ').toLowerCase().includes(q)));
+  renderPosts(filtered);
+}
+
 function filterByTag(tag, btn) {
-  const container = document.getElementById('tagContainer');
-  const allBtns = container.querySelectorAll('.tag-btn');
-  
-  allBtns.forEach(b => {
+  activeTag = tag;
+  document.querySelectorAll('#tagContainer .tag-btn').forEach(b => {
     b.className = 'tag-btn bg-white/70 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm';
   });
-  
   btn.className = 'tag-btn bg-slate-800 text-white shadow-md px-5 py-2.5 rounded-xl text-sm font-bold';
-  
-  const items = document.querySelectorAll('.masonry-item');
-  items.forEach(item => {
-    if (tag === 'all' || item.dataset.tag === tag) {
-      item.style.display = 'block';
-      item.classList.remove('visible');
-      setTimeout(() => item.classList.add('visible'), 50);
-    } else {
-      item.style.display = 'none';
-    }
-  });
+  applyFilters();
 }
 
-// 加载更多
+function sectionHtml(sec) {
+  return `<div class="detail-section"><h4><i class="fas fa-circle-check text-blue-500"></i>${sec.h}</h4><ul>${sec.items.map(item => `<li>${item}</li>`).join('')}</ul></div>`;
+}
+
+function openDetail(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post) return;
+  currentDetailId = id;
+  const c = colorMap[post.color];
+  document.getElementById('detailVisual').className = `detail-visual ${c.cover}`;
+  document.getElementById('detailIconWrap').className = `detail-visual-icon ${c.iconBg} ${c.text}`;
+  document.getElementById('detailIcon').className = `${post.icon} text-4xl`;
+  document.getElementById('detailCategory').textContent = post.category;
+  document.getElementById('detailReadTime').textContent = `${post.read} · ${post.likes} 人收藏`;
+  document.getElementById('detailVisualTitle').textContent = post.title;
+  document.getElementById('detailAuthorAvatar').className = `w-10 h-10 rounded-full ${c.iconBg} ${c.text} flex items-center justify-center flex-shrink-0`;
+  document.getElementById('detailAuthor').textContent = post.author;
+  document.getElementById('detailTitle').textContent = post.title;
+  document.getElementById('detailLead').textContent = post.desc;
+  document.getElementById('detailBody').innerHTML = (post.tip ? `<div class="detail-section detail-note"><h4><i class="fas fa-lightbulb text-amber-500"></i>先记住这个小提示</h4><p class="text-slate-600 font-semibold leading-relaxed">${post.tip}</p></div>` : '') + post.sections.map(sectionHtml).join('') + `<div class="detail-section"><h4><i class="fas fa-comment-dots text-emerald-500"></i>Selene 小提醒</h4><p class="text-slate-600 font-semibold leading-relaxed">刚到上海不用一次性把所有规则都掌握。可以先收藏这篇指南，遇到真实场景时再打开对照操作；如果不确定怎么表达，优先使用礼貌询问式句子。</p></div>`;
+  document.getElementById('detailTopics').innerHTML = [`#${post.category}`, '#上海生活', '#留学生友好'].map(t => `<span class="xhs-topic-chip"><i class="fas fa-hashtag"></i>${t.replace('#','')}</span>`).join('');
+  document.getElementById('detailHeartCount').textContent = post.likes;
+  const heartIcon = document.querySelector('.xhs-detail-actions .xhs-action-btn i');
+  if (heartIcon) heartIcon.className = 'far fa-heart';
+  renderComments(id);
+  const layer = document.getElementById('detailLayer');
+  layer.classList.add('open');
+  layer.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+  const content = layer.querySelector('.detail-content');
+  resetDetailVisualState();
+  bindDetailScrollBehavior();
+  if (content) content.scrollTop = 0;
+}
+
+function closeDetail(event) {
+  if (event && event.target !== document.getElementById('detailLayer')) return;
+  const layer = document.getElementById('detailLayer');
+  layer.classList.remove('open');
+  layer.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+  resetDetailVisualState();
+  currentDetailId = null;
+}
+
+function toggleLike(btn) {
+  const icon = btn.querySelector('i');
+  const span = btn.querySelector('span');
+  const liked = icon.classList.contains('fas');
+  icon.className = liked ? 'far fa-heart mr-1.5' : 'fas fa-heart mr-1.5';
+  span.textContent = liked ? '收藏' : '已收藏';
+}
+
+function toggleBookmark(btn) {
+  const icon = btn.querySelector('i');
+  icon.className = icon.classList.contains('fas') ? 'far fa-bookmark' : 'fas fa-bookmark';
+  showToast(icon.classList.contains('fas') ? '已收藏' : '已取消收藏');
+}
+
+function renderComments(id){
+  const list=commentsByPost[id]||[];
+  document.getElementById('commentsTotal').textContent=`${list.length} 条`;
+  document.getElementById('detailCommentCount').textContent=`${list.length} 条`;
+  document.getElementById('commentList').innerHTML=list.map(c=>`<div class="comment-item"><div class="comment-avatar"><i class="fas fa-user"></i></div><div class="comment-bubble"><div class="comment-name">${c.name}</div><div class="comment-text">${c.text}</div><div class="comment-meta"><span>${c.time}</span><span><i class="far fa-heart mr-1"></i>${c.likes}</span><span>回复</span></div></div></div>`).join('');
+}
+function addComment(){
+  if(!currentDetailId)return;
+  const input=document.getElementById('commentInput');
+  const text=input.value.trim();
+  if(!text){showToast('先输入评论内容哦');return;}
+  if(!commentsByPost[currentDetailId]) commentsByPost[currentDetailId]=[];
+  commentsByPost[currentDetailId].unshift({name:'我',text,time:'刚刚',likes:0});
+  input.value='';
+  renderComments(currentDetailId);
+  showToast('评论已发布');
+}
+function handleCommentKey(event){ if(event.key==='Enter'){event.preventDefault();addComment();} }
+function focusCommentInput(){const input=document.getElementById('commentInput'); if(input){input.scrollIntoView({block:'center',behavior:'smooth'}); setTimeout(()=>input.focus(),180);}}
+function toggleDetailHeart(btn){const icon=btn.querySelector('i'); const liked=icon.classList.contains('fas'); icon.className=liked?'far fa-heart':'fas fa-heart'; showToast(liked?'已取消喜欢':'已喜欢');}
+
+
+function bindDetailScrollBehavior(){
+  const layer=document.getElementById('detailLayer');
+  const shell=layer ? layer.querySelector('.detail-shell') : null;
+  const content=layer ? layer.querySelector('.detail-content') : null;
+  if(!shell || !content) return;
+  if(content.dataset.scrollBound==='true') return;
+  content.addEventListener('scroll',()=>{
+    if(window.innerWidth<=768){
+      shell.classList.toggle('visual-collapsed', content.scrollTop>48);
+    }else{
+      shell.classList.remove('visual-collapsed');
+    }
+  },{passive:true});
+  content.dataset.scrollBound='true';
+}
+function resetDetailVisualState(){
+  const shell=document.querySelector('#detailLayer .detail-shell');
+  if(shell) shell.classList.remove('visual-collapsed');
+}
+
 function loadMore() {
-  const container = document.getElementById('masonryContainer');
-  const newCards = [
-    { tag: 'food', title: '田子坊美食探秘', desc: '漫步田子坊，发现藏在弄堂里的美味小店。', category: '美食探店', color: 'amber' },
-    { tag: 'culture', title: '上海话剧观演指南', desc: '上海话剧艺术中心购票攻略与观演礼仪。', category: '文化活动', color: 'rose' }
+  const newOnes = [
+    { id:'tianzifang', tag:'food', category:'美食探店', color:'amber', icon:'fas fa-store', read:'5分钟阅读', title:'田子坊美食探秘', desc:'漫步田子坊，发现藏在弄堂里的美味小店和适合拍照的甜品店。', author:'Selene小编', likes:'760', sections:[{h:'怎么逛更舒服', items:['避开周末下午高峰，工作日傍晚更适合慢慢逛。','田子坊弄堂多，导航可能不准，看到喜欢的小店可以先截图定位。','价格会比普通街区略高，适合作为体验型探店。']},{h:'适合吃什么', items:['小吃和甜品更适合边走边逛。','想正餐建议提前看评价，避免只被门口装修吸引。','和朋友同行可以每家少点一点，多尝几家。']}] },
+    { id:'theatre', tag:'culture', category:'文化活动', color:'rose', icon:'fas fa-ticket', read:'7分钟阅读', title:'上海话剧观演指南', desc:'上海话剧艺术中心购票攻略与观演礼仪，第一次看中文话剧也不慌。', author:'Selene小编', likes:'840', sections:[{h:'购票建议', items:['提前看剧情简介，选择语言难度适中的剧。','第一次观演可以选择口碑稳定、剧情生活化的作品。','注意开演时间，迟到可能需要等到指定时间才能入场。']},{h:'观演礼仪', items:['演出中手机静音，不拍照录像。','看不懂的台词不用焦虑，可以关注演员表情和舞台调度。','结束后如果喜欢，可以和朋友聊聊最打动自己的片段。']}] }
   ];
-  
-  newCards.forEach((card, index) => {
-    const html = `<div class="masonry-item card-hover glass rounded-3xl overflow-hidden mb-6 break-inside-avoid" data-tag="${card.tag}">
-      <div class="p-5">
-        <div class="flex items-center space-x-2 mb-3">
-          <span class="px-2.5 py-1 rounded-lg bg-${card.color}-100 text-${card.color}-700 font-bold text-xs">${card.category}</span>
-          <span class="text-slate-400 font-medium text-xs">新内容</span>
-        </div>
-        <h3 class="text-slate-800 font-bold text-lg mb-2">${card.title}</h3>
-        <p class="text-slate-600 text-sm font-medium mb-5 leading-relaxed">${card.desc}</p>
-        <div class="flex items-center justify-between border-t border-slate-100/80 pt-4">
-          <div class="flex items-center space-x-2">
-            <div class="w-7 h-7 rounded-full bg-${card.color}-100 flex items-center justify-center">
-              <i class="fas fa-user text-${card.color}-600 text-xs"></i>
-            </div>
-            <span class="text-slate-500 font-bold text-xs">Selene小编</span>
-          </div>
-          <button class="text-slate-400 hover:text-blue-600 transition-colors">
-            <i class="far fa-bookmark text-lg"></i>
-          </button>
-        </div>
-      </div>
-    </div>`;
-    
-    setTimeout(() => {
-      container.insertAdjacentHTML('beforeend', html);
-      const newItem = container.lastElementChild;
-      observer.observe(newItem);
-      setTimeout(() => newItem.classList.add('visible'), 50);
-    }, index * 200);
-  });
-  
+  posts = posts.concat(newOnes.filter(n => !posts.some(p => p.id === n.id)));
+  applyFilters();
   showToast('已加载更多内容');
 }
 
-// 页面导航函数
-function navigateTo(page) {
-  window.location.href = page + '.html';
-}
-
-// 退出登录
-function handleLogout() {
-  if (confirm('确定要退出登录吗？')) {
-    localStorage.removeItem('isLoggedIn');
-    window.location.href = 'login.html';
-  }
-}
-
-// 显示提示
-function showToast(message) {
-  const toast = document.createElement('div');
-  toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-50 text-sm font-bold flex items-center space-x-2';
-  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`;
-  document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.style.transition = 'opacity 0.5s ease-out';
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 500);
-  }, 2000);
-}
-
-// 初始化
-document.addEventListener('DOMContentLoaded', function() {
-  /*
-  if (!localStorage.getItem('isLoggedIn')) {
-    window.location.href = 'login.html';
-    return;
-  }
-  */
-  
-  initScrollAnimation();
-});
+function navigateTo(page) { window.location.href = page + '.html'; }
+function handleLogout() { if (confirm('确定要退出登录吗？')) { localStorage.removeItem('isLoggedIn'); window.location.href = 'login.html'; } }
+function showToast(message) { const toast = document.createElement('div'); toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-xl z-[120] text-sm font-bold flex items-center space-x-2'; toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`; document.body.appendChild(toast); setTimeout(() => { toast.style.transition = 'opacity .45s ease-out'; toast.style.opacity = '0'; setTimeout(() => toast.remove(), 450); }, 1400); }
+function toggleMobileNav(force) { const shouldOpen = typeof force === 'boolean' ? force : !document.body.classList.contains('mobile-nav-open'); document.body.classList.toggle('mobile-nav-open', shouldOpen); const btn = document.querySelector('.mobile-nav-toggle'); if (btn) { btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false'); const icon = btn.querySelector('i'); if (icon) icon.className = shouldOpen ? 'fas fa-times' : 'fas fa-bars'; } }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (document.getElementById('detailLayer').classList.contains('open')) closeDetail(); else toggleMobileNav(false); } });
+document.querySelectorAll('body > aside.glass .nav-item').forEach(item => item.addEventListener('click', () => toggleMobileNav(false)));
+window.addEventListener('resize', () => { if (window.innerWidth > 768) { toggleMobileNav(false); resetDetailVisualState(); } });
+document.addEventListener('DOMContentLoaded', () => renderPosts(posts));
 </script>
 </body>
 </html>

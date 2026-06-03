@@ -38,9 +38,121 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
 /* 隐藏滚动条但保留滚动功能 */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+/* ===== Mobile adaptation for iPhone-size screens ===== */
+.mobile-nav-toggle,
+.mobile-nav-backdrop { display: none; }
+
+@media (max-width: 768px) {
+  html, body { width: 100%; min-height: 100dvh; }
+  body { overflow: hidden; -webkit-text-size-adjust: 100%; }
+
+  .mobile-nav-toggle {
+    display: flex;
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top));
+    left: 14px;
+    z-index: 80;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12);
+    color: #1E293B;
+  }
+
+  .mobile-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(15, 23, 42, 0.28);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+
+  body.mobile-nav-open .mobile-nav-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body > aside.glass {
+    width: min(82vw, 320px) !important;
+    height: 100dvh !important;
+    transform: translateX(-105%);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 70;
+    padding-top: env(safe-area-inset-top);
+    border-radius: 0 28px 28px 0;
+  }
+
+  body.mobile-nav-open > aside.glass { transform: translateX(0); }
+
+  body > aside.glass .nav-item:hover { transform: none; }
+  body > aside.glass nav { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+
+  body > main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100dvh !important;
+    padding: calc(70px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) !important;
+    overflow-x: hidden !important;
+  }
+
+  main header { gap: 14px; }
+  main header h2 { font-size: 1.55rem !important; line-height: 1.2 !important; }
+  main header p { font-size: 0.9rem !important; }
+  main .glass { border-radius: 24px !important; }
+  main .grid { min-width: 0; }
+  main img, main svg, main canvas { max-width: 100%; }
+  input, textarea, select, button { font-size: 16px; }
+
+  /* Chat page: turn desktop two-column layout into stacked mobile panels. */
+  main > aside.w-80 {
+    width: 100% !important;
+    max-height: 30dvh;
+    min-height: 190px;
+    flex-shrink: 0 !important;
+  }
+  main > aside.w-80 + section,
+  main > section { min-width: 0; width: 100%; }
+
+  /* Dashboard / guide / user pages: allow action buttons and cards to wrap cleanly. */
+  header .flex.items-center.space-x-3,
+  header .flex.items-center.space-x-2 { flex-wrap: wrap; gap: 8px; }
+  header .space-x-3 > :not([hidden]) ~ :not([hidden]),
+  header .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0 !important; }
+
+  /* Simulator page: avoid horizontal crowding in the intro card. */
+  #scenarioListView { padding-right: 0 !important; }
+  #scenarioListView .glass:first-child { flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px !important; }
+
+  /* Keep charts and wide visual blocks usable on narrow screens. */
+  .chart-container { min-height: 220px; }
+  table, .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 430px) {
+  body > main { padding-left: 12px !important; padding-right: 12px !important; }
+  body > aside.glass { width: 84vw !important; }
+  main header h2 { font-size: 1.4rem !important; }
+  .stat-card, .scenario-card, .card-hover { transform: none !important; }
+}
+
 </style>
 </head>
 <body class="min-h-screen flex">
+<button type="button" class="mobile-nav-toggle" aria-label="打开导航菜单" aria-expanded="false" onclick="toggleMobileNav(true)"><i class="fas fa-bars"></i></button>
+<div class="mobile-nav-backdrop" aria-hidden="true" onclick="toggleMobileNav(false)"></div>
+
 
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
   <div class="p-8 pb-4 flex items-center space-x-3">
@@ -335,6 +447,33 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('userGreeting').textContent = nickname;
   }
 });
+</script>
+<script>
+
+// Mobile navigation drawer: only affects narrow screens and keeps existing navigation logic intact.
+function toggleMobileNav(force) {
+  const shouldOpen = typeof force === 'boolean' ? force : !document.body.classList.contains('mobile-nav-open');
+  document.body.classList.toggle('mobile-nav-open', shouldOpen);
+  const btn = document.querySelector('.mobile-nav-toggle');
+  if (btn) {
+    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    const icon = btn.querySelector('i');
+    if (icon) icon.className = shouldOpen ? 'fas fa-times' : 'fas fa-bars';
+  }
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') toggleMobileNav(false);
+});
+
+document.querySelectorAll('body > aside.glass .nav-item').forEach(function(item) {
+  item.addEventListener('click', function() { toggleMobileNav(false); });
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768) toggleMobileNav(false);
+});
+
 </script>
 </body>
 </html>
