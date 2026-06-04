@@ -155,6 +155,307 @@ textarea { font-size: 16px; }
   }
 }
 
+
+/* ===== App-style mobile bottom navigation + chat mobile flow ===== */
+.app-bottom-nav { display: none; }
+.mobile-chat-back { display: none; }
+
+@media (max-width: 768px) {
+  .mobile-nav-toggle,
+  .mobile-nav-backdrop,
+  .mobile-sidebar-close,
+  body > aside.glass,
+  .mobile-history-toggle,
+  .mobile-history-backdrop {
+    display: none !important;
+  }
+
+  .app-bottom-nav {
+    position: fixed;
+    left: 50%;
+    bottom: calc(12px + var(--safe-bottom));
+    transform: translateX(-50%);
+    z-index: 100;
+    width: min(92vw, 390px);
+    height: 64px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    padding: 7px 9px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255,255,255,.92);
+    box-shadow: 0 16px 38px rgba(30,58,138,.16);
+  }
+  .app-tab {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    color: #64748B;
+    font-size: 1.2rem;
+    transition: all .22s ease;
+  }
+  .app-tab.active {
+    background: #1E293B;
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(15,23,42,.20);
+    transform: translateY(-2px);
+  }
+
+  .chat-shell {
+    margin-left: 0 !important;
+    height: 100dvh !important;
+    padding: calc(14px + var(--safe-top)) 14px calc(92px + var(--safe-bottom)) !important;
+    display: block !important;
+    overflow: hidden !important;
+  }
+
+  .history-panel {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 28px !important;
+    z-index: 1 !important;
+    padding-top: 1rem !important;
+  }
+  .history-panel h2 { font-size: 1.35rem !important; }
+  .history-panel p { font-size: .88rem !important; }
+  .history-item { padding: 1rem !important; border-radius: 22px !important; }
+  .history-title { font-size: 1rem !important; }
+  .history-preview, .history-time { font-size: .82rem !important; }
+
+  .chat-panel {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    height: 100dvh !important;
+    width: 100% !important;
+    z-index: 90 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%) !important;
+    box-shadow: none !important;
+  }
+  body.mobile-chat-active .chat-panel { display: grid !important; }
+  body.mobile-chat-active .history-panel { display: none !important; }
+  body.mobile-chat-active .app-bottom-nav { display: none !important; }
+
+  .mobile-chat-back {
+    display: flex !important;
+    width: 42px !important;
+    height: 42px !important;
+    margin-right: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 16px !important;
+    background: rgba(255,255,255,.78) !important;
+    color: #1E293B !important;
+    border: 1px solid rgba(255,255,255,.9) !important;
+    box-shadow: 0 8px 20px rgba(30,58,138,.12) !important;
+    flex-shrink: 0 !important;
+  }
+
+  .chat-header {
+    padding: calc(10px + var(--safe-top)) 12px 10px 12px !important;
+    min-height: calc(66px + var(--safe-top)) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .chat-title h2 { font-size: 1.02rem !important; }
+  .chat-title p { font-size: .78rem !important; }
+  .chat-messages { padding: 18px 14px 14px !important; }
+  .composer-wrap { padding: 10px 12px calc(10px + var(--safe-bottom)) !important; }
+}
+
+
+
+/* ===== Final responsive compatibility fix: full-width desktop + app-like mobile chat ===== */
+html, body { min-width: 0; }
+.chat-shell {
+  width: calc(100vw - 16rem);
+  max-width: none;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.chat-panel,
+.history-panel { min-width: 0; }
+.chat-panel { width: 100%; }
+.chat-messages { width: 100%; }
+.composer-wrap { width: 100%; }
+
+@media (min-width: 769px) {
+  body { display: block !important; }
+  .chat-shell {
+    margin-left: 16rem !important;
+    width: calc(100vw - 16rem) !important;
+    height: 100dvh !important;
+    padding: 1.5rem !important;
+    display: grid !important;
+    grid-template-columns: 340px minmax(0, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+  .history-panel,
+  .chat-panel {
+    height: calc(100dvh - 3rem) !important;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .chat-shell {
+    width: calc(100vw - 16rem) !important;
+    grid-template-columns: 300px minmax(0, 1fr) !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+  }
+  .history-panel,
+  .chat-panel { height: calc(100dvh - 2rem) !important; }
+}
+
+@media (max-width: 768px) {
+  body { display: block !important; width: 100vw !important; height: 100dvh !important; }
+  .chat-shell {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+    padding: calc(14px + var(--safe-top)) 14px calc(92px + var(--safe-bottom)) !important;
+    box-sizing: border-box !important;
+  }
+  .history-panel {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .history-panel.glass {
+    display: flex !important;
+  }
+  body.mobile-chat-active .history-panel.glass { display: none !important; }
+
+  body.mobile-chat-active .chat-panel {
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  .chat-header {
+    position: relative !important;
+    z-index: 3 !important;
+  }
+  .mobile-chat-back {
+    display: flex !important;
+    position: relative !important;
+    z-index: 5 !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+  }
+  .chat-title { min-width: 0 !important; flex: 1 1 auto !important; }
+
+  .chat-messages {
+    min-height: 0 !important;
+    width: 100vw !important;
+    padding: 18px 14px 14px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .message-bubble { max-width: calc(100vw - 88px) !important; }
+
+  /* Keep the same quick actions as desktop in mobile chat detail. */
+  body.mobile-chat-active .quick-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 2px !important;
+  }
+  body.mobile-chat-active .quick-actions button {
+    flex: 0 0 auto !important;
+    padding: 7px 10px !important;
+    border-radius: 14px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+  body.mobile-chat-active .composer-wrap {
+    display: block !important;
+    width: 100vw !important;
+    padding: 10px 12px calc(10px + var(--safe-bottom)) !important;
+    box-sizing: border-box !important;
+  }
+  .composer-row { width: 100% !important; }
+  .composer { min-width: 0 !important; }
+}
+
+
+/* ===== Mobile chat header title center alignment ===== */
+@media (max-width: 768px) {
+  body.mobile-chat-active .chat-header {
+    position: relative !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: calc(10px + var(--safe-top)) 64px 10px 64px !important;
+    min-height: calc(72px + var(--safe-top)) !important;
+  }
+
+  body.mobile-chat-active .mobile-chat-back {
+    position: absolute !important;
+    left: 14px !important;
+    top: calc(12px + var(--safe-top)) !important;
+    margin-right: 0 !important;
+  }
+
+  body.mobile-chat-active .chat-header > .flex.items-center {
+    width: 100% !important;
+    max-width: calc(100vw - 132px) !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    gap: 10px !important;
+  }
+
+  body.mobile-chat-active .chat-title {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+
+  body.mobile-chat-active .chat-title h2 {
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+
+  body.mobile-chat-active .chat-title .flex {
+    justify-content: center !important;
+  }
+
+  body.mobile-chat-active .header-avatar {
+    flex-shrink: 0 !important;
+  }
+}
+
+
+/* ===== Selene custom moon logo replacement ===== */
+.selene-logo-img {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-fit: cover !important;
+  border-radius: inherit !important;
+}
+.selene-logo-wrap {
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
 </style>
 </head>
 <body class="h-screen flex">
@@ -165,8 +466,8 @@ textarea { font-size: 16px; }
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
   <button type="button" class="mobile-sidebar-close" aria-label="关闭导航菜单" onclick="toggleMobileNav(false)"><i class="fas fa-times"></i></button>
   <div class="p-8 pb-4 flex items-center space-x-3">
-    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
-      <i class="fas fa-heart-pulse text-white"></i>
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0 selene-logo-wrap">
+      <img src="selene_logo.png" alt="Selene" class="selene-logo-img">
     </div>
     <div>
       <h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1>
@@ -200,10 +501,10 @@ textarea { font-size: 16px; }
 </aside>
 
 <main class="chat-shell">
-  <aside class="history-panel glass p-4" aria-label="对话记忆">
+  <aside class="history-panel glass p-4" aria-label="最近对话">
     <div class="flex items-center justify-between mb-4 px-2 pt-2">
       <div>
-        <h2 class="text-slate-800 font-bold text-lg">对话记忆</h2>
+        <h2 class="text-slate-800 font-bold text-lg">最近对话</h2>
         <p class="text-slate-400 text-xs mt-1">选择或新建一段陪伴对话</p>
       </div>
       <button class="w-10 h-10 rounded-xl bg-white/80 flex items-center justify-center text-slate-600 hover:bg-white shadow-sm hover:shadow transition-all text-sm" onclick="newChat()" aria-label="开启新对话">
@@ -234,9 +535,10 @@ textarea { font-size: 16px; }
 
   <section class="chat-panel glass" aria-label="聊天窗口">
     <header class="chat-header px-6 py-4 flex items-center justify-between">
+      <button type="button" class="mobile-chat-back" onclick="showChatHistory()" aria-label="返回对话列表"><i class="fas fa-chevron-left"></i></button>
       <div class="flex items-center space-x-4 min-w-0">
-        <div class="header-avatar w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center shadow-sm flex-shrink-0">
-          <i class="fas fa-heart-pulse text-white text-lg"></i>
+        <div class="header-avatar w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center shadow-sm flex-shrink-0 selene-logo-wrap">
+          <img src="selene_logo.png" alt="Selene" class="selene-logo-img">
         </div>
         <div class="chat-title min-w-0">
           <h2 class="text-slate-800 font-bold text-lg">Selene - 您的专属倾听者</h2>
@@ -246,7 +548,7 @@ textarea { font-size: 16px; }
           </div>
         </div>
       </div>
-      <button type="button" class="mobile-history-toggle" onclick="toggleHistory(true)" aria-label="打开对话记忆"><i class="fas fa-clock-rotate-left"></i></button>
+      <button type="button" class="mobile-history-toggle" onclick="toggleHistory(true)" aria-label="打开最近对话"><i class="fas fa-clock-rotate-left"></i></button>
       <div class="desktop-actions flex items-center space-x-3">
         <button class="w-10 h-10 rounded-xl bg-white/80 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-blue-600 transition-all" title="语音通话"><i class="fas fa-phone"></i></button>
         <button class="w-10 h-10 rounded-xl bg-white/80 border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-white hover:text-slate-800 transition-all" title="更多设置"><i class="fas fa-ellipsis-h"></i></button>
@@ -256,7 +558,7 @@ textarea { font-size: 16px; }
     <div class="chat-messages custom-scrollbar" id="chatMessages">
       <div class="flex justify-center mb-6"><span class="bg-white/60 text-slate-400 text-xs font-bold px-3 py-1 rounded-full shadow-sm">今天 14:30</span></div>
       <div class="message-row flex items-start gap-4 mb-6">
-        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1 selene-logo-wrap"><img src="selene_logo.png" alt="Selene" class="selene-logo-img"></div>
         <div class="message-bubble">
           <p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p>
           <div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm"><p class="text-slate-800 text-sm leading-relaxed font-medium">我是Selene，很高兴能陪伴您在上海的生活旅程。无论是倾诉心事、分享喜悦，还是寻求建议，我都会在这里倾听。今天想聊些什么呢？</p></div>
@@ -270,7 +572,7 @@ textarea { font-size: 16px; }
         </div>
       </div>
       <div class="message-row flex items-start gap-4 mb-6">
-        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1 selene-logo-wrap"><img src="selene_logo.png" alt="Selene" class="selene-logo-img"></div>
         <div class="message-bubble">
           <p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p>
           <div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm"><p class="text-slate-800 text-sm leading-relaxed font-medium">我理解您的感受。跨文化社交确实是一个渐进的过程，您已经很勇敢地迈出了第一步。这种孤独感是很多留学生都会经历的，您并不孤单。您愿意和我分享一些具体的困扰吗？比如是语言障碍、文化差异，还是其他方面的原因让您感觉难以融入？</p></div>
@@ -447,7 +749,7 @@ function addMessage(text, sender, persist = true) {
         <div class="message-bubble flex flex-col items-end"><p class="text-slate-400 text-xs mb-1.5 mr-1 font-medium">您</p><div class="bg-white border ${borderClass} rounded-2xl rounded-tr-sm p-4 shadow-sm text-left"><p class="text-slate-800 text-sm leading-relaxed font-medium">${safeText}</p></div></div>
       </div>`
     : `<div class="message-row flex items-start gap-4 mb-6">
-        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+        <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1 selene-logo-wrap"><img src="selene_logo.png" alt="Selene" class="selene-logo-img"></div>
         <div class="message-bubble"><p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p><div class="bg-white border ${borderClass} rounded-2xl rounded-tl-sm p-4 shadow-sm"><p class="text-slate-800 text-sm leading-relaxed font-medium">${safeText}</p></div></div>
       </div>`;
   container.insertAdjacentHTML('beforeend', html);
@@ -462,7 +764,7 @@ function showTypingIndicator() {
   isTyping = true;
   const container = document.getElementById('chatMessages');
   const html = `<div id="typingIndicator" class="message-row flex items-start gap-4 mb-6">
-    <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1"><i class="fas fa-heart-pulse text-white text-sm"></i></div>
+    <div class="message-avatar w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm mt-1 selene-logo-wrap"><img src="selene_logo.png" alt="Selene" class="selene-logo-img"></div>
     <div class="message-bubble"><p class="text-slate-400 text-xs mb-1.5 ml-1 font-medium">Selene</p><div class="bg-white border border-blue-200 rounded-2xl rounded-tl-sm p-4 shadow-sm"><div class="typing-indicator flex space-x-1 py-1"><span class="w-2 h-2 bg-slate-400 rounded-full"></span><span class="w-2 h-2 bg-slate-400 rounded-full"></span><span class="w-2 h-2 bg-slate-400 rounded-full"></span></div></div></div>
   </div>`;
   container.insertAdjacentHTML('beforeend', html);
@@ -517,6 +819,7 @@ function loadChat(chatId, element) {
   hideTypingIndicator();
   renderChat(chatId);
   toggleHistory(false);
+  if (window.innerWidth <= 768) document.body.classList.add('mobile-chat-active');
 }
 
 function newChat() {
@@ -539,7 +842,19 @@ function newChat() {
   history.insertAdjacentHTML('afterbegin', html);
   renderChat(id);
   toggleHistory(false);
+  if (window.innerWidth <= 768) document.body.classList.add('mobile-chat-active');
   showToast('已开启新对话');
+}
+
+
+function showChatHistory() {
+  document.body.classList.remove('mobile-chat-active');
+  toggleHistory(false);
+  toggleMobileNav(false);
+  const input = document.getElementById('messageInput');
+  if (input) input.blur();
+  const history = document.getElementById('chatHistory');
+  if (history) history.scrollTop = 0;
 }
 
 function navigateTo(page) { window.location.href = page + '.html'; }
@@ -586,14 +901,22 @@ document.querySelectorAll('body > aside.glass .nav-item').forEach(function(item)
 });
 
 window.addEventListener('resize', function() {
-  if (window.innerWidth > 768) { toggleMobileNav(false); toggleHistory(false); }
+  if (window.innerWidth > 768) { toggleMobileNav(false); toggleHistory(false); document.body.classList.remove('mobile-chat-active'); }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+  if (window.innerWidth <= 768) document.body.classList.remove('mobile-chat-active');
   renderChat(currentChatId);
   const container = document.getElementById('chatMessages');
   container.scrollTop = container.scrollHeight;
 });
 </script>
+<nav class="app-bottom-nav" aria-label="底部导航">
+  <button type="button" class="app-tab active" onclick="navigateTo('chat')" aria-label="情感陪伴"><i class="fas fa-comments"></i></button>
+  <button type="button" class="app-tab" onclick="navigateTo('dashboard')" aria-label="心境轨迹"><i class="fas fa-chart-line"></i></button>
+  <button type="button" class="app-tab" onclick="navigateTo('simulator')" aria-label="跨文化演练"><i class="fas fa-theater-masks"></i></button>
+  <button type="button" class="app-tab" onclick="navigateTo('guide')" aria-label="沪上指南"><i class="fas fa-compass"></i></button>
+  <button type="button" class="app-tab" onclick="navigateTo('user')" aria-label="个人中心"><i class="fas fa-user"></i></button>
+</nav>
 </body>
 </html>

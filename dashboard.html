@@ -445,6 +445,188 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
   }
 }
 
+
+/* ===== App-style mobile bottom navigation ===== */
+.app-bottom-nav { display: none; }
+@media (max-width: 768px) {
+  .mobile-nav-toggle,
+  .mobile-nav-backdrop,
+  .mobile-sidebar-close,
+  body > aside.glass {
+    display: none !important;
+  }
+  body.mobile-nav-open .mobile-nav-backdrop { opacity: 0 !important; pointer-events: none !important; }
+  body > main:not(.chat-shell) {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+  }
+  .app-bottom-nav {
+    position: fixed;
+    left: 50%;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 100;
+    width: min(92vw, 390px);
+    height: 64px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    padding: 7px 9px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    box-shadow: 0 16px 38px rgba(30, 58, 138, 0.16);
+  }
+  .app-tab {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    color: #64748B;
+    font-size: 1.2rem;
+    transition: all .22s ease;
+  }
+  .app-tab.active {
+    background: #1E293B;
+    color: #FFFFFF;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, .20);
+    transform: translateY(-2px);
+  }
+  .app-tab:active { transform: scale(.94); }
+}
+
+
+/* ===== Final mobile spacing cleanup: bottom-nav layout has no hamburger, so remove reserved header gaps ===== */
+@media (max-width: 768px) {
+  body > main:not(.chat-shell) {
+    padding-top: calc(12px + env(safe-area-inset-top)) !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body > main:not(.chat-shell) > div[class*="max-w-"] {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100% !important;
+  }
+
+  main header,
+  .dashboard-header {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  main header:first-child > div:first-child,
+  .dashboard-header > div:first-child,
+  .dashboard-heading {
+    padding-left: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .dashboard-title-row {
+    padding-left: 0 !important;
+  }
+
+  #scenarioListView {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  #scenarioListView > .flex-1,
+  #scenarioListView > div:first-child {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  body > main:not(.chat-shell) > .max-w-6xl,
+  body > main:not(.chat-shell) > .max-w-7xl {
+    padding-top: 0 !important;
+  }
+
+  body > main:not(.chat-shell) .glass:first-child {
+    margin-top: 0 !important;
+  }
+}
+
+
+/* ===== Final v3 mobile header flush-left fix =====
+   Bottom app navigation has replaced the hamburger, so no header needs a left reserve area. */
+@media (max-width: 768px) {
+  body > main:not(.chat-shell) {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    padding-top: calc(10px + env(safe-area-inset-top)) !important;
+    margin-left: 0 !important;
+    width: 100vw !important;
+  }
+
+  body > main:not(.chat-shell) > .max-w-7xl,
+  body > main:not(.chat-shell) > div.max-w-7xl.mx-auto,
+  main > .max-w-7xl.mx-auto {
+    max-width: none !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  body > main:not(.chat-shell) > .max-w-7xl > header:first-child,
+  body > main#pageMain > .max-w-7xl > header:first-child,
+  main#pageMain header:first-child,
+  .dashboard-header {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    transform: none !important;
+    text-align: left !important;
+  }
+
+  body > main:not(.chat-shell) > .max-w-7xl > header:first-child > div:first-child,
+  body > main#pageMain > .max-w-7xl > header:first-child > div:first-child,
+  main#pageMain header:first-child > div:first-child,
+  .dashboard-header > div:first-child,
+  .dashboard-header > .dashboard-heading,
+  .dashboard-heading,
+  .dashboard-title-row {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    min-height: 0 !important;
+    transform: none !important;
+    text-align: left !important;
+  }
+
+  main#pageMain header:first-child h2,
+  main#pageMain header:first-child p,
+  .dashboard-title-row h2,
+  .dashboard-header h2,
+  .dashboard-subtitle {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    text-align: left !important;
+  }
+}
+
+
+/* ===== Selene custom moon logo replacement ===== */
+.selene-logo-img {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-fit: cover !important;
+  border-radius: inherit !important;
+}
+.selene-logo-wrap {
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
 </style>
 </head>
 <body class="h-screen flex">
@@ -455,8 +637,8 @@ body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); backgrou
 <aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
   <button type="button" class="mobile-sidebar-close" aria-label="关闭导航菜单" onclick="toggleMobileNav(false)"><i class="fas fa-times"></i></button>
   <div class="p-8 pb-4 flex items-center space-x-3">
-    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0">
-      <i class="fas fa-heart-pulse text-white"></i>
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0 selene-logo-wrap">
+      <img src="selene_logo.png" alt="Selene" class="selene-logo-img">
     </div>
     <div>
       <h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1>
@@ -1097,5 +1279,12 @@ window.addEventListener('resize', function() {
 });
 
 </script>
+<nav class="app-bottom-nav" aria-label="底部导航">
+  <button type="button" class="app-tab" onclick="navigateTo('chat')" aria-label="情感陪伴"><i class="fas fa-comments"></i></button>
+  <button type="button" class="app-tab active" onclick="navigateTo('dashboard')" aria-label="心境轨迹"><i class="fas fa-chart-line"></i></button>
+  <button type="button" class="app-tab" onclick="navigateTo('simulator')" aria-label="跨文化演练"><i class="fas fa-theater-masks"></i></button>
+  <button type="button" class="app-tab" onclick="navigateTo('guide')" aria-label="沪上指南"><i class="fas fa-compass"></i></button>
+  <button type="button" class="app-tab" onclick="navigateTo('user')" aria-label="个人中心"><i class="fas fa-user"></i></button>
+</nav>
 </body>
 </html>
