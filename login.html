@@ -2,616 +2,83 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Selene智能陪伴平台 - 登录</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Selene - 登录注册</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        primary: { 50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE', 300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8', 800: '#1E40AF', 900: '#1E3A8A' },
-        accent: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E' }
-      },
-      fontFamily: {
-        sans: ['Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
-      }
-    }
-  }
-}
+tailwind.config = { theme: { extend: { colors: { primary: { 50:'#EFF6FF',100:'#DBEAFE',200:'#BFDBFE',300:'#93C5FD',400:'#60A5FA',500:'#3B82F6',600:'#2563EB',700:'#1D4ED8',800:'#1E40AF',900:'#1E3A8A' }, accent: { 400:'#FBBF24',500:'#F59E0B',600:'#D97706' } }, fontFamily: { sans: ['Noto Sans SC','PingFang SC','Microsoft YaHei','sans-serif'] } } } };
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
-body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow-x: hidden; }
-
-/* 背景与面板特效 */
-.glass-panel { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
-.hero-image { background-image: url('login_hero.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }
-
-/* 表单与交互元素特效 */
-.slider-thumb::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #1E293B; border-radius: 50%; cursor: pointer; border: 2px solid #FFFFFF; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2); transition: transform 0.2s; }
-.slider-thumb::-webkit-slider-thumb:hover { transform: scale(1.15); }
-.emotion-tag { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.emotion-tag:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(30, 58, 138, 0.08); }
-.emotion-tag.selected { transform: scale(1.05); box-shadow: 0 8px 20px rgba(30, 58, 138, 0.15); border-color: #1E293B; }
-
-/* 动画特效 */
-.fade-out { animation: fadeOut 0.6s ease-out forwards; }
-@keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
-.float-animation { animation: float 6s ease-in-out infinite; }
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-.form-fade-in { animation: formFadeIn 0.5s ease-out forwards; }
-@keyframes formFadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-/* PC端细滚动条 */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
-
-.scale-wrapper {
-  transform: scale(0.8) translateY(-60px);
-  transform-origin: center;
-}
-
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-}
-
-
-
-/* ===== Mobile adaptation for iPhone-size screens ===== */
+* { font-family: 'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif; box-sizing: border-box; }
+:root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+html, body { width: 100%; min-height: 100%; }
+body { margin:0; min-height: 100dvh; background: linear-gradient(120deg,#E0F2FE 0%,#EEF2FF 48%,#FEF3C7 100%); color:#1E293B; display:flex; align-items:center; justify-content:center; padding:24px; overflow-x:hidden; }
+.glass-panel { background: rgba(255,255,255,.76); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border:1px solid rgba(255,255,255,.85); box-shadow:0 20px 60px rgba(30,58,138,.10); }
+.hero-image { background-image: url('login_hero.png'); background-size: cover; background-position: center; }
+.logo-img { width:100%; height:100%; object-fit:cover; border-radius:18px; }
+.form-view { display:none; animation: fadeIn .24s ease-out; }
+.form-view.active { display:block; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+input { font-size: 16px; }
 @media (max-width: 768px) {
-  html, body { min-height: 100dvh; width: 100%; }
-  body {
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-    padding: calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom)) !important;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    -webkit-text-size-adjust: 100%;
-  }
-  #mainContainer {
-    min-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    border-radius: 28px !important;
-  }
-  #mainContainer .glass-panel {
-    padding: 28px 20px !important;
-    max-height: none !important;
-    overflow-y: visible !important;
-  }
-  .absolute.top-10.left-20 { top: -80px !important; left: -120px !important; width: 18rem !important; height: 18rem !important; }
-  .absolute.bottom-10.right-20 { bottom: -100px !important; right: -140px !important; width: 20rem !important; height: 20rem !important; }
-  input, button { font-size: 16px; }
+  body { align-items:stretch; padding: calc(10px + var(--safe-top)) 10px calc(10px + var(--safe-bottom)); }
+  .auth-shell { min-height: calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom)); border-radius:28px !important; grid-template-columns:1fr !important; }
+  .auth-hero { display:none; }
+  .auth-form { padding: 26px 18px !important; }
 }
-
-@media (max-width: 430px) {
-  #mainContainer { border-radius: 24px !important; }
-  #mainContainer .glass-panel { padding: 24px 16px !important; }
-}
-
-
-
-/* ===== Mobile readability + wider form optimization ===== */
-@media (max-width: 768px) {
-  html { font-size: 17px; }
-
-  /* Previous desktop scale made the mobile form look smaller and narrower. */
-  .scale-wrapper {
-    transform: none !important;
-    transform-origin: center !important;
-  }
-
-  body {
-    padding: calc(8px + env(safe-area-inset-top)) 8px calc(8px + env(safe-area-inset-bottom)) !important;
-  }
-
-  #mainContainer {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    border-radius: 26px !important;
-  }
-
-  #mainContainer .glass-panel {
-    width: 100% !important;
-    padding: 26px 18px !important;
-  }
-
-  .lg\:hidden.text-center.mb-8 {
-    margin-bottom: 1.35rem !important;
-  }
-
-  .lg\:hidden h1 {
-    font-size: 1.8rem !important;
-    line-height: 1.18 !important;
-  }
-
-  .lg\:hidden p {
-    font-size: 0.92rem !important;
-    line-height: 1.45 !important;
-  }
-
-  #loginTab,
-  #registerTab {
-    font-size: 1rem !important;
-    padding-top: 0.95rem !important;
-    padding-bottom: 0.95rem !important;
-  }
-
-  #loginForm .space-y-6,
-  #registerForm .space-y-6 {
-    gap: 1.15rem !important;
-  }
-
-  label {
-    font-size: 1rem !important;
-    margin-bottom: 0.55rem !important;
-  }
-
-  input[type="email"],
-  input[type="password"],
-  input[type="text"] {
-    font-size: 1rem !important;
-    min-height: 3.55rem !important;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-    border-radius: 1.25rem !important;
-  }
-
-  input::placeholder {
-    font-size: 1rem !important;
-  }
-
-  #loginForm .flex.items-center.justify-between,
-  #registerForm .flex.items-center.justify-between {
-    font-size: 0.95rem !important;
-  }
-
-  #loginForm button,
-  #registerForm button {
-    font-size: 1.05rem !important;
-  }
-
-  #registerForm .bg-white\/60.border.border-white.rounded-3xl {
-    padding: 1rem !important;
-    border-radius: 1.35rem !important;
-  }
-
-  #registerForm .bg-white\/60.border.border-white.rounded-3xl .flex.items-center.space-x-4 {
-    gap: 0.85rem !important;
-  }
-
-  #emotionTags {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 0.75rem !important;
-  }
-
-  .emotion-tag {
-    font-size: 0.98rem !important;
-    padding: 0.95rem 0.6rem !important;
-    border-radius: 1.15rem !important;
-  }
-
-  .emotion-tag i {
-    font-size: 1.05rem !important;
-  }
-
-  .mt-10.pt-8.border-t {
-    margin-top: 1.6rem !important;
-    padding-top: 1.4rem !important;
-  }
-
-  .mt-10.pt-8.border-t p,
-  body > div#mainContainer + p,
-  #mainContainer p.text-center.text-slate-400 {
-    font-size: 0.82rem !important;
-  }
-
-  .w-14.h-14.rounded-full {
-    width: 3.65rem !important;
-    height: 3.65rem !important;
-  }
-}
-
-@media (max-width: 430px) {
-  html { font-size: 17.5px; }
-  body { padding-left: 6px !important; padding-right: 6px !important; }
-  #mainContainer { border-radius: 24px !important; }
-  #mainContainer .glass-panel { padding: 24px 14px !important; }
-}
-
-
-
-/* ===== Login mobile breathing-space + custom project logo ===== */
-.selene-logo-mobile,
-.selene-logo-desktop,
-.selene-logo-badge {
-  display: block;
-  object-fit: cover;
-  border-radius: 28px;
-  box-shadow: 0 14px 34px rgba(30, 58, 138, 0.12);
-}
-.selene-logo-mobile { width: 76px; height: 76px; }
-.selene-logo-desktop { width: 72px; height: 72px; flex: 0 0 auto; }
-.selene-logo-badge { width: 28px; height: 28px; border-radius: 10px; box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18); }
-
-@media (max-width: 768px) {
-  html { font-size: 16px !important; }
-  body {
-    min-height: 100dvh !important;
-    align-items: flex-start !important;
-    justify-content: center !important;
-    padding: calc(22px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom)) !important;
-    overflow-y: auto !important;
-  }
-  #mainContainer {
-    width: min(100%, 430px) !important;
-    max-width: 430px !important;
-    min-height: auto !important;
-    margin: 0 auto !important;
-    border-radius: 30px !important;
-    overflow: hidden !important;
-    box-shadow: 0 16px 42px rgba(30, 58, 138, 0.12) !important;
-  }
-  #mainContainer .glass-panel {
-    padding: 30px 24px 28px !important;
-    max-height: none !important;
-    overflow-y: visible !important;
-  }
-  .mobile-brand-block {
-    margin-bottom: 1.35rem !important;
-  }
-  .selene-logo-mobile {
-    width: 74px !important;
-    height: 74px !important;
-    border-radius: 25px !important;
-  }
-  .mobile-brand-block h2 {
-    font-size: 2rem !important;
-    line-height: 1.1 !important;
-    margin-bottom: 0.45rem !important;
-  }
-  .mobile-brand-block p {
-    font-size: 0.93rem !important;
-    line-height: 1.45 !important;
-    max-width: 18rem !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  #loginTab,
-  #registerTab {
-    padding-top: 0.82rem !important;
-    padding-bottom: 0.82rem !important;
-    font-size: 0.96rem !important;
-  }
-  #loginForm .space-y-6,
-  #registerForm .space-y-6 { gap: 1rem !important; }
-  label { font-size: 0.94rem !important; margin-bottom: 0.45rem !important; }
-  input[type="email"],
-  input[type="password"],
-  input[type="text"] {
-    min-height: 3.2rem !important;
-    padding-top: 0.86rem !important;
-    padding-bottom: 0.86rem !important;
-    border-radius: 1.15rem !important;
-    font-size: 0.96rem !important;
-  }
-  input::placeholder { font-size: 0.96rem !important; }
-  #loginForm .flex.items-center.justify-between,
-  #registerForm .flex.items-center.justify-between { font-size: 0.9rem !important; }
-  #loginForm button,
-  #registerForm button { font-size: 1rem !important; }
-  #loginForm button.w-full,
-  #registerForm button.w-full {
-    padding-top: 0.9rem !important;
-    padding-bottom: 0.9rem !important;
-    border-radius: 1.15rem !important;
-  }
-  .mt-10.pt-8.border-t {
-    margin-top: 1.35rem !important;
-    padding-top: 1.15rem !important;
-  }
-  .w-14.h-14.rounded-full {
-    width: 3.2rem !important;
-    height: 3.2rem !important;
-  }
-}
-
-@media (max-width: 430px) {
-  body { padding-left: 16px !important; padding-right: 16px !important; }
-  #mainContainer { border-radius: 28px !important; }
-  #mainContainer .glass-panel { padding: 28px 20px 26px !important; }
-  .selene-logo-mobile { width: 70px !important; height: 70px !important; }
-}
-
-@media (max-width: 380px) {
-  body { padding-left: 12px !important; padding-right: 12px !important; }
-  #mainContainer .glass-panel { padding-left: 18px !important; padding-right: 18px !important; }
-  .mobile-brand-block h2 { font-size: 1.85rem !important; }
-}
-
 </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 lg:p-8 relative">
-
-<div class="absolute inset-0 pointer-events-none z-0">
-  <div class="absolute top-10 left-20 w-96 h-96 bg-blue-300/30 rounded-full blur-3xl float-animation"></div>
-  <div class="absolute bottom-10 right-20 w-[30rem] h-[30rem] bg-amber-300/20 rounded-full blur-3xl float-animation" style="animation-delay: -3s;"></div>
+<body>
+<div class="auth-shell glass-panel w-full max-w-5xl min-h-[620px] rounded-[2rem] overflow-hidden grid grid-cols-[1.05fr_.95fr]">
+  <section class="auth-hero hero-image relative p-10 flex flex-col justify-between">
+    <div class="absolute inset-0 bg-slate-900/20"></div>
+    <div class="relative flex items-center gap-3 text-white">
+      <div class="w-12 h-12 rounded-2xl bg-slate-900/70 overflow-hidden"><img src="selene_logo.png" alt="Selene" class="logo-img"></div>
+      <div><h1 class="text-2xl font-extrabold">Selene</h1><p class="text-white/75 text-sm font-medium">留学生智能陪伴平台</p></div>
+    </div>
+    <div class="relative text-white max-w-sm">
+      <p class="text-sm font-semibold text-white/80 mb-3">From arrival to career</p>
+      <h2 class="text-4xl font-extrabold leading-tight">来中国，学中国，融入中国，留在中国</h2>
+    </div>
+  </section>
+  <section class="auth-form p-10 flex flex-col justify-center">
+    <div class="lg:hidden text-center mb-8">
+      <div class="mx-auto w-16 h-16 rounded-3xl bg-slate-800 overflow-hidden mb-4"><img src="selene_logo.png" alt="Selene" class="logo-img"></div>
+      <h1 class="text-2xl font-extrabold text-slate-800">Selene</h1>
+      <p class="text-slate-500 text-sm font-medium mt-1">留学生智能陪伴平台</p>
+    </div>
+    <div class="grid grid-cols-2 bg-slate-100/80 rounded-2xl p-1 mb-8">
+      <button id="loginTab" onclick="switchTab('login')" class="rounded-xl py-3 font-bold bg-white shadow-sm text-slate-800">登录</button>
+      <button id="registerTab" onclick="switchTab('register')" class="rounded-xl py-3 font-bold text-slate-500">注册</button>
+    </div>
+    <form id="loginForm" class="form-view active space-y-5" onsubmit="event.preventDefault(); location.href='chinese.html';">
+      <div><label class="block text-sm font-bold text-slate-700 mb-2">邮箱</label><input type="email" placeholder="请输入邮箱" class="w-full px-4 py-4 rounded-2xl bg-white/80 border border-slate-200 outline-none focus:border-blue-400"></div>
+      <div><label class="block text-sm font-bold text-slate-700 mb-2">密码</label><input type="password" placeholder="请输入密码" class="w-full px-4 py-4 rounded-2xl bg-white/80 border border-slate-200 outline-none focus:border-blue-400"></div>
+      <button class="w-full py-4 rounded-2xl bg-slate-800 hover:bg-blue-600 text-white font-extrabold transition-all shadow-lg">进入平台</button>
+    </form>
+    <form id="registerForm" class="form-view space-y-5" onsubmit="event.preventDefault(); location.href='chinese.html';">
+      <div><label class="block text-sm font-bold text-slate-700 mb-2">昵称</label><input type="text" placeholder="请输入昵称" class="w-full px-4 py-4 rounded-2xl bg-white/80 border border-slate-200 outline-none focus:border-blue-400"></div>
+      <div><label class="block text-sm font-bold text-slate-700 mb-2">邮箱</label><input type="email" placeholder="请输入邮箱" class="w-full px-4 py-4 rounded-2xl bg-white/80 border border-slate-200 outline-none focus:border-blue-400"></div>
+      <div><label class="block text-sm font-bold text-slate-700 mb-2">密码</label><input type="password" placeholder="请设置密码" class="w-full px-4 py-4 rounded-2xl bg-white/80 border border-slate-200 outline-none focus:border-blue-400"></div>
+      <button class="w-full py-4 rounded-2xl bg-slate-800 hover:bg-blue-600 text-white font-extrabold transition-all shadow-lg">创建账号</button>
+    </form>
+  </section>
 </div>
-
-<div id="mainContainer" class="scale-wrapper w-full max-w-6xl min-h-[600px] flex flex-col lg:flex-row rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(30,58,138,0.15)] relative z-10 border border-white/50">
-  
-  <div class="hidden lg:flex lg:w-1/2 relative bg-blue-950 hero-image flex-col justify-between">
-    <div class="absolute inset-0 bg-gradient-to-tr from-blue-950/10 via-transparent to-blue-950/05"></div>
-    
-    <div class="relative z-10 p-10 mt-auto">
-      <div class="inline-flex items-center space-x-3 bg-slate-900/60 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/10 shadow-lg">
-        <img src="selene_logo.png" alt="Selene项目Logo" class="selene-logo-badge">
-        <span class="text-white font-bold tracking-wide">Selene智能陪伴平台</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="w-full lg:w-1/2 glass-panel p-8 sm:p-12 lg:p-16 flex flex-col justify-center relative overflow-y-auto custom-scrollbar max-h-[90vh] lg:max-h-none">
-    
-    <div class="lg:hidden text-center mb-6 mobile-brand-block">
-      <img src="selene_logo.png" alt="Selene项目Logo" class="selene-logo-mobile mx-auto mb-3">
-      <h2 class="text-3xl font-bold text-slate-800 mb-2">Selene</h2>
-    </div>
-
-    <div class="hidden lg:flex items-center gap-4 mb-8 desktop-brand-block">
-      <img src="selene_logo.png" alt="Selene项目Logo" class="selene-logo-desktop">
-      <div>
-        <h2 class="text-3xl font-bold text-slate-800 mb-2">Selene</h2>
-      </div>
-    </div>
-
-    <div class="flex mb-8 bg-white/50 border border-white/80 rounded-2xl p-1 shadow-inner">
-      <button id="loginTab" onclick="switchTab('login')" class="flex-1 py-3.5 rounded-xl text-slate-800 font-bold bg-white shadow-sm transition-all duration-300 text-sm">账号登录</button>
-      <button id="registerTab" onclick="switchTab('register')" class="flex-1 py-3.5 rounded-xl text-slate-500 font-medium hover:text-slate-800 transition-all duration-300 text-sm">注册新账号</button>
-    </div>
-
-    <div id="loginForm" class="form-fade-in">
-      <div class="space-y-6">
-        <div>
-          <label class="block text-slate-800 text-sm mb-2 font-bold">邮箱地址</label>
-          <div class="relative">
-            <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="email" placeholder="请输入您的邮箱" class="w-full bg-white/80 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 shadow-inner transition-all font-medium">
-          </div>
-        </div>
-        <div>
-          <label class="block text-slate-800 text-sm mb-2 font-bold">密码</label>
-          <div class="relative">
-            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="password" placeholder="请输入密码" class="w-full bg-white/80 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 shadow-inner transition-all font-medium">
-          </div>
-        </div>
-        <div class="flex items-center justify-between text-sm font-medium">
-          <label class="flex items-center text-slate-600 cursor-pointer hover:text-slate-800 transition-colors">
-            <input type="checkbox" class="mr-2 rounded border-slate-300 text-slate-800 focus:ring-slate-800 w-4 h-4">
-            <span>保持登录状态</span>
-          </label>
-          <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors font-bold">忘记密码</a>
-        </div>
-        <button onclick="handleLogin()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-md hover:bg-blue-600 hover:shadow-lg transition-all duration-300 mt-2 text-lg">
-          登录
-        </button>
-      </div>
-    </div>
-
-    <div id="registerForm" class="hidden">
-      <div class="space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-slate-800 text-sm mb-2 font-bold">您的昵称</label>
-            <div class="relative">
-              <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input type="text" id="nickname" placeholder="输入昵称" class="w-full bg-white/80 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 shadow-inner transition-all font-medium">
-            </div>
-          </div>
-          <div>
-            <label class="block text-slate-800 text-sm mb-2 font-bold">邮箱地址</label>
-            <div class="relative">
-              <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input type="email" id="email" placeholder="输入邮箱" class="w-full bg-white/80 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 shadow-inner transition-all font-medium">
-            </div>
-          </div>
-        </div>
-        
-        <div>
-          <label class="block text-slate-800 text-sm mb-2 font-bold">设置密码</label>
-          <div class="relative">
-            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="password" id="password" placeholder="设置您的密码 (至少8位)" class="w-full bg-white/80 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 shadow-inner transition-all font-medium">
-          </div>
-        </div>
-
-        <div class="bg-white/60 border border-white rounded-3xl p-6 shadow-sm">
-          <label class="block text-slate-800 text-sm mb-4 font-bold">您来到上海多久了？</label>
-          <div class="flex items-center space-x-4">
-            <div class="flex-1">
-              <input type="range" id="durationSlider" min="1" max="48" value="6" class="w-full h-2.5 bg-slate-200 rounded-full appearance-none cursor-pointer slider-thumb" oninput="updateDuration()">
-              <div class="flex justify-between mt-3 text-slate-400 font-bold text-xs px-1">
-                <span>刚来 (1个月)</span>
-                <span>2年</span>
-                <span>4年以上</span>
-              </div>
-            </div>
-            <div class="w-20 text-center bg-white rounded-xl py-2 shadow-sm border border-slate-100 flex-shrink-0">
-              <span id="durationDisplay" class="text-xl font-bold text-blue-600">6</span>
-              <span class="text-slate-500 font-bold text-xs">个月</span>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-slate-800 text-sm mb-3 font-bold">今天的心情如何？</label>
-          <div class="grid grid-cols-3 gap-3 md:gap-4" id="emotionTags">
-            <button type="button" onclick="selectEmotion(this, 'calm')" class="emotion-tag bg-emerald-50 text-emerald-700 py-3.5 px-2 rounded-2xl text-sm font-bold border border-emerald-200 hover:bg-emerald-100 flex justify-center items-center">
-              <i class="fas fa-leaf mr-2 opacity-80 text-lg"></i>平静
-            </button>
-            <button type="button" onclick="selectEmotion(this, 'happy')" class="emotion-tag bg-amber-50 text-amber-700 py-3.5 px-2 rounded-2xl text-sm font-bold border border-amber-200 hover:bg-amber-100 flex justify-center items-center">
-              <i class="fas fa-sun mr-2 opacity-80 text-lg"></i>愉悦
-            </button>
-            <button type="button" onclick="selectEmotion(this, 'anxious')" class="emotion-tag bg-rose-50 text-rose-700 py-3.5 px-2 rounded-2xl text-sm font-bold border border-rose-200 hover:bg-rose-100 flex justify-center items-center">
-              <i class="fas fa-bolt mr-2 opacity-80 text-lg"></i>焦虑
-            </button>
-            <button type="button" onclick="selectEmotion(this, 'lonely')" class="emotion-tag bg-indigo-50 text-indigo-700 py-3.5 px-2 rounded-2xl text-sm font-bold border border-indigo-200 hover:bg-indigo-100 flex justify-center items-center">
-              <i class="fas fa-moon mr-2 opacity-80 text-lg"></i>孤独
-            </button>
-            <button type="button" onclick="selectEmotion(this, 'confused')" class="emotion-tag bg-orange-50 text-orange-700 py-3.5 px-2 rounded-2xl text-sm font-bold border border-orange-200 hover:bg-orange-100 flex justify-center items-center">
-              <i class="fas fa-question mr-2 opacity-80 text-lg"></i>迷茫
-            </button>
-            <button type="button" onclick="selectEmotion(this, 'hopeful')" class="emotion-tag bg-blue-50 text-blue-700 py-3.5 px-2 rounded-2xl text-sm font-bold border border-blue-200 hover:bg-blue-100 flex justify-center items-center">
-              <i class="fas fa-seedling mr-2 opacity-80 text-lg"></i>期待
-            </button>
-          </div>
-          <input type="hidden" id="selectedEmotion" value="">
-        </div>
-
-        <button onclick="handleRegister()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-md hover:bg-blue-600 hover:shadow-lg transition-all duration-300 mt-6 text-lg">
-          开启Selene之旅
-        </button>
-      </div>
-    </div>
-
-    <div class="mt-10 pt-8 border-t border-slate-200/50">
-      <p class="text-center text-slate-400 font-bold text-xs mb-5">或使用以下方式快捷登录</p>
-      <div class="flex justify-center space-x-6">
-        <button class="w-14 h-14 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-emerald-500 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-xl" title="微信登录">
-          <i class="fab fa-weixin"></i>
-        </button>
-        <button class="w-14 h-14 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-blue-500 hover:bg-blue-50 hover:border-blue-200 transition-all text-xl" title="QQ登录">
-          <i class="fab fa-qq"></i>
-        </button>
-        <button class="w-14 h-14 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-800 hover:bg-slate-100 hover:border-slate-300 transition-all text-xl" title="Apple登录">
-          <i class="fab fa-apple"></i>
-        </button>
-      </div>
-    </div>
-
-    <p class="text-center text-slate-400 font-medium text-xs mt-10">登录或注册即表示您同意 Selene 的 <a href="#" class="text-blue-500 hover:underline">服务条款</a> 与 <a href="#" class="text-blue-500 hover:underline">隐私政策</a></p>
-
-  </div>
-</div>
-
 <script>
-// 全局变量初始化
-let selectedEmotionValue = '';
-let selectedDuration = 6;
-
-// 标签页切换函数
-function switchTab(tab) {
-  const loginTab = document.getElementById('loginTab');
-  const registerTab = document.getElementById('registerTab');
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  
-  if (tab === 'login') {
-    loginTab.className = 'flex-1 py-3.5 rounded-xl text-slate-800 font-bold bg-white shadow-sm transition-all duration-300 text-sm';
-    registerTab.className = 'flex-1 py-3.5 rounded-xl text-slate-500 font-medium hover:text-slate-800 transition-all duration-300 text-sm';
-    loginForm.classList.remove('hidden');
-    loginForm.classList.add('form-fade-in');
-    registerForm.classList.add('hidden');
-    registerForm.classList.remove('form-fade-in');
-  } else {
-    registerTab.className = 'flex-1 py-3.5 rounded-xl text-slate-800 font-bold bg-white shadow-sm transition-all duration-300 text-sm';
-    loginTab.className = 'flex-1 py-3.5 rounded-xl text-slate-500 font-medium hover:text-slate-800 transition-all duration-300 text-sm';
-    registerForm.classList.remove('hidden');
-    registerForm.classList.add('form-fade-in');
-    loginForm.classList.add('hidden');
-    loginForm.classList.remove('form-fade-in');
+function switchTab(tab){
+  const loginTab=document.getElementById('loginTab'), registerTab=document.getElementById('registerTab');
+  const loginForm=document.getElementById('loginForm'), registerForm=document.getElementById('registerForm');
+  const active='bg-white shadow-sm text-slate-800', normal='text-slate-500';
+  if(tab==='login'){
+    loginForm.classList.add('active'); registerForm.classList.remove('active');
+    loginTab.className='rounded-xl py-3 font-bold '+active; registerTab.className='rounded-xl py-3 font-bold '+normal;
+  }else{
+    registerForm.classList.add('active'); loginForm.classList.remove('active');
+    registerTab.className='rounded-xl py-3 font-bold '+active; loginTab.className='rounded-xl py-3 font-bold '+normal;
   }
 }
-
-// 更新居住时长显示
-function updateDuration() {
-  const slider = document.getElementById('durationSlider');
-  const display = document.getElementById('durationDisplay');
-  selectedDuration = parseInt(slider.value);
-  display.textContent = selectedDuration;
-}
-
-// 选择情绪标签
-function selectEmotion(element, emotion) {
-  document.querySelectorAll('.emotion-tag').forEach(tag => {
-    tag.classList.remove('selected', 'ring-2', 'ring-slate-400', 'border-slate-800');
-  });
-  element.classList.add('selected', 'ring-2', 'ring-slate-400');
-  selectedEmotionValue = emotion;
-  document.getElementById('selectedEmotion').value = emotion;
-}
-
-// 处理登录
-function handleLogin() {
-  const container = document.getElementById('mainContainer');
-  container.classList.add('fade-out');
-  setTimeout(() => {
-    localStorage.setItem('isLoggedIn', 'true');
-    // 如果没有昵称记录，则设置一个默认的
-    if(!localStorage.getItem('userNickname')) {
-       localStorage.setItem('userNickname', '留学生朋友');
-    }
-    window.location.href = 'chat.html';
-  }, 500);
-}
-
-// 处理注册
-function handleRegister() {
-  const nickname = document.getElementById('nickname').value;
-  const email = document.getElementById('email').value;
-  
-  if (!nickname || !email) {
-    showToast('请填写完整的昵称与邮箱');
-    return;
-  }
-  
-  if (!selectedEmotionValue) {
-    showToast('请选择您今天的心情状态');
-    return;
-  }
-  
-  localStorage.setItem('isLoggedIn', 'true');
-  localStorage.setItem('userNickname', nickname);
-  localStorage.setItem('userEmail', email);
-  localStorage.setItem('userDuration', selectedDuration);
-  localStorage.setItem('userEmotion', selectedEmotionValue);
-  
-  const container = document.getElementById('mainContainer');
-  container.classList.add('fade-out');
-  setTimeout(() => {
-    window.location.href = 'chat.html';
-  }, 500);
-}
-
-// 显示提示信息
-function showToast(message) {
-  const toast = document.createElement('div');
-  toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-50 text-sm font-bold flex items-center space-x-2';
-  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`;
-  document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.style.transition = 'opacity 0.5s ease-out';
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 500);
-  }, 2000);
-}
-
-// 页面加载动画
-document.addEventListener('DOMContentLoaded', function() {
-  document.body.style.opacity = '0';
-  setTimeout(() => {
-    document.body.style.transition = 'opacity 0.6s ease-out';
-    document.body.style.opacity = '1';
-  }, 50);
-});
 </script>
 </body>
 </html>

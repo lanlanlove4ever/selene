@@ -2,645 +2,375 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Selene智能陪伴平台 - 个人中心</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Selene - 个人中心</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        primary: { 50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE', 300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8', 800: '#1E40AF', 900: '#1E3A8A' },
-        accent: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E' }
-      },
-      fontFamily: {
-        sans: ['Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
-      }
-    }
-  }
-}
+tailwind.config = { theme: { extend: { colors: { primary: { 50:'#EFF6FF',100:'#DBEAFE',200:'#BFDBFE',300:'#93C5FD',400:'#60A5FA',500:'#3B82F6',600:'#2563EB',700:'#1D4ED8',800:'#1E40AF',900:'#1E3A8A' }, accent: { 400:'#FBBF24',500:'#F59E0B',600:'#D97706' } }, fontFamily: { sans: ['Noto Sans SC','PingFang SC','Microsoft YaHei','sans-serif'] } } } };
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
-body { background: linear-gradient(to right, #E0F2FE 0%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; }
-.glass { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px rgba(30, 58, 138, 0.05); }
-.menu-item { transition: all 0.3s; }
-.menu-item:hover { background: rgba(255, 255, 255, 0.6); transform: translateX(8px); }
-.avatar-ring { animation: pulse 3s ease-in-out infinite; }
-@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); } 50% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } }
-.stat-card { transition: all 0.3s; }
-.stat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(30, 58, 138, 0.1); }
-.nav-item { transition: all 0.3s; }
-.nav-item:hover { background: rgba(255, 255, 255, 0.7); }
-.nav-item.active { background: #FFFFFF; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05); border-color: rgba(59, 130, 246, 0.2); }
-/* 隐藏滚动条但保留滚动功能 */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-
-/* ===== Mobile adaptation for iPhone-size screens ===== */
-.mobile-nav-toggle,
-.mobile-nav-backdrop { display: none; }
-
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; box-sizing: border-box; }
+:root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+html, body { width: 100%; min-height: 100%; }
+body { margin: 0; background: linear-gradient(120deg, #E0F2FE 0%, #EEF2FF 48%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
+.glass { background: rgba(255,255,255,.66); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.82); box-shadow: 0 8px 32px rgba(30,58,138,.06); }
+.nav-item:hover { transform: translateX(6px); }
+.nav-item.active:hover { transform: none; }
+.logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .34); border-radius: 999px; }
+.mobile-topbar, .mobile-bottom-nav { display: none; }
+.page-shell { min-height: 100dvh; margin-left: 16rem; padding: 1.5rem; }
+.blank-board { min-height: calc(100dvh - 9.5rem); border-radius: 2rem; }
 @media (max-width: 768px) {
-  html, body { width: 100%; min-height: 100dvh; }
   body { overflow: hidden; -webkit-text-size-adjust: 100%; }
-
-  .mobile-nav-toggle {
-    display: flex;
-    position: fixed;
-    top: calc(12px + env(safe-area-inset-top));
-    left: 14px;
-    z-index: 80;
-    width: 44px;
-    height: 44px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12);
-    color: #1E293B;
-  }
-
-  .mobile-nav-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 55;
-    background: rgba(15, 23, 42, 0.28);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.28s ease;
-  }
-
-  body.mobile-nav-open .mobile-nav-backdrop {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  body > aside.glass {
-    width: min(82vw, 320px) !important;
-    height: 100dvh !important;
-    transform: translateX(-105%);
-    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 70;
-    padding-top: env(safe-area-inset-top);
-    border-radius: 0 28px 28px 0;
-  }
-
-  body.mobile-nav-open > aside.glass { transform: translateX(0); }
-
-  body > aside.glass .nav-item:hover { transform: none; }
-  body > aside.glass nav { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
-
-  body > main {
-    margin-left: 0 !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    height: 100dvh !important;
-    padding: calc(70px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) !important;
-    overflow-x: hidden !important;
-  }
-
-  main header { gap: 14px; }
-  main header h2 { font-size: 1.55rem !important; line-height: 1.2 !important; }
-  main header p { font-size: 0.9rem !important; }
-  main .glass { border-radius: 24px !important; }
-  main .grid { min-width: 0; }
-  main img, main svg, main canvas { max-width: 100%; }
-  input, textarea, select, button { font-size: 16px; }
-
-  /* Chat page: turn desktop two-column layout into stacked mobile panels. */
-  main > aside.w-80 {
-    width: 100% !important;
-    max-height: 30dvh;
-    min-height: 190px;
-    flex-shrink: 0 !important;
-  }
-  main > aside.w-80 + section,
-  main > section { min-width: 0; width: 100%; }
-
-  /* Dashboard / guide / user pages: allow action buttons and cards to wrap cleanly. */
-  header .flex.items-center.space-x-3,
-  header .flex.items-center.space-x-2 { flex-wrap: wrap; gap: 8px; }
-  header .space-x-3 > :not([hidden]) ~ :not([hidden]),
-  header .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0 !important; }
-
-  /* Simulator page: avoid horizontal crowding in the intro card. */
-  #scenarioListView { padding-right: 0 !important; }
-  #scenarioListView .glass:first-child { flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px !important; }
-
-  /* Keep charts and wide visual blocks usable on narrow screens. */
-  .chart-container { min-height: 220px; }
-  table, .overflow-x-auto { -webkit-overflow-scrolling: touch; }
-}
-
-@media (max-width: 430px) {
-  body > main { padding-left: 12px !important; padding-right: 12px !important; }
-  body > aside.glass { width: 84vw !important; }
-  main header h2 { font-size: 1.4rem !important; }
-  .stat-card, .scenario-card, .card-hover { transform: none !important; }
+  .desktop-sidebar { display: none !important; }
+  .mobile-topbar { display: flex; position: sticky; top: 0; z-index: 30; padding: calc(10px + var(--safe-top)) 14px 10px; align-items: center; justify-content: space-between; background: rgba(255,255,255,.58); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid rgba(226,232,240,.58); }
+  .mobile-bottom-nav { display: grid; position: fixed; left: 10px; right: 10px; bottom: calc(10px + var(--safe-bottom)); z-index: 40; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 4px; padding: 6px; border-radius: 24px; background: rgba(255,255,255,.78); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,.88); box-shadow: 0 14px 34px rgba(30,58,138,.12); }
+  .mobile-tab { min-width: 0; height: 54px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; text-decoration: none; }
+  .mobile-tab i { font-size: 17px; }
+  .page-shell { margin-left: 0; padding: 0 12px calc(86px + var(--safe-bottom)); height: 100dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .desktop-header { display: none !important; }
+  .blank-board { min-height: calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)); border-radius: 26px; margin-top: 14px; }
 }
 
 
-/* ===== Mobile drawer close fix: put the close button inside the opened sidebar ===== */
-.mobile-sidebar-close { display: none; }
-
+/* ===== Redesigned Personal Center module (keeps original shell/nav unchanged) ===== */
+.profile-board {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100dvh - 9.5rem);
+}
+.profile-card,
+.service-card,
+.setting-card,
+.timeline-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 28px rgba(30, 58, 138, 0.06);
+}
+.profile-card { border-radius: 1.75rem; }
+.service-card,
+.setting-card,
+.timeline-card {
+  border-radius: 1.5rem;
+  transition: transform .24s ease, box-shadow .24s ease, background .24s ease;
+}
+.service-card:hover,
+.setting-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 16px 34px rgba(30, 58, 138, 0.10);
+}
+.module-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .45rem .7rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.progress-track { height: 8px; border-radius: 999px; background: rgba(226, 232, 240, .82); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #3B82F6, #F59E0B); }
+.avatar-pulse { animation: avatarPulse 3.2s ease-in-out infinite; }
+@keyframes avatarPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.24); } 50% { box-shadow: 0 0 0 16px rgba(59,130,246,0); } }
+.user-toast {
+  position: fixed;
+  left: 50%;
+  top: calc(26px + var(--safe-top));
+  transform: translateX(-50%);
+  z-index: 120;
+  background: #1E293B;
+  color: #fff;
+  padding: .8rem 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .20);
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  font-size: .86rem;
+  font-weight: 800;
+}
 @media (max-width: 768px) {
-  body.mobile-nav-open .mobile-nav-toggle {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transform: scale(0.92) !important;
+  .profile-board {
+    padding: 14px;
+    max-height: none;
+    overflow: visible;
   }
-
-  body > aside.glass {
-    position: fixed !important;
-  }
-
-  body.mobile-nav-open > aside.glass .mobile-sidebar-close {
-    display: flex !important;
-  }
-
-  .mobile-sidebar-close {
-    position: absolute !important;
-    top: calc(12px + env(safe-area-inset-top)) !important;
-    right: 14px !important;
-    z-index: 95 !important;
-    width: 40px !important;
-    height: 40px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 15px !important;
-    background: rgba(255, 255, 255, 0.88) !important;
-    border: 1px solid rgba(226, 232, 240, 0.85) !important;
-    box-shadow: 0 8px 20px rgba(30, 58, 138, 0.12) !important;
-    color: #1E293B !important;
-    cursor: pointer !important;
-  }
-
-  .mobile-sidebar-close:active {
-    transform: scale(0.96) !important;
-  }
-}
-
-
-/* ===== App-style mobile bottom navigation ===== */
-.app-bottom-nav { display: none; }
-@media (max-width: 768px) {
-  .mobile-nav-toggle,
-  .mobile-nav-backdrop,
-  .mobile-sidebar-close,
-  body > aside.glass {
-    display: none !important;
-  }
-  body.mobile-nav-open .mobile-nav-backdrop { opacity: 0 !important; pointer-events: none !important; }
-  body > main:not(.chat-shell) {
-    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
-  }
-  .app-bottom-nav {
-    position: fixed;
-    left: 50%;
-    bottom: calc(12px + env(safe-area-inset-bottom));
-    transform: translateX(-50%);
-    z-index: 100;
-    width: min(92vw, 390px);
-    height: 64px;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    align-items: center;
-    padding: 7px 9px;
-    border-radius: 24px;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    border: 1px solid rgba(255, 255, 255, 0.92);
-    box-shadow: 0 16px 38px rgba(30, 58, 138, 0.16);
-  }
-  .app-tab {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 18px;
-    color: #64748B;
-    font-size: 1.2rem;
-    transition: all .22s ease;
-  }
-  .app-tab.active {
-    background: #1E293B;
-    color: #FFFFFF;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, .20);
-    transform: translateY(-2px);
-  }
-  .app-tab:active { transform: scale(.94); }
-}
-
-
-/* ===== Final mobile spacing cleanup: bottom-nav layout has no hamburger, so remove reserved header gaps ===== */
-@media (max-width: 768px) {
-  body > main:not(.chat-shell) {
-    padding-top: calc(12px + env(safe-area-inset-top)) !important;
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
-  }
-
-  body > main:not(.chat-shell) > div[class*="max-w-"] {
-    margin-left: auto !important;
-    margin-right: auto !important;
-    width: 100% !important;
-  }
-
-  main header,
-  .dashboard-header {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-
-  main header:first-child > div:first-child,
-  .dashboard-header > div:first-child,
-  .dashboard-heading {
-    padding-left: 0 !important;
-    min-height: 0 !important;
-  }
-
-  .dashboard-title-row {
-    padding-left: 0 !important;
-  }
-
-  #scenarioListView {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-  }
-
-  #scenarioListView > .flex-1,
-  #scenarioListView > div:first-child {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-  }
-
-  body > main:not(.chat-shell) > .max-w-6xl,
-  body > main:not(.chat-shell) > .max-w-7xl {
-    padding-top: 0 !important;
-  }
-
-  body > main:not(.chat-shell) .glass:first-child {
-    margin-top: 0 !important;
-  }
-}
-
-
-/* ===== Selene custom moon logo replacement ===== */
-.selene-logo-img {
-  width: 100% !important;
-  height: 100% !important;
-  display: block !important;
-  object-fit: cover !important;
-  border-radius: inherit !important;
-}
-.selene-logo-wrap {
-  overflow: hidden !important;
-  padding: 0 !important;
-  background: transparent !important;
+  .profile-card { border-radius: 26px; }
+  .service-card,
+  .setting-card,
+  .timeline-card { border-radius: 22px; }
+  .service-card:hover,
+  .setting-card:hover { transform: none; }
+  .module-pill { font-size: .68rem; padding: .4rem .58rem; }
+  .user-toast { width: calc(100vw - 32px); justify-content: center; top: calc(74px + var(--safe-top)); }
 }
 
 </style>
 </head>
-<body class="min-h-screen flex">
-<button type="button" class="mobile-nav-toggle" aria-label="打开导航菜单" aria-expanded="false" onclick="toggleMobileNav(true)"><i class="fas fa-bars"></i></button>
-<div class="mobile-nav-backdrop" aria-hidden="true" onclick="toggleMobileNav(false)"></div>
-
-
-<aside class="w-64 fixed h-screen left-0 top-0 glass border-r border-white/50 flex flex-col z-40">
-  <button type="button" class="mobile-sidebar-close" aria-label="关闭导航菜单" onclick="toggleMobileNav(false)"><i class="fas fa-times"></i></button>
-  <div class="p-8 pb-4 flex items-center space-x-3">
-    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md flex-shrink-0 selene-logo-wrap">
-      <img src="selene_logo.png" alt="Selene" class="selene-logo-img">
+<body>
+<aside class="desktop-sidebar glass fixed left-0 top-0 z-40 h-screen w-64 border-r border-white/50 flex flex-col">
+  <div class="p-8 pb-4 flex items-center gap-3">
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md overflow-hidden flex-shrink-0">
+      <img src="selene_logo.png" alt="Selene" class="logo-img">
     </div>
     <div>
-      <h1 class="text-slate-800 font-bold text-lg leading-tight">Selene</h1>
+      <h1 class="text-slate-800 font-extrabold text-lg leading-tight">Selene</h1>
       <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
     </div>
   </div>
-
-  <nav class="flex-1 px-4 mt-6 space-y-2">
-    <button onclick="navigateTo('chat')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-comments text-lg w-6 text-center"></i>
-      <span class="font-medium">情感陪伴</span>
-    </button>
-    <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-chart-line text-lg w-6 text-center"></i>
-      <span class="font-medium">心境轨迹</span>
-    </button>
-    <button onclick="navigateTo('simulator')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-theater-masks text-lg w-6 text-center"></i>
-      <span class="font-medium">跨文化演练</span>
-    </button>
-    <button onclick="navigateTo('guide')" class="nav-item w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-500 hover:text-slate-800 border border-transparent">
-      <i class="fas fa-compass text-lg w-6 text-center"></i>
-      <span class="font-medium">沪上指南</span>
-    </button>
-    <button onclick="navigateTo('user')" class="nav-item active w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-800 border">
-      <i class="fas fa-user text-lg w-6 text-center text-blue-600"></i>
-      <span class="font-bold">个人中心</span>
-    </button>
+  <nav class="flex-1 px-4 mt-6 space-y-2 overflow-y-auto custom-scrollbar">
+    <a href="chinese.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-language w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">中文学习</span>
+        </a>
+    <a href="chat.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-comments w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">情感陪伴</span>
+        </a>
+    <a href="internship.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-briefcase w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">实习助手</span>
+        </a>
+    <a href="career.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-building-user w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">留华就业</span>
+        </a>
+    <a href="user.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all active bg-white text-slate-900 border-blue-100 shadow-sm">
+          <i class="fas fa-user w-6 text-center text-lg text-blue-600"></i><span class="font-bold">个人中心</span>
+        </a>
   </nav>
-
   <div class="p-4 border-t border-slate-200/50">
-    <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
-      <i class="fas fa-sign-out-alt"></i>
-      <span>退出登录</span>
-    </button>
+    <a href="login.html" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
+      <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
+    </a>
   </div>
 </aside>
 
-<main class="flex-1 ml-64 p-8 h-screen overflow-y-auto no-scrollbar relative">
-  <div class="max-w-6xl mx-auto space-y-6">
+<main class="page-shell">
+  <div class="mobile-topbar">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-2xl bg-slate-800 overflow-hidden flex-shrink-0"><img src="selene_logo.png" alt="Selene" class="logo-img"></div>
+      <div class="min-w-0"><h1 class="text-slate-800 font-extrabold leading-tight truncate">个人中心</h1><p class="text-slate-500 text-xs font-medium truncate">账户信息与个人服务管理</p></div>
+    </div>
+    <a href="user.html" class="w-10 h-10 rounded-2xl bg-white/70 border border-white flex items-center justify-center text-slate-600"><i class="fas fa-user"></i></a>
+  </div>
 
-    <div class="glass rounded-3xl p-8 flex flex-col lg:flex-row items-center justify-between gap-8">
-      
-      <div class="flex items-center space-x-6">
-        <div class="relative flex-shrink-0">
-          <div class="avatar-ring w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 to-blue-500 p-1 shadow-md">
-            <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-              <img src="user_avatar.svg" alt="Avatar" class="w-full h-full object-cover">
+  <header class="desktop-header mb-6 flex items-center justify-between">
+    <div>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/55 border border-white/80 text-blue-600 text-xs font-bold mb-3">
+        <i class="fas fa-user"></i><span>Selene</span>
+      </div>
+      <h2 class="text-3xl font-extrabold text-slate-800">个人中心</h2>
+      <p class="text-slate-500 font-medium mt-1">账户信息与个人服务管理</p>
+    </div>
+  </header>
+
+  
+<section class="blank-board glass profile-board custom-scrollbar">
+  <div class="space-y-6">
+    <!-- 用户概览 -->
+    <div class="profile-card p-5 md:p-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div class="flex items-center gap-4 md:gap-5 min-w-0">
+          <div class="avatar-pulse w-20 h-20 md:w-24 md:h-24 rounded-[1.7rem] bg-gradient-to-br from-blue-500 via-indigo-400 to-amber-300 p-1 flex-shrink-0">
+            <div class="w-full h-full rounded-[1.45rem] bg-white overflow-hidden flex items-center justify-center">
+              <img src="user_avatar.svg" alt="用户头像" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=&quot;fas fa-user text-3xl text-blue-500&quot;></i>'">
             </div>
           </div>
-          <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer z-10">
-            <i class="fas fa-camera text-sm"></i>
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <h3 class="text-2xl md:text-3xl font-extrabold text-slate-800 truncate" id="profileName">Lanlan</h3>
+              <span class="module-pill bg-blue-100 text-blue-700 border border-blue-200"><i class="fas fa-moon"></i> Selene会员</span>
+            </div>
+            <p class="text-slate-500 font-semibold text-sm md:text-base">来华成长档案 · 中文学习 / AI疗愈 / 实习就业一体化管理</p>
+            <div class="flex flex-wrap gap-2 mt-4">
+              <span class="module-pill bg-emerald-100 text-emerald-700 border border-emerald-200"><i class="fas fa-seedling"></i> 适应提升中</span>
+              <span class="module-pill bg-amber-100 text-amber-700 border border-amber-200"><i class="fas fa-language"></i> 中文B1目标</span>
+              <span class="module-pill bg-indigo-100 text-indigo-700 border border-indigo-200"><i class="fas fa-briefcase"></i> 实习准备期</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 w-full lg:w-auto">
+          <div class="bg-white/80 border border-white rounded-2xl p-4 text-center min-w-0">
+            <div class="text-2xl md:text-3xl font-extrabold text-slate-800">28</div>
+            <div class="text-slate-500 text-xs font-bold mt-1">陪伴天数</div>
+          </div>
+          <div class="bg-white/80 border border-white rounded-2xl p-4 text-center min-w-0">
+            <div class="text-2xl md:text-3xl font-extrabold text-blue-600">16</div>
+            <div class="text-slate-500 text-xs font-bold mt-1">学习打卡</div>
+          </div>
+          <div class="bg-white/80 border border-white rounded-2xl p-4 text-center min-w-0">
+            <div class="text-2xl md:text-3xl font-extrabold text-amber-500">4</div>
+            <div class="text-slate-500 text-xs font-bold mt-1">求职任务</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 全生命周期进度 -->
+    <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_.85fr] gap-6">
+      <div class="timeline-card p-5 md:p-6">
+        <div class="flex items-center justify-between gap-3 mb-5">
+          <div>
+            <h3 class="text-slate-800 font-extrabold text-lg md:text-xl">成长路径进度</h3>
+            <p class="text-slate-500 text-sm font-medium mt-1">从来华适应到留华发展，持续追踪关键能力</p>
+          </div>
+          <button class="hidden md:inline-flex px-3 py-2 rounded-2xl bg-slate-800 text-white text-xs font-extrabold hover:bg-blue-600 transition-all" onclick="showUserToast('成长报告生成功能开发中')">
+            生成报告
           </button>
         </div>
-        
+        <div class="space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-2"><span class="text-slate-700 font-extrabold text-sm"><i class="fas fa-language text-blue-500 mr-2"></i>中文学习</span><span class="text-slate-500 text-xs font-bold">68%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:68%"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2"><span class="text-slate-700 font-extrabold text-sm"><i class="fas fa-heart text-rose-500 mr-2"></i>情感陪伴</span><span class="text-slate-500 text-xs font-bold">74%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:74%"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2"><span class="text-slate-700 font-extrabold text-sm"><i class="fas fa-briefcase text-indigo-500 mr-2"></i>实习准备</span><span class="text-slate-500 text-xs font-bold">42%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:42%"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2"><span class="text-slate-700 font-extrabold text-sm"><i class="fas fa-building-user text-amber-500 mr-2"></i>留华就业</span><span class="text-slate-500 text-xs font-bold">25%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:25%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-card p-5 md:p-6">
+        <h3 class="text-slate-800 font-extrabold text-lg md:text-xl mb-4">本周提醒</h3>
+        <div class="space-y-3">
+          <div class="flex gap-3 p-3 rounded-2xl bg-white/70 border border-white">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0"><i class="fas fa-volume-high"></i></div>
+            <div><p class="text-slate-800 font-extrabold text-sm">完成一次中文口语练习</p><p class="text-slate-500 text-xs font-semibold mt-1">建议练习：面试自我介绍</p></div>
+          </div>
+          <div class="flex gap-3 p-3 rounded-2xl bg-white/70 border border-white">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0"><i class="fas fa-comments"></i></div>
+            <div><p class="text-slate-800 font-extrabold text-sm">与Selene进行一次情绪复盘</p><p class="text-slate-500 text-xs font-semibold mt-1">记录最近的适应压力来源</p></div>
+          </div>
+          <div class="flex gap-3 p-3 rounded-2xl bg-white/70 border border-white">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0"><i class="fas fa-file-lines"></i></div>
+            <div><p class="text-slate-800 font-extrabold text-sm">完善中文简历基础信息</p><p class="text-slate-500 text-xs font-semibold mt-1">提升实习推荐匹配度</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 服务入口 -->
+    <div>
+      <div class="flex items-end justify-between gap-4 mb-4">
         <div>
-          <h1 class="text-slate-800 text-2xl font-bold mb-2" id="userNickname">留学生朋友</h1>
-          <p class="text-slate-500 font-medium text-sm mb-4">来沪6个月 · Selene会员</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200">平静</span>
-            <span class="px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 font-bold text-xs border border-amber-200">积极</span>
-            <span class="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs border border-emerald-200">成长中</span>
-          </div>
+          <h3 class="text-slate-800 font-extrabold text-lg md:text-xl">我的服务入口</h3>
+          <p class="text-slate-500 text-sm font-medium mt-1">围绕当前四大核心模块重新设计个人中心</p>
         </div>
       </div>
-      
-      <div class="grid grid-cols-3 gap-4 w-full lg:w-auto">
-        <div class="stat-card bg-white/80 border border-white rounded-2xl p-5 shadow-sm text-center min-w-[120px]">
-          <div class="text-3xl font-bold text-slate-800">28</div>
-          <div class="text-slate-500 font-medium text-sm mt-1">陪伴天数</div>
-        </div>
-        <div class="stat-card bg-white/80 border border-white rounded-2xl p-5 shadow-sm text-center min-w-[120px]">
-          <div class="text-3xl font-bold text-blue-600">15</div>
-          <div class="text-slate-500 font-medium text-sm mt-1">对话次数</div>
-        </div>
-        <div class="stat-card bg-white/80 border border-white rounded-2xl p-5 shadow-sm text-center min-w-[120px]">
-          <div class="text-3xl font-bold text-amber-500">3</div>
-          <div class="text-slate-500 font-medium text-sm mt-1">演练完成</div>
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <a href="chinese.html" class="service-card p-5 block">
+          <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4"><i class="fas fa-language text-xl"></i></div>
+          <h4 class="text-slate-800 font-extrabold mb-1">中文学习档案</h4>
+          <p class="text-slate-500 text-xs font-semibold leading-relaxed">查看场景口语、职场表达、学习目标与打卡进度。</p>
+        </a>
+        <a href="chat.html" class="service-card p-5 block">
+          <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mb-4"><i class="fas fa-heart text-xl"></i></div>
+          <h4 class="text-slate-800 font-extrabold mb-1">情感陪伴记录</h4>
+          <p class="text-slate-500 text-xs font-semibold leading-relaxed">管理AI疗愈对话、文化休克支持与陪伴偏好。</p>
+        </a>
+        <a href="internship.html" class="service-card p-5 block">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4"><i class="fas fa-briefcase text-xl"></i></div>
+          <h4 class="text-slate-800 font-extrabold mb-1">实习准备清单</h4>
+          <p class="text-slate-500 text-xs font-semibold leading-relaxed">整理简历、面试模拟、岗位偏好与投递计划。</p>
+        </a>
+        <a href="career.html" class="service-card p-5 block">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4"><i class="fas fa-building-user text-xl"></i></div>
+          <h4 class="text-slate-800 font-extrabold mb-1">留华就业画像</h4>
+          <p class="text-slate-500 text-xs font-semibold leading-relaxed">维护求职方向、签证状态、企业匹配与职业路径。</p>
+        </a>
       </div>
     </div>
 
+    <!-- 偏好和账号设置 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      
-      <div class="space-y-6">
-        <div class="glass rounded-3xl p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-slate-800 font-bold text-lg">我的成就</h2>
-            <button class="text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors">查看全部</button>
-          </div>
-          <div class="flex justify-between items-center px-2">
-            <div class="text-center group cursor-pointer">
-              <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-300 to-rose-400 flex items-center justify-center mb-2 shadow-sm transition-transform group-hover:scale-110">
-                <i class="fas fa-fire text-white text-2xl"></i>
-              </div>
-              <span class="text-slate-600 font-bold text-xs">坚持者</span>
-            </div>
-            <div class="text-center group cursor-pointer">
-              <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-blue-300 to-indigo-400 flex items-center justify-center mb-2 shadow-sm transition-transform group-hover:scale-110">
-                <i class="fas fa-comments text-white text-2xl"></i>
-              </div>
-              <span class="text-slate-600 font-bold text-xs">倾诉者</span>
-            </div>
-            <div class="text-center group cursor-pointer">
-              <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-300 to-blue-400 flex items-center justify-center mb-2 shadow-sm transition-transform group-hover:scale-110">
-                <i class="fas fa-seedling text-white text-2xl"></i>
-              </div>
-              <span class="text-slate-600 font-bold text-xs">成长者</span>
-            </div>
-            <div class="text-center">
-              <div class="w-16 h-16 mx-auto rounded-2xl bg-white/50 border-2 border-dashed border-slate-300 flex items-center justify-center mb-2">
-                <i class="fas fa-lock text-slate-300 text-xl"></i>
-              </div>
-              <span class="text-slate-400 font-medium text-xs">待解锁</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="glass rounded-3xl overflow-hidden py-2">
-          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('个人资料功能开发中')">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center shadow-sm">
-                <i class="fas fa-user-edit text-blue-600 text-lg"></i>
-              </div>
-              <div>
-                <span class="text-slate-800 font-bold block">个人资料</span>
-                <span class="text-slate-500 text-xs font-medium mt-1 block">编辑昵称、时长与基本信息</span>
-              </div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-400"></i>
-          </div>
-          
-          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('心情日记功能开发中')">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center shadow-sm">
-                <i class="fas fa-book text-amber-600 text-lg"></i>
-              </div>
-              <div>
-                <span class="text-slate-800 font-bold block">心情日记</span>
-                <span class="text-slate-500 text-xs font-medium mt-1 block">回顾您过往的心境记录</span>
-              </div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-400"></i>
-          </div>
-          
-          <div class="menu-item flex items-center justify-between p-5 cursor-pointer mx-2" onclick="showToast('收藏内容功能开发中')">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center shadow-sm">
-                <i class="fas fa-bookmark text-rose-600 text-lg"></i>
-              </div>
-              <div>
-                <span class="text-slate-800 font-bold block">我的收藏</span>
-                <span class="text-slate-500 text-xs font-medium mt-1 block">查看保存的文章与演练</span>
-              </div>
-            </div>
-            <div class="flex items-center space-x-3">
-              <span class="bg-slate-100 text-slate-500 font-bold text-xs px-2 py-1 rounded-lg">12项</span>
-              <i class="fas fa-chevron-right text-slate-400"></i>
-            </div>
-          </div>
+      <div class="setting-card p-5 md:p-6">
+        <h3 class="text-slate-800 font-extrabold text-lg md:text-xl mb-4">个人资料与偏好</h3>
+        <div class="space-y-3">
+          <button class="w-full flex items-center justify-between gap-4 p-4 rounded-2xl bg-white/70 border border-white text-left" onclick="showUserToast('个人资料编辑功能开发中')">
+            <span class="flex items-center gap-3"><span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-user-pen"></i></span><span><b class="block text-slate-800 text-sm">基本信息</b><em class="not-italic text-slate-500 text-xs font-semibold">昵称、学校、专业、来华时长</em></span></span><i class="fas fa-chevron-right text-slate-400"></i>
+          </button>
+          <button class="w-full flex items-center justify-between gap-4 p-4 rounded-2xl bg-white/70 border border-white text-left" onclick="showUserToast('语言偏好设置功能开发中')">
+            <span class="flex items-center gap-3"><span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center"><i class="fas fa-globe"></i></span><span><b class="block text-slate-800 text-sm">语言偏好</b><em class="not-italic text-slate-500 text-xs font-semibold">中文 / English / 母语辅助解释</em></span></span><i class="fas fa-chevron-right text-slate-400"></i>
+          </button>
+          <button class="w-full flex items-center justify-between gap-4 p-4 rounded-2xl bg-white/70 border border-white text-left" onclick="showUserToast('求职意向设置功能开发中')">
+            <span class="flex items-center gap-3"><span class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center"><i class="fas fa-location-dot"></i></span><span><b class="block text-slate-800 text-sm">求职意向</b><em class="not-italic text-slate-500 text-xs font-semibold">城市、行业、岗位与实习周期</em></span></span><i class="fas fa-chevron-right text-slate-400"></i>
+          </button>
         </div>
       </div>
 
-      <div class="space-y-6">
-        <div class="glass rounded-3xl overflow-hidden py-2 h-full">
-          <div class="p-6 pb-2">
-            <h2 class="text-slate-800 font-bold text-lg">系统偏好</h2>
-          </div>
-          
-          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('提醒设置功能开发中')">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shadow-sm">
-                <i class="fas fa-bell text-emerald-600 text-lg"></i>
-              </div>
-              <div>
-                <span class="text-slate-800 font-bold block">消息与提醒</span>
-                <span class="text-slate-500 text-xs font-medium mt-1 block">每日问候与互动通知</span>
-              </div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-400"></i>
-          </div>
-          
-          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('隐私设置功能开发中')">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center shadow-sm">
-                <i class="fas fa-shield-halved text-indigo-600 text-lg"></i>
-              </div>
-              <div>
-                <span class="text-slate-800 font-bold block">隐私与安全</span>
-                <span class="text-slate-500 text-xs font-medium mt-1 block">账号绑定与数据管理</span>
-              </div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-400"></i>
-          </div>
-
-          <div class="menu-item flex items-center justify-between p-5 cursor-pointer border-b border-slate-200/50 mx-2" onclick="showToast('帮助中心功能开发中')">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                <i class="fas fa-circle-question text-slate-500 text-lg"></i>
-              </div>
-              <div>
-                <span class="text-slate-800 font-bold block">帮助中心</span>
-                <span class="text-slate-500 text-xs font-medium mt-1 block">常见问题与在线客服</span>
-              </div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-400"></i>
-          </div>
-          
-          <div class="menu-item flex items-center justify-between p-5 cursor-pointer mx-2" onclick="showToast('关于我们功能开发中')">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                <i class="fas fa-info-circle text-slate-500 text-lg"></i>
-              </div>
-              <div>
-                <span class="text-slate-800 font-bold block">关于 Selene</span>
-                <span class="text-slate-500 text-xs font-medium mt-1 block">版本日志与服务条款</span>
-              </div>
-            </div>
-            <div class="flex items-center space-x-3">
-              <span class="text-slate-400 font-bold text-xs">v1.0.0</span>
-              <i class="fas fa-chevron-right text-slate-400"></i>
-            </div>
-          </div>
+      <div class="setting-card p-5 md:p-6">
+        <h3 class="text-slate-800 font-extrabold text-lg md:text-xl mb-4">账号与安全</h3>
+        <div class="space-y-3">
+          <button class="w-full flex items-center justify-between gap-4 p-4 rounded-2xl bg-white/70 border border-white text-left" onclick="showUserToast('隐私设置功能开发中')">
+            <span class="flex items-center gap-3"><span class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fas fa-shield-halved"></i></span><span><b class="block text-slate-800 text-sm">隐私与数据</b><em class="not-italic text-slate-500 text-xs font-semibold">聊天记录、求职资料、数据授权</em></span></span><i class="fas fa-chevron-right text-slate-400"></i>
+          </button>
+          <button class="w-full flex items-center justify-between gap-4 p-4 rounded-2xl bg-white/70 border border-white text-left" onclick="showUserToast('提醒设置功能开发中')">
+            <span class="flex items-center gap-3"><span class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center"><i class="fas fa-bell"></i></span><span><b class="block text-slate-800 text-sm">通知提醒</b><em class="not-italic text-slate-500 text-xs font-semibold">学习打卡、面试安排、岗位更新</em></span></span><i class="fas fa-chevron-right text-slate-400"></i>
+          </button>
+          <a href="login.html" class="w-full flex items-center justify-between gap-4 p-4 rounded-2xl bg-white/70 border border-rose-100 text-left text-rose-500 hover:bg-white transition-all">
+            <span class="flex items-center gap-3"><span class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center"><i class="fas fa-right-from-bracket"></i></span><span><b class="block text-sm">退出登录</b><em class="not-italic text-rose-400 text-xs font-semibold">返回登录注册页面</em></span></span><i class="fas fa-chevron-right text-rose-300"></i>
+          </a>
         </div>
       </div>
-
-    </div>
-
-    <div class="text-center pt-8 pb-4">
-      <p class="text-slate-400 font-medium text-sm">© 2026 Selene 智能陪伴平台. All rights reserved.</p>
-      <p class="text-slate-400/60 font-medium text-xs mt-2">上海留学生心理陪伴服务专属平台</p>
     </div>
   </div>
+</section>
+
 </main>
 
-<script>
-// 页面导航函数
-function navigateTo(page) {
-  window.location.href = page + '.html';
-}
+<nav class="mobile-bottom-nav">
+  <a href="chinese.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-language"></i><span>中文学习</span>
+      </a>
+  <a href="chat.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-comments"></i><span>情感陪伴</span>
+      </a>
+  <a href="internship.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-briefcase"></i><span>实习助手</span>
+      </a>
+  <a href="career.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-building-user"></i><span>留华就业</span>
+      </a>
+  <a href="user.html" class="mobile-tab text-blue-600 bg-white shadow-sm">
+        <i class="fas fa-user"></i><span>个人中心</span>
+      </a>
+</nav>
 
-// 显示提示
-function showToast(message) {
+<script>
+function showUserToast(message) {
+  const oldToast = document.querySelector('.user-toast');
+  if (oldToast) oldToast.remove();
   const toast = document.createElement('div');
-  toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-2xl shadow-xl z-50 text-sm font-bold flex items-center space-x-2';
-  toast.innerHTML = `<i class="fas fa-info-circle text-blue-400"></i><span>${message}</span>`;
+  toast.className = 'user-toast';
+  toast.innerHTML = `<i class="fas fa-circle-info text-blue-300"></i><span>${message}</span>`;
   document.body.appendChild(toast);
   setTimeout(() => {
-    toast.style.transition = 'opacity 0.5s ease-out';
+    toast.style.transition = 'opacity .35s ease, transform .35s ease';
     toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 500);
-  }, 2000);
+    toast.style.transform = 'translateX(-50%) translateY(-8px)';
+    setTimeout(() => toast.remove(), 360);
+  }, 1600);
 }
 
-// 退出登录
-function handleLogout() {
-  if (confirm('确定要退出登录吗？')) {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userNickname');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userDuration');
-    localStorage.removeItem('userEmotion');
-    
-    // 返回登录页
-    window.location.href = 'login.html';
-  }
-}
-
-// 初始化
 document.addEventListener('DOMContentLoaded', function() {
-  /*
-  if (!localStorage.getItem('isLoggedIn')) {
-    window.location.href = 'login.html';
-    return;
-  }
-  */
-  
-  // 加载用户信息
   const nickname = localStorage.getItem('userNickname');
-  if (nickname) {
-    document.getElementById('userNickname').textContent = nickname;
-    document.getElementById('userGreeting').textContent = nickname;
-  }
+  const profileName = document.getElementById('profileName');
+  if (nickname && profileName) profileName.textContent = nickname;
 });
 </script>
-<script>
 
-// Mobile navigation drawer: only affects narrow screens and keeps existing navigation logic intact.
-function toggleMobileNav(force) {
-  const shouldOpen = typeof force === 'boolean' ? force : !document.body.classList.contains('mobile-nav-open');
-  document.body.classList.toggle('mobile-nav-open', shouldOpen);
-  const btn = document.querySelector('.mobile-nav-toggle');
-  if (btn) {
-    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-    const icon = btn.querySelector('i');
-    if (icon) icon.className = shouldOpen ? 'fas fa-times' : 'fas fa-bars';
-  }
-}
-
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') toggleMobileNav(false);
-});
-
-document.querySelectorAll('body > aside.glass .nav-item').forEach(function(item) {
-  item.addEventListener('click', function() { toggleMobileNav(false); });
-});
-
-window.addEventListener('resize', function() {
-  if (window.innerWidth > 768) toggleMobileNav(false);
-});
-
-</script>
-<nav class="app-bottom-nav" aria-label="底部导航">
-  <button type="button" class="app-tab" onclick="navigateTo('chat')" aria-label="情感陪伴"><i class="fas fa-comments"></i></button>
-  <button type="button" class="app-tab" onclick="navigateTo('dashboard')" aria-label="心境轨迹"><i class="fas fa-chart-line"></i></button>
-  <button type="button" class="app-tab" onclick="navigateTo('simulator')" aria-label="跨文化演练"><i class="fas fa-theater-masks"></i></button>
-  <button type="button" class="app-tab" onclick="navigateTo('guide')" aria-label="沪上指南"><i class="fas fa-compass"></i></button>
-  <button type="button" class="app-tab active" onclick="navigateTo('user')" aria-label="个人中心"><i class="fas fa-user"></i></button>
-</nav>
 </body>
 </html>

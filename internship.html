@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Selene - 实习助手</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: { colors: { primary: { 50:'#EFF6FF',100:'#DBEAFE',200:'#BFDBFE',300:'#93C5FD',400:'#60A5FA',500:'#3B82F6',600:'#2563EB',700:'#1D4ED8',800:'#1E40AF',900:'#1E3A8A' }, accent: { 400:'#FBBF24',500:'#F59E0B',600:'#D97706' } }, fontFamily: { sans: ['Noto Sans SC','PingFang SC','Microsoft YaHei','sans-serif'] } } } };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; box-sizing: border-box; }
+:root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+html, body { width: 100%; min-height: 100%; }
+body { margin: 0; background: linear-gradient(120deg, #E0F2FE 0%, #EEF2FF 48%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
+.glass { background: rgba(255,255,255,.66); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.82); box-shadow: 0 8px 32px rgba(30,58,138,.06); }
+.nav-item:hover { transform: translateX(6px); }
+.nav-item.active:hover { transform: none; }
+.logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .34); border-radius: 999px; }
+.mobile-topbar, .mobile-bottom-nav { display: none; }
+.page-shell { min-height: 100dvh; margin-left: 16rem; padding: 1.5rem; }
+.blank-board { min-height: calc(100dvh - 9.5rem); border-radius: 2rem; }
+@media (max-width: 768px) {
+  body { overflow: hidden; -webkit-text-size-adjust: 100%; }
+  .desktop-sidebar { display: none !important; }
+  .mobile-topbar { display: flex; position: sticky; top: 0; z-index: 30; padding: calc(10px + var(--safe-top)) 14px 10px; align-items: center; justify-content: space-between; background: rgba(255,255,255,.58); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid rgba(226,232,240,.58); }
+  .mobile-bottom-nav { display: grid; position: fixed; left: 10px; right: 10px; bottom: calc(10px + var(--safe-bottom)); z-index: 40; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 4px; padding: 6px; border-radius: 24px; background: rgba(255,255,255,.78); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,.88); box-shadow: 0 14px 34px rgba(30,58,138,.12); }
+  .mobile-tab { min-width: 0; height: 54px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; text-decoration: none; }
+  .mobile-tab i { font-size: 17px; }
+  .page-shell { margin-left: 0; padding: 0 12px calc(86px + var(--safe-bottom)); height: 100dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .desktop-header { display: none !important; }
+  .blank-board { min-height: calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)); border-radius: 26px; margin-top: 14px; }
+}
+
+/* ===== Internship Assistant redesigned module ===== */
+.intern-board {
+  min-height: calc(100dvh - 9.5rem);
+  border-radius: 2rem;
+  overflow: hidden;
+  padding: 1.3rem;
+  overflow-y: auto;
+}
+.intern-wrap { max-width: 1180px; margin: 0 auto; }
+.intern-hero {
+  display:grid;
+  grid-template-columns: minmax(0,1.25fr) minmax(280px,.75fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.intern-card {
+  background: rgba(255,255,255,.74);
+  border: 1px solid rgba(255,255,255,.90);
+  border-radius: 1.65rem;
+  box-shadow: 0 12px 32px rgba(30,58,138,.07);
+}
+.intern-main {
+  padding: 1.45rem;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(37,99,235,.18), transparent 30%),
+    radial-gradient(circle at 95% 22%, rgba(245,158,11,.16), transparent 30%),
+    rgba(255,255,255,.72);
+}
+.intern-kicker {
+  display:inline-flex; align-items:center; gap:.45rem;
+  padding:.38rem .72rem; border-radius:999px;
+  background:rgba(37,99,235,.09); border:1px solid rgba(37,99,235,.16);
+  color:#2563EB; font-size:.75rem; font-weight:900; margin-bottom:.8rem;
+}
+.intern-title { font-size:1.85rem; line-height:1.16; font-weight:950; color:#0F172A; letter-spacing:-.02em; }
+.intern-sub { margin-top:.7rem; color:#64748B; line-height:1.72; font-size:.94rem; font-weight:650; max-width:760px; }
+.intern-actions { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1.05rem; }
+.intern-btn {
+  border:0; cursor:pointer; border-radius:1rem; padding:.78rem .95rem;
+  font-weight:950; display:inline-flex; align-items:center; gap:.48rem;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.intern-btn.primary { background:#1E293B; color:#fff; box-shadow:0 12px 24px rgba(15,23,42,.13); }
+.intern-btn.soft { background:rgba(255,255,255,.76); color:#334155; border:1px solid rgba(226,232,240,.9); }
+.intern-btn:hover { transform:translateY(-2px); }
+.readiness-card { padding:1.2rem; display:flex; flex-direction:column; justify-content:space-between; }
+.readiness-ring {
+  width:92px; height:92px; border-radius:999px;
+  background:conic-gradient(#2563EB 0 76%, rgba(148,163,184,.18) 76% 100%);
+  box-shadow: inset 0 0 0 10px rgba(255,255,255,.92);
+  display:flex; align-items:center; justify-content:center;
+}
+.readiness-ring span { font-size:1.5rem; font-weight:950; color:#0F172A; }
+.readiness-item { display:flex; justify-content:space-between; gap:.65rem; align-items:center; padding:.52rem 0; border-bottom:1px solid rgba(226,232,240,.68); }
+.readiness-item:last-child { border-bottom:0; }
+.readiness-label { color:#64748B; font-size:.78rem; font-weight:850; }
+.readiness-score { color:#2563EB; font-weight:950; font-size:.82rem; }
+
+.intern-feature-grid {
+  display:grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap:.85rem; margin-bottom:1rem;
+}
+.intern-feature {
+  padding:1rem; min-height:150px; cursor:pointer; transition:all .22s ease;
+  position:relative; overflow:hidden; border-color:rgba(147,197,253,.42);
+  background:linear-gradient(135deg,#EAF3FF 0%,#F8FBFF 65%,#FFFFFF 100%);
+}
+.intern-feature:hover { transform:translateY(-4px); box-shadow:0 18px 38px rgba(30,58,138,.12); }
+.intern-feature.active { border-color:rgba(37,99,235,.42); box-shadow:0 18px 38px rgba(37,99,235,.13); }
+.feature-icon { width:3rem; height:3rem; border-radius:1.15rem; background:#DBEAFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:1.18rem; margin-bottom:.75rem; }
+.intern-feature h3 { color:#0F172A; font-weight:950; font-size:1rem; }
+.intern-feature p { margin-top:.35rem; color:#64748B; line-height:1.55; font-size:.8rem; font-weight:650; }
+.feature-arrow { margin-top:auto; padding-top:.75rem; display:flex; align-items:center; justify-content:space-between; color:#2563EB; font-weight:950; font-size:.76rem; }
+
+.intern-workspace { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(310px,.92fr); gap:1rem; }
+.panel-pad { padding:1.15rem; }
+.section-head { display:flex; align-items:center; justify-content:space-between; gap:.8rem; margin-bottom:.9rem; }
+.section-head h3 { color:#0F172A; font-size:1.12rem; font-weight:950; }
+.section-head p { color:#64748B; font-size:.8rem; font-weight:650; margin-top:.2rem; }
+.pill { display:inline-flex; align-items:center; gap:.35rem; padding:.38rem .62rem; border-radius:999px; background:rgba(37,99,235,.08); border:1px solid rgba(37,99,235,.14); color:#2563EB; font-size:.72rem; font-weight:900; white-space:nowrap; }
+
+.intern-view { display:none; animation: internFade .22s ease-out; }
+.intern-view.active { display:block; }
+@keyframes internFade { from{opacity:0; transform:translateY(7px);} to{opacity:1; transform:none;} }
+
+.job-list { display:grid; gap:.75rem; }
+.job-card { padding:.95rem; border-radius:1.25rem; background:rgba(248,250,252,.84); border:1px solid rgba(226,232,240,.86); cursor:pointer; transition:all .18s ease; }
+.job-card:hover { transform:translateY(-2px); background:#fff; box-shadow:0 12px 24px rgba(30,58,138,.06); }
+.job-top { display:flex; justify-content:space-between; gap:.8rem; align-items:flex-start; }
+.job-title { color:#0F172A; font-weight:950; }
+.job-company { color:#64748B; font-size:.8rem; font-weight:700; margin-top:.18rem; }
+.match-badge { flex-shrink:0; padding:.38rem .55rem; border-radius:999px; background:rgba(16,185,129,.09); color:#059669; font-size:.72rem; font-weight:950; }
+.job-tags { display:flex; flex-wrap:wrap; gap:.42rem; margin-top:.75rem; }
+.job-tags span { padding:.32rem .5rem; border-radius:999px; background:#fff; border:1px solid rgba(226,232,240,.9); color:#64748B; font-size:.7rem; font-weight:850; }
+
+.resume-score-card { padding:1rem; border-radius:1.25rem; background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(255,255,255,.76)); border:1px solid rgba(147,197,253,.36); }
+.resume-row { display:grid; grid-template-columns:86px minmax(0,1fr) 38px; gap:.65rem; align-items:center; padding:.62rem 0; border-bottom:1px solid rgba(226,232,240,.7); }
+.resume-row:last-child { border-bottom:0; }
+.resume-row label { color:#64748B; font-size:.76rem; font-weight:850; }
+.resume-bar { height:7px; border-radius:999px; background:rgba(148,163,184,.18); overflow:hidden; }
+.resume-bar span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#2563EB,#F59E0B); }
+.resume-row b { color:#2563EB; text-align:right; font-weight:950; font-size:.8rem; }
+
+.interview-card { display:grid; gap:.72rem; }
+.question-card { padding:.92rem; border-radius:1.15rem; background:#fff; border:1px solid rgba(226,232,240,.88); }
+.question-card strong { color:#0F172A; font-weight:950; }
+.question-card p { color:#64748B; font-size:.82rem; line-height:1.62; margin-top:.35rem; font-weight:650; }
+.culture-list { display:grid; gap:.65rem; }
+.culture-item { display:flex; gap:.75rem; padding:.85rem; border-radius:1.15rem; background:#fff; border:1px solid rgba(226,232,240,.88); }
+.culture-icon { width:2.25rem; height:2.25rem; border-radius:.9rem; background:rgba(245,158,11,.10); color:#D97706; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.culture-item h4 { color:#0F172A; font-size:.9rem; font-weight:950; }
+.culture-item p { color:#64748B; font-size:.78rem; line-height:1.55; margin-top:.2rem; font-weight:650; }
+
+.timeline-list { display:grid; gap:.75rem; }
+.timeline-step { display:grid; grid-template-columns:2.1rem minmax(0,1fr); gap:.7rem; align-items:flex-start; }
+.timeline-dot { width:2.1rem; height:2.1rem; border-radius:999px; background:#DBEAFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-weight:950; }
+.timeline-step h4 { color:#0F172A; font-size:.88rem; font-weight:950; }
+.timeline-step p { color:#64748B; font-size:.76rem; line-height:1.55; margin-top:.2rem; font-weight:650; }
+
+.intern-toast {
+  position:fixed; left:50%; top:calc(22px + var(--safe-top)); transform:translateX(-50%);
+  z-index:120; background:#1E293B; color:white; border-radius:1rem; padding:.82rem 1rem;
+  box-shadow:0 18px 38px rgba(15,23,42,.18); font-size:.86rem; font-weight:850;
+  display:flex; align-items:center; gap:.55rem;
+}
+@media (max-width: 1120px) {
+  .intern-feature-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .intern-hero, .intern-workspace { grid-template-columns:1fr; }
+}
+@media (max-width: 768px) {
+  .intern-board { min-height:calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)); margin-top:14px; border-radius:26px; padding:.9rem; }
+  .intern-title { font-size:1.45rem; }
+  .intern-sub { font-size:.84rem; }
+  .intern-actions { gap:.5rem; }
+  .intern-btn { padding:.68rem .78rem; font-size:.82rem; border-radius:.9rem; }
+  .intern-feature-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
+  .intern-feature { min-height:142px; padding:.85rem; border-radius:1.25rem; }
+  .feature-icon { width:2.55rem; height:2.55rem; border-radius:1rem; font-size:1rem; margin-bottom:.55rem; }
+  .intern-feature h3 { font-size:.88rem; }
+  .intern-feature p { font-size:.72rem; line-height:1.43; }
+  .feature-arrow { font-size:.68rem; padding-top:.55rem; }
+  .panel-pad { padding:.92rem; }
+  .section-head { align-items:flex-start; }
+  .resume-row { grid-template-columns:76px minmax(0,1fr) 34px; }
+}
+@media (max-width: 390px) {
+  .intern-board { padding:.72rem; }
+  .intern-feature { min-height:148px; }
+  .intern-feature p { display:none; }
+}
+
+
+/* ===== Deep module navigation for Internship Assistant ===== */
+.intern-home { display:none; }
+.intern-home.active { display:block; }
+.intern-subview { display:none; animation: internFade .22s ease-out; }
+.intern-subview.active { display:block; }
+.intern-sub-header {
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  margin-bottom:1rem; padding:.78rem .9rem; border-radius:1.35rem;
+  background:linear-gradient(135deg, rgba(255,255,255,.92), rgba(239,246,255,.84));
+  border:1px solid rgba(255,255,255,.94); box-shadow:0 10px 28px rgba(30,58,138,.08);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); position:sticky; top:0; z-index:5;
+}
+.intern-back-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:.7rem .95rem; border-radius:1rem; background:rgba(255,255,255,.82);
+  border:1px solid rgba(226,232,240,.84); color:#334155; font-weight:950; cursor:pointer;
+  box-shadow:0 8px 22px rgba(30,58,138,.07); transition:all .18s ease; white-space:nowrap;
+}
+.intern-back-btn:hover { transform:translateX(-2px); color:#2563EB; background:#fff; }
+.sub-title { text-align:center; flex:1; min-width:0; }
+.sub-title h3 { color:#0F172A; font-size:1.42rem; font-weight:950; }
+.sub-title p { color:#64748B; font-size:.84rem; font-weight:650; margin-top:.15rem; }
+.sub-spacer { width:42px; flex-shrink:0; }
+.entry-grid .intern-feature { display:flex; flex-direction:column; }
+.intern-detail-grid { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(300px,.92fr); gap:1rem; }
+.job-filter-row { display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.2rem; }
+.filter-chip { flex:0 0 auto; padding:.5rem .75rem; border-radius:999px; border:1px solid rgba(226,232,240,.9); background:rgba(255,255,255,.75); color:#64748B; font-size:.76rem; font-weight:900; cursor:pointer; }
+.filter-chip.active { color:#2563EB; background:rgba(37,99,235,.08); border-color:rgba(37,99,235,.24); }
+.match-reason { margin-top:.75rem; padding:.65rem .75rem; border-radius:1rem; background:rgba(37,99,235,.06); color:#475569; font-size:.76rem; line-height:1.55; font-weight:700; }
+.check-list { display:grid; gap:.75rem; }
+.check-list label { display:flex; align-items:flex-start; gap:.65rem; padding:.78rem; border-radius:1rem; background:rgba(248,250,252,.88); border:1px solid rgba(226,232,240,.86); color:#475569; font-size:.82rem; font-weight:800; line-height:1.45; }
+.resume-before-after { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
+.ba-card { padding:.9rem; border-radius:1rem; background:rgba(248,250,252,.9); border:1px solid rgba(226,232,240,.86); }
+.ba-card h4 { color:#64748B; font-size:.78rem; font-weight:950; margin-bottom:.45rem; }
+.ba-card p { color:#475569; font-size:.82rem; line-height:1.65; font-weight:650; }
+.ba-card.improved { background:rgba(37,99,235,.06); border-color:rgba(37,99,235,.18); }
+.ba-card.improved h4 { color:#2563EB; }
+.upload-box { padding:1.2rem; border-radius:1.25rem; text-align:center; background:rgba(37,99,235,.07); border:1px dashed rgba(37,99,235,.35); color:#2563EB; cursor:pointer; }
+.upload-box i { font-size:2rem; margin-bottom:.55rem; }
+.upload-box h4 { font-weight:950; color:#0F172A; }
+.upload-box p { margin-top:.25rem; color:#64748B; font-size:.8rem; font-weight:700; }
+.keyword-cloud { display:flex; flex-wrap:wrap; gap:.5rem; }
+.keyword-cloud span { padding:.38rem .6rem; border-radius:999px; background:#fff; border:1px solid rgba(226,232,240,.9); color:#64748B; font-size:.74rem; font-weight:850; }
+.interview-stage { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.5rem; }
+.stage { padding:.65rem .5rem; border-radius:.95rem; background:rgba(248,250,252,.9); border:1px solid rgba(226,232,240,.86); text-align:center; color:#64748B; font-size:.75rem; font-weight:900; }
+.stage.active { background:rgba(37,99,235,.09); color:#2563EB; border-color:rgba(37,99,235,.22); }
+.enhanced-culture-list .culture-item { align-items:flex-start; }
+.enhanced-culture-list .culture-item button { margin-top:.6rem; padding:.48rem .68rem; border-radius:.8rem; border:1px solid rgba(37,99,235,.18); background:rgba(37,99,235,.08); color:#2563EB; font-size:.76rem; font-weight:900; cursor:pointer; }
+.culture-tip { padding:.86rem; border-radius:1rem; background:rgba(248,250,252,.9); border:1px solid rgba(226,232,240,.86); margin-bottom:.75rem; }
+.culture-tip strong { color:#0F172A; font-weight:950; font-size:.86rem; }
+.culture-tip p { color:#64748B; font-size:.78rem; line-height:1.6; font-weight:650; margin-top:.25rem; }
+@media (max-width:1120px) { .intern-detail-grid { grid-template-columns:1fr; } }
+@media (max-width:768px) {
+  body.intern-deep .mobile-bottom-nav { display:none !important; }
+  body.intern-deep .page-shell { padding-bottom:calc(14px + var(--safe-bottom)) !important; }
+  .intern-board { max-height:none; overflow-y:auto; }
+  .intern-sub-header { top:0; z-index:6; padding:.62rem .68rem; border-radius:1.28rem; margin-bottom:.85rem; }
+  .intern-back-btn { width:42px; height:42px; padding:0; border-radius:1rem; flex-shrink:0; }
+  .intern-back-btn span { display:none; }
+  .sub-title h3 { font-size:1.08rem; }
+  .sub-title p { display:none; }
+  .sub-spacer { width:42px; }
+  .intern-feature-grid.entry-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .feature-arrow span { font-size:.68rem; }
+  .resume-before-after { grid-template-columns:1fr; }
+  .interview-stage { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+</style>
+</head>
+<body>
+<aside class="desktop-sidebar glass fixed left-0 top-0 z-40 h-screen w-64 border-r border-white/50 flex flex-col">
+  <div class="p-8 pb-4 flex items-center gap-3">
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md overflow-hidden flex-shrink-0">
+      <img src="selene_logo.png" alt="Selene" class="logo-img">
+    </div>
+    <div>
+      <h1 class="text-slate-800 font-extrabold text-lg leading-tight">Selene</h1>
+      <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
+    </div>
+  </div>
+  <nav class="flex-1 px-4 mt-6 space-y-2 overflow-y-auto custom-scrollbar">
+    <a href="chinese.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-language w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">中文学习</span>
+        </a>
+    <a href="chat.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-comments w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">情感陪伴</span>
+        </a>
+    <a href="internship.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all active bg-white text-slate-900 border-blue-100 shadow-sm">
+          <i class="fas fa-briefcase w-6 text-center text-lg text-blue-600"></i><span class="font-bold">实习助手</span>
+        </a>
+    <a href="career.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-building-user w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">留华就业</span>
+        </a>
+    <a href="user.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-user w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">个人中心</span>
+        </a>
+  </nav>
+  <div class="p-4 border-t border-slate-200/50">
+    <a href="login.html" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
+      <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
+    </a>
+  </div>
+</aside>
+
+<main class="page-shell">
+  <div class="mobile-topbar">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-2xl bg-slate-800 overflow-hidden flex-shrink-0"><img src="selene_logo.png" alt="Selene" class="logo-img"></div>
+      <div class="min-w-0"><h1 class="text-slate-800 font-extrabold leading-tight truncate">实习助手</h1><p class="text-slate-500 text-xs font-medium truncate">简历优化、面试模拟与实习推荐</p></div>
+    </div>
+    <a href="user.html" class="w-10 h-10 rounded-2xl bg-white/70 border border-white flex items-center justify-center text-slate-600"><i class="fas fa-user"></i></a>
+  </div>
+
+  <header class="desktop-header mb-6 flex items-center justify-between">
+    <div>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/55 border border-white/80 text-blue-600 text-xs font-bold mb-3">
+        <i class="fas fa-briefcase"></i><span>Selene</span>
+      </div>
+      <h2 class="text-3xl font-extrabold text-slate-800">实习助手</h2>
+      <p class="text-slate-500 font-medium mt-1">简历优化、面试模拟与实习推荐</p>
+    </div>
+  </header>
+
+  
+<section class="intern-board glass">
+  <div class="intern-wrap">
+    <div class="intern-home active" id="intern-home">
+      <div class="intern-hero">
+        <div class="readiness-card intern-card">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <div class="intern-kicker" style="margin-bottom:.55rem;"><i class="fas fa-chart-simple"></i><span>准备度</span></div>
+              <h3 class="text-slate-900 font-black text-xl">实习竞争力评分</h3>
+              <p class="text-slate-500 text-sm font-semibold mt-2">基于语言、简历、面试和岗位匹配度综合评估</p>
+            </div>
+            <div class="readiness-ring"><span>76</span></div>
+          </div>
+          <div class="mt-4">
+            <div class="readiness-item"><span class="readiness-label">中文面试表达</span><span class="readiness-score">72%</span></div>
+            <div class="readiness-item"><span class="readiness-label">简历岗位匹配</span><span class="readiness-score">81%</span></div>
+            <div class="readiness-item"><span class="readiness-label">职场文化理解</span><span class="readiness-score">68%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="intern-feature-grid entry-grid">
+        <article class="intern-feature intern-card" onclick="openInternModule('jobs')" role="button" tabindex="0" aria-label="进入实习推荐模块">
+          <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
+          <h3>实习推荐</h3>
+          <p>按专业、语言、国籍、签证状态和职业兴趣匹配岗位。</p>
+          <div class="feature-arrow"><span>查看推荐岗位</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+        <article class="intern-feature intern-card" onclick="openInternModule('resume')" role="button" tabindex="0" aria-label="进入简历优化模块">
+          <div class="feature-icon"><i class="fas fa-file-pen"></i></div>
+          <h3>简历优化</h3>
+          <p>中英文简历润色，转换成中国企业更熟悉的表达结构。</p>
+          <div class="feature-arrow"><span>开始诊断</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+        <article class="intern-feature intern-card" onclick="openInternModule('interview')" role="button" tabindex="0" aria-label="进入面试模拟模块">
+          <div class="feature-icon"><i class="fas fa-comments"></i></div>
+          <h3>面试模拟</h3>
+          <p>覆盖中文/英文面试、HR问题和行业岗位问题。</p>
+          <div class="feature-arrow"><span>模拟面试</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+        <article class="intern-feature intern-card" onclick="openInternModule('culture')" role="button" tabindex="0" aria-label="进入职场文化模块">
+          <div class="feature-icon"><i class="fas fa-handshake-angle"></i></div>
+          <h3>职场文化</h3>
+          <p>训练微信沟通、会议表达、称呼礼仪和反馈方式。</p>
+          <div class="feature-arrow"><span>查看情景</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+      </div>
+
+      <div class="intern-card panel-pad quick-plan">
+        <div class="section-head">
+          <div><h3>本周实习准备路径</h3><p>Selene 将大目标拆成每天可完成的小任务</p></div>
+          <button class="intern-btn primary" onclick="internToast('已生成7天实习冲刺计划')"><i class="fas fa-calendar-days"></i> 7天冲刺计划</button>
+        </div>
+        <div class="timeline-list compact-timeline">
+          <div class="timeline-step"><div class="timeline-dot">1</div><div><h4>确定目标方向</h4><p>海外运营 / 市场调研 / 社群运营三类岗位优先。</p></div></div>
+          <div class="timeline-step"><div class="timeline-dot">2</div><div><h4>完成中文简历优化</h4><p>补充量化成果，并适配中国企业招聘习惯。</p></div></div>
+          <div class="timeline-step"><div class="timeline-dot">3</div><div><h4>练习中文面试</h4><p>重点训练自我介绍和“为什么选择中国企业”。</p></div></div>
+          <div class="timeline-step"><div class="timeline-dot">4</div><div><h4>投递匹配岗位</h4><p>优先选择标注“接受外籍学生”的岗位。</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="intern-subview" id="intern-jobs">
+      <div class="intern-sub-header">
+        <button class="intern-back-btn" onclick="backToInternHome()"><i class="fas fa-chevron-left"></i><span>返回实习助手</span></button>
+        <div class="sub-title"><h3>实习推荐</h3><p>岗位匹配、投递清单与岗位适配原因</p></div>
+        <div class="sub-spacer"></div>
+      </div>
+      <div class="intern-detail-grid">
+        <div class="intern-card panel-pad">
+          <div class="section-head">
+            <div><h3>实习岗位</h3><p>优先展示“接受外籍学生 / 支持英文沟通 / 可开具实习证明”的岗位</p></div>
+            <span class="pill"><i class="fas fa-sparkles"></i> 匹配 12 个岗位</span>
+          </div>
+          <div class="job-filter-row">
+            <button class="filter-chip active">全部</button><button class="filter-chip">市场运营</button><button class="filter-chip">跨境电商</button><button class="filter-chip">可实习加注</button><button class="filter-chip">英文友好</button>
+          </div>
+          <div class="job-list mt-3">
+            <div class="job-card" onclick="internToast('已收藏：海外运营实习生')">
+              <div class="job-top"><div><div class="job-title">海外运营实习生</div><div class="job-company">跨境电商公司 · 上海 · 每周3天</div></div><span class="match-badge">92%匹配</span></div>
+              <div class="job-tags"><span>接受外籍学生</span><span>英语优势</span><span>中文B1+</span><span>可转正</span></div>
+              <div class="match-reason"><i class="fas fa-lightbulb"></i> 匹配原因：你的英语背景和社群运营经历适合海外用户增长岗位。</div>
+            </div>
+            <div class="job-card" onclick="internToast('已收藏：国际市场调研助理')">
+              <div class="job-top"><div><div class="job-title">国际市场调研助理</div><div class="job-company">出海游戏企业 · 上海 · 远程/线下混合</div></div><span class="match-badge">88%匹配</span></div>
+              <div class="job-tags"><span>市场分析</span><span>多语种</span><span>简历需中文</span><span>导师制</span></div>
+              <div class="match-reason"><i class="fas fa-lightbulb"></i> 匹配原因：适合希望进入市场分析、海外增长和内容本地化方向的留学生。</div>
+            </div>
+            <div class="job-card" onclick="internToast('已收藏：留学生社群运营')">
+              <div class="job-top"><div><div class="job-title">留学生社群运营</div><div class="job-company">国际教育机构 · 上海 · 可实习加注</div></div><span class="match-badge">84%匹配</span></div>
+              <div class="job-tags"><span>校园资源</span><span>英文沟通</span><span>内容运营</span><span>灵活排班</span></div>
+              <div class="match-reason"><i class="fas fa-lightbulb"></i> 匹配原因：岗位对跨文化沟通和留学生真实体验要求较高。</div>
+            </div>
+          </div>
+        </div>
+        <aside class="intern-card panel-pad">
+          <div class="section-head"><div><h3>投递前检查</h3><p>避免因材料或身份问题影响面试</p></div></div>
+          <div class="check-list">
+            <label><i class="fas fa-check-circle text-emerald-500"></i><span>确认岗位是否接受外籍学生</span></label>
+            <label><i class="fas fa-check-circle text-emerald-500"></i><span>准备中英文简历双版本</span></label>
+            <label><i class="fas fa-circle-exclamation text-amber-500"></i><span>向学校确认实习加注流程</span></label>
+            <label><i class="fas fa-circle-exclamation text-amber-500"></i><span>准备每周可实习时间说明</span></label>
+          </div>
+          <button class="intern-btn primary w-full justify-center mt-4" onclick="internToast('已生成岗位投递清单')"><i class="fas fa-list-check"></i> 生成投递清单</button>
+        </aside>
+      </div>
+    </div>
+
+    <div class="intern-subview" id="intern-resume">
+      <div class="intern-sub-header">
+        <button class="intern-back-btn" onclick="backToInternHome()"><i class="fas fa-chevron-left"></i><span>返回实习助手</span></button>
+        <div class="sub-title"><h3>简历优化</h3><p>中英文简历诊断、岗位关键词匹配和中国企业表达结构</p></div>
+        <div class="sub-spacer"></div>
+      </div>
+      <div class="intern-detail-grid">
+        <div class="intern-card panel-pad">
+          <div class="section-head">
+            <div><h3>AI简历诊断</h3><p>根据目标岗位自动检查关键词、经历表达和中文格式</p></div>
+            <span class="pill"><i class="fas fa-file-circle-check"></i> 可提升 18 分</span>
+          </div>
+          <div class="resume-score-card">
+            <div class="resume-row"><label>岗位关键词</label><div class="resume-bar"><span style="width:68%"></span></div><b>68</b></div>
+            <div class="resume-row"><label>中文表达</label><div class="resume-bar"><span style="width:74%"></span></div><b>74</b></div>
+            <div class="resume-row"><label>成果量化</label><div class="resume-bar"><span style="width:52%"></span></div><b>52</b></div>
+            <div class="resume-row"><label>版式结构</label><div class="resume-bar"><span style="width:86%"></span></div><b>86</b></div>
+          </div>
+          <div class="resume-before-after mt-4">
+            <div class="ba-card"><h4>优化前</h4><p>Participated in social media operation and helped with student activities.</p></div>
+            <div class="ba-card improved"><h4>优化后</h4><p>运营留学生社群账号，3周新增120名成员，活动报名率提升28%，负责英文内容本地化与用户反馈整理。</p></div>
+          </div>
+          <div class="mt-4 grid gap-3">
+            <div class="question-card"><strong>建议 1：把经历写成“动作 + 结果”</strong><p>用数字、对象和结果展示贡献，例如新增人数、转化率、活动参与人数。</p></div>
+            <div class="question-card"><strong>建议 2：补充中国企业常见关键词</strong><p>根据目标岗位增加“用户增长、内容运营、数据分析、跨文化沟通”等关键词。</p></div>
+            <div class="question-card"><strong>建议 3：增加签证与可实习时间说明</strong><p>在简历底部清楚写明每周可实习天数、到岗时间和是否需学校实习加注。</p></div>
+          </div>
+        </div>
+        <aside class="intern-card panel-pad">
+          <div class="upload-box" onclick="internToast('已模拟上传简历')"><i class="fas fa-cloud-arrow-up"></i><h4>上传简历进行诊断</h4><p>支持 PDF / Word / 中英文简历</p></div>
+          <div class="keyword-cloud mt-4"><span>海外运营</span><span>用户增长</span><span>市场调研</span><span>数据分析</span><span>跨文化沟通</span><span>中英文表达</span></div>
+          <button class="intern-btn primary w-full justify-center mt-4" onclick="internToast('已生成中文简历优化版')"><i class="fas fa-wand-magic-sparkles"></i> 生成优化版</button>
+        </aside>
+      </div>
+    </div>
+
+    <div class="intern-subview" id="intern-interview">
+      <div class="intern-sub-header">
+        <button class="intern-back-btn" onclick="backToInternHome()"><i class="fas fa-chevron-left"></i><span>返回实习助手</span></button>
+        <div class="sub-title"><h3>面试模拟</h3><p>中文/英文面试、HR追问和岗位问题训练</p></div>
+        <div class="sub-spacer"></div>
+      </div>
+      <div class="intern-detail-grid">
+        <div class="intern-card panel-pad">
+          <div class="section-head">
+            <div><h3>AI 面试模拟</h3><p>先练中文自我介绍，再进入HR追问和岗位问答</p></div>
+            <button class="intern-btn primary" onclick="internToast('模拟面试已开始')"><i class="fas fa-microphone"></i> 开始录音</button>
+          </div>
+          <div class="interview-stage">
+            <div class="stage active">1 自我介绍</div><div class="stage">2 HR追问</div><div class="stage">3 岗位问题</div><div class="stage">4 AI反馈</div>
+          </div>
+          <div class="interview-card mt-4">
+            <div class="question-card"><strong>Q1：请用中文做一个1分钟自我介绍。</strong><p>AI提示：可以按照“我是谁—专业背景—相关经历—为什么适合岗位”的顺序回答。</p></div>
+            <div class="question-card"><strong>Q2：你为什么想在中国企业实习？</strong><p>AI提示：结合语言学习、跨文化能力和对中国市场的兴趣。</p></div>
+            <div class="question-card"><strong>Q3：如果团队沟通全部使用微信，你会怎么适应？</strong><p>AI提示：表达愿意主动确认任务、按时反馈进度、遇到不懂及时提问。</p></div>
+          </div>
+        </div>
+        <aside class="intern-card panel-pad">
+          <div class="section-head"><div><h3>AI评分反馈</h3><p>模拟上一轮面试表现</p></div></div>
+          <div class="resume-row"><label>表达清晰</label><div class="resume-bar"><span style="width:82%"></span></div><b>82</b></div>
+          <div class="resume-row"><label>中文流畅</label><div class="resume-bar"><span style="width:70%"></span></div><b>70</b></div>
+          <div class="resume-row"><label>岗位相关</label><div class="resume-bar"><span style="width:88%"></span></div><b>88</b></div>
+          <div class="mt-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 text-sm text-slate-600 font-semibold leading-relaxed"><i class="fas fa-lightbulb text-blue-500 mr-2"></i>建议用“经历 + 能力 + 岗位价值”的结构回答，避免只说个人兴趣。</div>
+          <button class="intern-btn primary w-full justify-center mt-4" onclick="internToast('已生成面试改进建议')"><i class="fas fa-clipboard-check"></i> 生成改进建议</button>
+        </aside>
+      </div>
+    </div>
+
+    <div class="intern-subview" id="intern-culture">
+      <div class="intern-sub-header">
+        <button class="intern-back-btn" onclick="backToInternHome()"><i class="fas fa-chevron-left"></i><span>返回实习助手</span></button>
+        <div class="sub-title"><h3>职场文化</h3><p>微信沟通、会议表达、称呼礼仪和反馈方式</p></div>
+        <div class="sub-spacer"></div>
+      </div>
+      <div class="intern-detail-grid">
+        <div class="intern-card panel-pad">
+          <div class="section-head">
+            <div><h3>中国职场文化训练</h3><p>把抽象文化差异变成可练习的职场情景</p></div>
+            <span class="pill"><i class="fas fa-seedling"></i> 今日4个场景</span>
+          </div>
+          <div class="culture-list enhanced-culture-list">
+            <div class="culture-item"><div class="culture-icon"><i class="fab fa-weixin"></i></div><div><h4>如何在微信里确认任务？</h4><p>训练“收到—确认截止时间—复述关键要求—主动反馈”的表达方式。</p><button onclick="internToast('进入微信沟通情景')">开始练习</button></div></div>
+            <div class="culture-item"><div class="culture-icon"><i class="fas fa-users"></i></div><div><h4>会议中不理解怎么办？</h4><p>学习礼貌打断、会后确认和用中文表达不确定的句式。</p><button onclick="internToast('进入会议表达情景')">开始练习</button></div></div>
+            <div class="culture-item"><div class="culture-icon"><i class="fas fa-user-tie"></i></div><div><h4>如何称呼领导和同事？</h4><p>解释“老师、经理、哥/姐、同学”等称呼在不同场景下的边界。</p><button onclick="internToast('进入称呼礼仪情景')">开始练习</button></div></div>
+            <div class="culture-item"><div class="culture-icon"><i class="fas fa-comment-dots"></i></div><div><h4>如何表达不同意见？</h4><p>练习先认可、再补充、最后提出建议的表达方式，降低沟通冲突。</p><button onclick="internToast('进入反馈表达情景')">开始练习</button></div></div>
+          </div>
+        </div>
+        <aside class="intern-card panel-pad">
+          <div class="section-head"><div><h3>文化适应提示</h3><p>面向实习场景的轻量提醒</p></div></div>
+          <div class="culture-tip"><strong>微信沟通</strong><p>收到任务后建议回复“收到，我会在周五前完成，如有问题及时和您确认。”</p></div>
+          <div class="culture-tip"><strong>会议表达</strong><p>没有听懂时可以说“抱歉，我想确认一下刚才的重点是……”</p></div>
+          <div class="culture-tip"><strong>反馈方式</strong><p>提出不同意见前先说明理解对方目标，再给出补充建议。</p></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="mobile-bottom-nav">
+  <a href="chinese.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-language"></i><span>中文学习</span>
+      </a>
+  <a href="chat.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-comments"></i><span>情感陪伴</span>
+      </a>
+  <a href="internship.html" class="mobile-tab text-blue-600 bg-white shadow-sm">
+        <i class="fas fa-briefcase"></i><span>实习助手</span>
+      </a>
+  <a href="career.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-building-user"></i><span>留华就业</span>
+      </a>
+  <a href="user.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-user"></i><span>个人中心</span>
+      </a>
+</nav>
+
+<script>
+function openInternModule(name) {
+  const home = document.getElementById('intern-home');
+  if (home) home.classList.remove('active');
+  document.querySelectorAll('.intern-subview').forEach(v => v.classList.remove('active'));
+  const view = document.getElementById('intern-' + name);
+  if (view) view.classList.add('active');
+  document.body.classList.add('intern-deep');
+  const board = document.querySelector('.intern-board');
+  if (board) board.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function backToInternHome() {
+  document.querySelectorAll('.intern-subview').forEach(v => v.classList.remove('active'));
+  const home = document.getElementById('intern-home');
+  if (home) home.classList.add('active');
+  document.body.classList.remove('intern-deep');
+  const board = document.querySelector('.intern-board');
+  if (board) board.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function internToast(message) {
+  document.querySelectorAll('.intern-toast').forEach(t => t.remove());
+  const toast = document.createElement('div');
+  toast.className = 'intern-toast';
+  toast.innerHTML = '<i class="fas fa-circle-info text-blue-300"></i><span>' + message + '</span>';
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity .32s ease, transform .32s ease';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -8px)';
+    setTimeout(() => toast.remove(), 350);
+  }, 1500);
+}
+</script>
+
+</body>
+</html>

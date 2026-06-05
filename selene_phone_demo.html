@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Selene智能陪伴平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  background:
+    radial-gradient(circle at 14% 18%,rgba(255,235,160,.42),transparent 28%),
+    radial-gradient(circle at 84% 13%,rgba(147,197,253,.36),transparent 24%),
+    linear-gradient(135deg,#E0F2FE 0%,#EEF2FF 48%,#FEF3C7 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#0f172a;
+  padding:18px;
+}
+
+.demo-canvas{
+  width:min(1640px,96vw);
+  aspect-ratio:16/9;
+  display:grid;
+  grid-template-columns:minmax(390px,432px) minmax(560px,620px);
+  justify-content:center;
+  align-items:center;
+  gap:52px;
+}
+
+/* iPhone shell */
+.phone-shell{
+  position:relative;
+  width:100%;
+  max-width:432px;
+  justify-self:center;
+  filter:drop-shadow(0 40px 70px rgba(30,58,138,.22));
+}
+.phone-device{
+  position:relative;
+  padding:13px;
+  border-radius:58px;
+  background:#111827;
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 6px rgba(255,255,255,.22);
+}
+.phone-device::before{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:52px;
+  border:1px solid rgba(255,255,255,.12);
+  pointer-events:none;
+}
+.phone-notch{
+  position:absolute;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:6;
+  width:126px;
+  height:34px;
+  background:#0f172a;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 6px 18px rgba(0,0,0,.22);
+}
+.notch-speaker{width:44px;height:5px;border-radius:999px;background:#374151}
+.notch-cam{width:10px;height:10px;border-radius:50%;background:#253247;border:2px solid #0b1220}
+.phone-screen{
+  position:relative;
+  height:852px;
+  border-radius:46px;
+  overflow:hidden;
+  background:#F8FAFC;
+  border:1px solid rgba(255,255,255,.18);
+}
+.status-mask{
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:16px;
+  z-index:4;
+  background:linear-gradient(180deg,rgba(248,250,252,.96),rgba(248,250,252,0));
+  pointer-events:none;
+}
+.phone-frame{width:100%;height:100%;border:0;display:block;background:#fff}
+
+/* Right panel */
+.control-wrap{
+  height:852px;
+  width:100%;
+}
+.control-card{
+  height:100%;
+  border-radius:30px;
+  background:rgba(255,255,255,.70);
+  border:1px solid rgba(255,255,255,.92);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  box-shadow:0 18px 50px rgba(30,58,138,.10);
+  padding:20px 20px 18px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.brand-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:12px;
+  flex:0 0 auto;
+}
+.brand-logo{
+  width:54px;
+  height:54px;
+  border-radius:19px;
+  overflow:hidden;
+  box-shadow:0 14px 28px rgba(30,58,138,.12);
+  background:#fff;
+  flex:0 0 54px;
+}
+.brand-logo img{width:100%;height:100%;object-fit:cover}
+.brand-title{
+  font-size:31px;
+  font-weight:950;
+  line-height:1.08;
+  letter-spacing:-.02em;
+  color:#0f172a;
+}
+.brand-sub{
+  font-size:13px;
+  font-weight:800;
+  color:#64748b;
+  margin-top:4px;
+}
+
+.intro{
+  padding:11px 14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(226,232,240,.95);
+  margin-bottom:10px;
+  flex:0 0 auto;
+}
+.intro p{
+  font-size:13px;
+  line-height:1.55;
+  color:#475569;
+  font-weight:700;
+}
+
+.module-list{
+  display:grid;
+  gap:8px;
+  flex:1 1 auto;
+  min-height:0;
+  overflow:hidden;
+}
+
+.module-card{
+  border:1px solid rgba(226,232,240,.95);
+  background:rgba(255,255,255,.78);
+  border-radius:20px;
+  padding:11px 13px;
+  cursor:pointer;
+  transition:all .18s ease;
+  overflow:hidden;
+}
+.module-card:hover{
+  transform:translateX(2px);
+  background:#fff;
+  box-shadow:0 10px 24px rgba(30,58,138,.08);
+}
+.module-card.active{
+  background:#0f172a;
+  border-color:#0f172a;
+  box-shadow:0 16px 30px rgba(15,23,42,.16);
+}
+.module-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.module-main{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-width:0;
+}
+.icon-box{
+  width:38px;
+  height:38px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 38px;
+  background:#DBEAFE;
+  color:#2563EB;
+  font-size:18px;
+  font-weight:900;
+}
+.module-card.active .icon-box{background:rgba(255,255,255,.16);color:#fff}
+
+.module-name{
+  font-size:20px;
+  font-weight:950;
+  color:#1e293b;
+  line-height:1.15;
+}
+.module-note{
+  font-size:12px;
+  font-weight:750;
+  color:#94a3b8;
+  margin-top:3px;
+  line-height:1.34;
+}
+.module-explain{
+  font-size:14px;
+  line-height:1.48;
+  color:#64748b;
+  font-weight:700;
+  margin-top:5px;
+}
+.module-card.active .module-name{color:#fff}
+.module-card.active .module-note{color:rgba(255,255,255,.68)}
+.module-card.active .module-explain{color:rgba(255,255,255,.82)}
+.module-arrow{
+  font-size:16px;
+  font-weight:900;
+  color:#2563EB;
+  padding-top:4px;
+  transition:transform .18s ease;
+}
+.module-card.active .module-arrow{color:#fff;transform:rotate(90deg)}
+
+.branch-wrap{
+  margin-top:9px;
+  display:block;
+}
+.branch-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+.branch-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  width:100%;
+  min-height:66px;
+  border:1px solid rgba(226,232,240,.95);
+  background:rgba(255,255,255,.86);
+  border-radius:14px;
+  padding:8px 6px;
+  color:#334155;
+  font-family:inherit;
+  font-size:15px;
+  line-height:1.22;
+  font-weight:900;
+  text-align:center;
+  cursor:default;
+}
+.module-card.active .branch-btn{
+  background:rgba(255,255,255,.10);
+  border-color:rgba(255,255,255,.14);
+  color:#fff;
+}
+.branch-icon{
+  width:27px;
+  height:27px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#DBEAFE;
+  color:#2563EB;
+  flex:0 0 27px;
+  font-size:15px;
+}
+.module-card.active .branch-icon{background:rgba(255,255,255,.16);color:#fff}
+
+/* Emotional companion has no sub modules, keep compact */
+.module-card.compact .module-explain{margin-top:6px}
+
+.status-text{
+  margin-top:10px;
+  font-size:13px;
+  font-weight:850;
+  color:#64748b;
+  min-height:20px;
+  flex:0 0 auto;
+}
+
+@media (max-width:1300px){
+  .demo-canvas{grid-template-columns:minmax(360px,420px) minmax(520px,560px);gap:30px}
+  .brand-title{font-size:28px}
+  .module-explain{font-size:13.2px}
+  .branch-grid{gap:6px}
+  .branch-btn{font-size:14px;min-height:62px}
+}
+
+@media (max-width:980px){
+  body{padding:12px}
+  .demo-canvas{
+    width:min(96vw,880px);
+    aspect-ratio:auto;
+    grid-template-columns:1fr;
+    gap:22px;
+  }
+  .control-wrap,.control-card{height:auto}
+  .control-wrap{order:-1}
+  .module-list{overflow:visible}
+  .phone-screen{height:calc((min(432px,96vw)-26px)*2.02);max-height:852px}
+  .brand-title{font-size:27px}
+}
+</style>
+</head>
+<body>
+<div class="demo-canvas">
+  <div class="phone-shell">
+    <div class="phone-device">
+      <div class="phone-notch"><span class="notch-cam"></span><span class="notch-speaker"></span><span class="notch-cam"></span></div>
+      <div class="phone-screen">
+        <div class="status-mask"></div>
+        <iframe id="phoneFrame" class="phone-frame" src="chinese.html" title="Selene app demo"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <aside class="control-wrap">
+    <div class="control-card">
+      <div class="brand-row">
+        <div class="brand-logo"><img src="selene_logo.png" alt="Selene"></div>
+        <div>
+          <div class="brand-title">Selene智能陪伴平台</div>
+        </div>
+      </div>
+
+      <div class="module-list">
+        <div class="module-card active" data-module="chinese" onclick="activateModule('chinese')">
+          <div class="module-head">
+            <div class="module-main">
+              <div class="icon-box"><i class="fas fa-language"></i></div>
+              <div>
+                <div class="module-name">中文学习</div>
+                <div class="module-explain">通过场景化中文训练、发音诊断和模拟考试，提升真实沟通与职场表达能力。</div>
+              </div>
+            </div>
+            <div class="module-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="branch-wrap">
+            <div class="branch-grid">
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-microphone-lines"></i></span><span>影子跟读</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-book"></i></span><span>发音错题本</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-font"></i></span><span>逐字分析</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-file-circle-check"></i></span><span>HSKK模拟</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-card compact" data-module="chat" onclick="activateModule('chat')">
+          <div class="module-head">
+            <div class="module-main">
+              <div class="icon-box"><i class="fas fa-comments"></i></div>
+              <div>
+                <div class="module-name">情感陪伴</div>
+                <div class="module-explain">面向文化休克与孤独时刻，提供情绪支持、陪伴对话和跨文化理解帮助。</div>
+              </div>
+            </div>
+            <div class="module-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="branch-wrap">
+            <div class="branch-grid">
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-list-check"></i></span><span>文化解码</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-file-lines"></i></span><span>社交辅助</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-user-check"></i></span><span>情感陪伴</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-handshake"></i></span><span>生活问答</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-card" data-module="internship" onclick="activateModule('internship')">
+          <div class="module-head">
+            <div class="module-main">
+              <div class="icon-box"><i class="fas fa-briefcase"></i></div>
+              <div>
+                <div class="module-name">实习助手</div>
+                <div class="module-explain">从寻找岗位、优化简历到模拟面试和理解中国职场，完成实习准备闭环。</div>
+              </div>
+            </div>
+            <div class="module-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="branch-wrap">
+            <div class="branch-grid">
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-list-check"></i></span><span>实习推荐</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-file-lines"></i></span><span>简历优化</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-user-check"></i></span><span>面试模拟</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-handshake"></i></span><span>职场文化</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-card" data-module="career" onclick="activateModule('career')">
+          <div class="module-head">
+            <div class="module-main">
+              <div class="icon-box"><i class="fas fa-building-user"></i></div>
+              <div>
+                <div class="module-name">留华就业</div>
+                <div class="module-explain">围绕留华发展需求，提供岗位机会、政策路径、职业规划和企业连接支持。</div>
+              </div>
+            </div>
+            <div class="module-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="branch-wrap">
+            <div class="branch-grid">
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-briefcase"></i></span><span>岗位匹配</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-scale-balanced"></i></span><span>政策咨询</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-route"></i></span><span>职业路径</span></div>
+              <div class="branch-btn"><span class="branch-icon"><i class="fas fa-building"></i></span><span>企业连接</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const frame=document.getElementById('phoneFrame');
+const cards=Array.from(document.querySelectorAll('.module-card'));
+const modules={
+  chinese:{src:'chinese.html', title:'中文学习'},
+  chat:{src:'chat.html', title:'情感陪伴'},
+  internship:{src:'internship.html', title:'实习助手'},
+  career:{src:'career.html', title:'留华就业'}
+};
+function activateModule(module){
+  cards.forEach(card=>card.classList.toggle('active', card.dataset.module===module));
+  const cfg=modules[module];
+  frame.src = cfg.src;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Selene - 中文学习</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: { colors: { primary: { 50:'#EFF6FF',100:'#DBEAFE',200:'#BFDBFE',300:'#93C5FD',400:'#60A5FA',500:'#3B82F6',600:'#2563EB',700:'#1D4ED8',800:'#1E40AF',900:'#1E3A8A' }, accent: { 400:'#FBBF24',500:'#F59E0B',600:'#D97706' } }, fontFamily: { sans: ['Noto Sans SC','PingFang SC','Microsoft YaHei','sans-serif'] } } } };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; box-sizing: border-box; }
+:root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+html, body { width: 100%; min-height: 100%; }
+body { margin: 0; background: linear-gradient(120deg, #E0F2FE 0%, #EEF2FF 48%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
+.glass { background: rgba(255,255,255,.66); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.82); box-shadow: 0 8px 32px rgba(30,58,138,.06); }
+.nav-item:hover { transform: translateX(6px); }
+.nav-item.active:hover { transform: none; }
+.logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .34); border-radius: 999px; }
+.mobile-topbar, .mobile-bottom-nav { display: none; }
+.page-shell { min-height: 100dvh; margin-left: 16rem; padding: 1.5rem; }
+.blank-board { min-height: calc(100dvh - 9.5rem); border-radius: 2rem; }
+@media (max-width: 768px) {
+  body { overflow: hidden; -webkit-text-size-adjust: 100%; }
+  .desktop-sidebar { display: none !important; }
+  .mobile-topbar { display: flex; position: sticky; top: 0; z-index: 30; padding: calc(10px + var(--safe-top)) 14px 10px; align-items: center; justify-content: space-between; background: rgba(255,255,255,.58); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid rgba(226,232,240,.58); }
+  .mobile-bottom-nav { display: grid; position: fixed; left: 10px; right: 10px; bottom: calc(10px + var(--safe-bottom)); z-index: 40; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 4px; padding: 6px; border-radius: 24px; background: rgba(255,255,255,.78); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,.88); box-shadow: 0 14px 34px rgba(30,58,138,.12); }
+  .mobile-tab { min-width: 0; height: 54px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; text-decoration: none; }
+  .mobile-tab i { font-size: 17px; }
+  .page-shell { margin-left: 0; padding: 0 12px calc(86px + var(--safe-bottom)); height: 100dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .desktop-header { display: none !important; }
+  .blank-board { min-height: calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)); border-radius: 26px; margin-top: 14px; }
+}
+
+/* ===== Chinese learning module integrated from ShadowSpeak, adapted to Selene light style ===== */
+.learning-board {
+  min-height: calc(100dvh - 9.5rem);
+  border-radius: 2rem;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.learning-app {
+  --learn-blue: #2563EB;
+  --learn-blue-soft: #DBEAFE;
+  --learn-amber: #F59E0B;
+  --learn-green: #10B981;
+  --learn-red: #EF4444;
+  --learn-purple: #6366F1;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  display: flex;
+  flex-direction: column;
+  color: #1E293B;
+}
+.learn-view {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.5rem;
+  animation: learnFade .24s ease-out;
+}
+.learn-view.active { display: block; }
+@keyframes learnFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.learn-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.learn-card {
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(255,255,255,.88);
+  border-radius: 1.75rem;
+  box-shadow: 0 10px 30px rgba(30,58,138,.06);
+}
+.learn-main-card {
+  padding: 1.45rem;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(59,130,246,.16), transparent 34%),
+    radial-gradient(circle at 94% 20%, rgba(245,158,11,.16), transparent 28%),
+    rgba(255,255,255,.72);
+}
+.learn-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .35rem .65rem;
+  border-radius: 999px;
+  background: rgba(37,99,235,.09);
+  border: 1px solid rgba(37,99,235,.13);
+  color: #2563EB;
+  font-size: .75rem;
+  font-weight: 800;
+  margin-bottom: .75rem;
+}
+.learn-title { font-size: 1.75rem; line-height: 1.15; font-weight: 900; color: #0F172A; }
+.learn-subtitle { margin-top: .65rem; color: #64748B; font-size: .92rem; line-height: 1.7; font-weight: 600; max-width: 720px; }
+.learn-stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .75rem; margin-top: 1rem; }
+.learn-stat { padding: .85rem; border-radius: 1.25rem; background: rgba(255,255,255,.72); border: 1px solid rgba(226,232,240,.72); }
+.learn-stat strong { display:block; font-size: 1.45rem; font-weight: 900; color: #0F172A; }
+.learn-stat span { color: #64748B; font-size: .75rem; font-weight: 800; }
+
+.daily-practice { padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 100%; }
+.ring-wrap { width: 74px; height: 74px; position: relative; flex-shrink: 0; }
+.ring-wrap svg { transform: rotate(-90deg); }
+.ring-value { position: absolute; inset: 0; display:flex; align-items:center; justify-content:center; font-size: .95rem; font-weight: 900; color: #2563EB; }
+.progress-track { height: 8px; border-radius: 999px; background: rgba(148,163,184,.18); overflow:hidden; }
+.progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #F59E0B); transition: width .4s ease; }
+
+.learn-module-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; margin-top: 1rem; }
+.module-card {
+  position: relative;
+  padding: 1.18rem;
+  border-radius: 1.65rem;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.92);
+  box-shadow: 0 12px 30px rgba(30,58,138,.08);
+  cursor: pointer;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, filter .22s ease;
+  min-height: 176px;
+  display:flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+.module-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(135deg, rgba(239,246,255,.95), rgba(255,255,255,.68));
+}
+.module-card::after {
+  content: none;
+  display: none;
+}
+.module-card:hover { transform: translateY(-5px); box-shadow: 0 20px 42px rgba(30,58,138,.14); border-color: rgba(37,99,235,.20); filter: saturate(1.03); }
+.module-card:active { transform: translateY(-1px) scale(.985); }
+.module-card.module-blue::before,
+.module-card.module-amber::before,
+.module-card.module-indigo::before {
+  background: linear-gradient(135deg, #EAF3FF 0%, #F7FBFF 62%, #FFFFFF 100%);
+}
+.module-card.module-blue,
+.module-card.module-amber,
+.module-card.module-indigo {
+  border-color: rgba(147,197,253,.46);
+}
+.module-card.module-purple::before {
+  background: linear-gradient(135deg, #F4E8FF 0%, #FCF8FF 62%, #FFFFFF 100%);
+}
+.module-card.module-purple {
+  border-color: rgba(196,181,253,.50);
+}
+.module-card.module-purple .module-arrow {
+  background: #7C3AED;
+  box-shadow: 0 10px 18px rgba(124,58,237,.18);
+}
+.module-card.module-purple:hover .module-arrow {
+  background: #6D28D9;
+}
+.module-icon { width: 3.2rem; height: 3.2rem; border-radius: 1.25rem; display:flex; align-items:center; justify-content:center; font-size: 1.35rem; margin-bottom: .85rem; box-shadow: inset 0 1px 0 rgba(255,255,255,.6); }
+.module-card h3 { font-size: 1.08rem; font-weight: 950; color: #0F172A; margin-bottom: .35rem; letter-spacing: -.01em; }
+.module-card p { color: #64748B; font-size: .83rem; line-height: 1.58; font-weight: 700; }
+.module-meta { margin-top: auto; display:flex; align-items:center; justify-content:flex-end; gap:.8rem; padding-top: .95rem; color:#64748B; font-size:.78rem; font-weight:900; }
+.module-cta { display:inline-flex; align-items:center; gap:.38rem; padding:.48rem .62rem; border-radius:999px; background:rgba(255,255,255,.82); border:1px solid rgba(226,232,240,.88); color:#334155; box-shadow:0 6px 16px rgba(30,58,138,.07); white-space: nowrap; }
+.module-arrow {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  background:#2563EB;
+  color:#FFFFFF;
+  box-shadow: 0 10px 18px rgba(37,99,235,.18);
+  font-size:.95rem;
+  transition: transform .22s ease, background .22s ease;
+}
+.module-card:hover .module-arrow { transform: translateX(3px); background:#1D4ED8; }
+
+.tone-panel { margin-top: 1rem; padding: 1.2rem; }
+.tone-row { display:grid; grid-template-columns: 52px minmax(0,1fr) 44px; align-items:center; gap:.75rem; margin-top:.8rem; }
+.tone-label { color:#64748B; font-size:.78rem; font-weight:800; }
+.tone-score { text-align:right; font-size:.82rem; font-weight:900; }
+.tone-bar { height: 9px; background: rgba(148,163,184,.18); border-radius: 999px; overflow:hidden; }
+.tone-bar span { display:block; height:100%; border-radius:999px; }
+
+.learn-sub-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom: 1rem; padding:.78rem .9rem; border-radius:1.35rem; background:linear-gradient(135deg, rgba(255,255,255,.90), rgba(239,246,255,.84)); border:1px solid rgba(255,255,255,.94); box-shadow:0 10px 28px rgba(30,58,138,.08); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); position:sticky; top:0; z-index:5; }
+.back-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding: .7rem .95rem; border-radius: 1rem; background: rgba(255,255,255,.78);
+  border: 1px solid rgba(226,232,240,.78); color:#334155; font-weight:900;
+  box-shadow: 0 8px 22px rgba(30,58,138,.07); transition: all .18s ease;
+}
+.back-btn:hover { transform: translateX(-2px); color:#2563EB; background:#fff; }
+.sub-title h3 { font-size: 1.5rem; font-weight: 900; color:#0F172A; }
+.sub-title p { color:#64748B; font-size:.86rem; font-weight: 600; margin-top:.2rem; }
+
+.practice-layout { display:grid; grid-template-columns: minmax(0,1.1fr) minmax(270px,.9fr); gap:1rem; }
+.practice-card { padding: 1.25rem; }
+.lesson-tags { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:.75rem; }
+.lesson-tags span { padding:.38rem .65rem; border-radius:999px; background:rgba(37,99,235,.08); color:#2563EB; border:1px solid rgba(37,99,235,.12); font-size:.75rem; font-weight:800; }
+.reading-text { margin-top: 1rem; padding: 1.15rem; border-radius: 1.4rem; background: rgba(248,250,252,.85); border:1px solid rgba(226,232,240,.88); text-align:center; }
+.rt-line { font-size: 1.7rem; font-weight: 900; color:#0F172A; line-height:1.9; }
+.rt-word { display:inline-block; padding:0 .08rem; border-radius:.4rem; cursor:pointer; transition:all .18s ease; }
+.rt-word:hover, .rt-word.highlighted { color:#2563EB; background:rgba(37,99,235,.08); }
+.rt-pinyin { color:#64748B; font-weight:700; font-size:.86rem; line-height:2; }
+.rt-translation { color:#94A3B8; font-size:.82rem; font-style: italic; }
+.speed-btns { display:flex; flex-wrap:wrap; gap:.5rem; margin-top: .9rem; }
+.spd-btn { padding:.48rem .75rem; border-radius:.8rem; border:1px solid rgba(226,232,240,.9); background:rgba(255,255,255,.78); color:#64748B; font-size:.78rem; font-weight:900; cursor:pointer; }
+.spd-btn.active { color:#2563EB; border-color:rgba(37,99,235,.32); background:rgba(37,99,235,.08); }
+.wave-card { margin-top: 1rem; padding: 1rem; border-radius: 1.2rem; background: rgba(248,250,252,.85); border:1px solid rgba(226,232,240,.88); }
+.wave-bars { display:flex; align-items:center; gap:4px; height:58px; margin-top:.6rem; overflow:hidden; }
+.bar { width:6px; border-radius:999px; transition: height .18s ease, background .18s ease; background:#93C5FD; }
+.bar.user { background:#F59E0B; }
+.bar.match { background:#10B981; }
+.ctrl-row { display:flex; align-items:center; justify-content:center; gap:.75rem; margin-top:1rem; flex-wrap:wrap; }
+.ctrl-btn { width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(226,232,240,.9); background:rgba(255,255,255,.82); color:#334155; font-weight:900; cursor:pointer; transition: all .18s ease; }
+.ctrl-btn:hover { transform: translateY(-2px); background:#fff; color:#2563EB; }
+.ctrl-btn.primary { width:62px; height:62px; background:#1E293B; color:#fff; border-color:#1E293B; font-size:1.25rem; box-shadow:0 12px 24px rgba(15,23,42,.16); }
+.ctrl-btn.recording { background:#EF4444; border-color:#EF4444; animation: pulseLight 1.2s ease-in-out infinite; }
+@keyframes pulseLight { 0%,100% { box-shadow:0 0 0 0 rgba(239,68,68,.28); } 50% { box-shadow:0 0 0 14px rgba(239,68,68,0); } }
+
+.result-card { display:none; margin-top:1rem; padding:1.1rem; }
+.result-card.show { display:block; }
+.result-head { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom: .9rem; }
+.score-big { font-size:2.4rem; line-height:1; font-weight: 950; color:#F59E0B; }
+.char-analysis { display:flex; flex-wrap:wrap; gap:.6rem; margin:.8rem 0; }
+.ca-item { min-width:58px; padding:.65rem .75rem; border-radius:1rem; background:#fff; border:1px solid rgba(226,232,240,.9); text-align:center; cursor:pointer; transition:transform .18s ease; }
+.ca-item:hover { transform: translateY(-2px); }
+.ca-item.ok { border-color: rgba(16,185,129,.28); background:rgba(16,185,129,.06); }
+.ca-item.warn { border-color: rgba(245,158,11,.32); background:rgba(245,158,11,.08); }
+.ca-item.err { border-color: rgba(239,68,68,.30); background:rgba(239,68,68,.07); }
+.ca-char { font-weight:900; font-size:1.25rem; color:#0F172A; }
+.ca-pin { font-size:.72rem; color:#64748B; font-weight:800; margin-top:.1rem; }
+.ca-st { font-size:.7rem; margin-top:.15rem; font-weight:900; }
+.ca-item.ok .ca-st { color:#10B981; }
+.ca-item.warn .ca-st { color:#F59E0B; }
+.ca-item.err .ca-st { color:#EF4444; }
+.tip-box { padding:.85rem; border-radius:1rem; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.18); color:#92400E; font-size:.82rem; line-height:1.65; font-weight:650; }
+.add-mistake-btn { margin-top:.75rem; width:100%; padding:.85rem; border-radius:1rem; border:1px solid rgba(37,99,235,.18); background:rgba(37,99,235,.08); color:#2563EB; font-weight:900; cursor:pointer; }
+
+.mistake-toolbar { display:flex; align-items:center; gap:.65rem; overflow-x:auto; padding-bottom:.2rem; margin-bottom: .9rem; }
+.ftab { flex:0 0 auto; padding:.55rem .85rem; border-radius:999px; background:rgba(255,255,255,.72); border:1px solid rgba(226,232,240,.9); color:#64748B; font-size:.78rem; font-weight:900; cursor:pointer; }
+.ftab.active { background:rgba(37,99,235,.09); border-color:rgba(37,99,235,.28); color:#2563EB; }
+.mistake-list { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:.85rem; }
+.mistake-item { padding:1rem; border-radius:1.35rem; background:rgba(255,255,255,.72); border:1px solid rgba(255,255,255,.88); box-shadow:0 8px 24px rgba(30,58,138,.055); cursor:pointer; }
+.mi-top { display:flex; gap:.85rem; align-items:center; }
+.mi-char-big { width:58px; height:58px; border-radius:1.15rem; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(37,99,235,.08); border:1px solid rgba(37,99,235,.15); flex-shrink:0; }
+.mi-char { font-size:1.45rem; font-weight:950; color:#0F172A; line-height:1; }
+.mi-pin { font-size:.72rem; color:#2563EB; font-weight:900; margin-top:.2rem; }
+.mi-info-title { font-weight:900; color:#0F172A; font-size:.94rem; }
+.mi-info-sub { color:#64748B; font-size:.76rem; font-weight:650; margin-top:.2rem; }
+.mi-bottom { margin-top:.8rem; display:flex; align-items:end; gap:.75rem; }
+.mi-bar-wrap { flex:1; }
+.mi-bar-label { color:#94A3B8; font-size:.7rem; font-weight:800; margin-bottom:.35rem; }
+.mi-bar { height:6px; background:rgba(148,163,184,.18); border-radius:999px; overflow:hidden; }
+.mi-bar-fill { display:block; height:100%; background:linear-gradient(90deg,#2563EB,#F59E0B); border-radius:999px; }
+.mi-tag { flex-shrink:0; padding:.35rem .55rem; border-radius:999px; font-size:.7rem; font-weight:900; }
+.mi-tag.due { color:#EF4444; background:rgba(239,68,68,.08); }
+.mi-tag.ok { color:#10B981; background:rgba(16,185,129,.08); }
+.mi-tag.soon { color:#F59E0B; background:rgba(245,158,11,.08); }
+.review-all-btn { width:100%; border:0; padding:.95rem; border-radius:1.15rem; color:#fff; background:#1E293B; font-weight:950; cursor:pointer; margin-bottom:.85rem; box-shadow:0 12px 24px rgba(15,23,42,.12); }
+
+.exam-layout { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr); gap:1rem; }
+.exam-type-tabs { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:.55rem; margin:.75rem 0 1rem; }
+.ett { padding:.7rem; text-align:center; border-radius:1rem; background:rgba(255,255,255,.72); border:1px solid rgba(226,232,240,.9); color:#64748B; font-weight:900; cursor:pointer; }
+.ett.active { background:rgba(99,102,241,.09); color:#4F46E5; border-color:rgba(99,102,241,.26); }
+.exam-question-card { padding:1.2rem; }
+.eqc-num { color:#4F46E5; font-size:.75rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+.eqc-instruction { color:#64748B; font-size:.86rem; line-height:1.7; font-weight:650; margin:.6rem 0; }
+.eqc-content { padding:1rem; border-radius:1.15rem; background:rgba(99,102,241,.07); border:1px solid rgba(99,102,241,.15); font-size:1.08rem; font-weight:900; color:#0F172A; line-height:1.8; text-align:center; }
+.eqc-timer { display:flex; align-items:center; gap:.75rem; padding:.85rem; border-radius:1rem; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.18); margin-top: .85rem; }
+.timer-text { font-size:1.75rem; font-weight:950; color:#F59E0B; font-variant-numeric: tabular-nums; }
+.timer-label { font-size:.78rem; color:#64748B; font-weight:800; }
+.exam-rec-btn { width:100%; border:0; margin-top:.85rem; padding:1rem; border-radius:1.15rem; color:#fff; background:linear-gradient(90deg,#4F46E5,#818CF8); font-weight:950; cursor:pointer; box-shadow:0 12px 24px rgba(99,102,241,.18); }
+.exam-rec-btn.recording { background:linear-gradient(90deg,#EF4444,#F97316); animation:pulseLight 1.4s ease-in-out infinite; }
+.score-row { display:grid; grid-template-columns:88px minmax(0,1fr) 36px; gap:.7rem; align-items:center; padding:.8rem 0; border-bottom:1px solid rgba(226,232,240,.72); }
+.score-row:last-child { border-bottom:0; }
+.sr-label { font-size:.82rem; color:#64748B; font-weight:800; }
+.sr-bar { height:7px; background:rgba(148,163,184,.18); border-radius:999px; overflow:hidden; }
+.sr-fill { display:block; height:100%; background:linear-gradient(90deg,#4F46E5,#818CF8); border-radius:999px; }
+.sr-score { text-align:right; color:#4F46E5; font-weight:950; }
+
+
+.analysis-layout { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr); gap:1rem; }
+.analysis-sentence-card { padding:1.25rem; }
+.analysis-text-card { margin-top:1rem; padding:1.15rem; border-radius:1.4rem; background:rgba(248,250,252,.88); border:1px solid rgba(226,232,240,.88); text-align:center; }
+.analysis-line { font-size:1.75rem; font-weight:950; color:#0F172A; line-height:1.85; }
+.analysis-char { display:inline-flex; flex-direction:column; align-items:center; justify-content:center; min-width:2.2rem; margin:.15rem .1rem; padding:.28rem .18rem; border-radius:.85rem; cursor:pointer; border:1px solid transparent; transition:all .18s ease; }
+.analysis-char .hanzi { font-size:1.45rem; line-height:1; font-weight:950; }
+.analysis-char .pinyin { font-size:.68rem; color:#64748B; font-weight:800; margin-top:.25rem; }
+.analysis-char:hover, .analysis-char.active { background:rgba(37,99,235,.08); border-color:rgba(37,99,235,.20); transform:translateY(-2px); }
+.analysis-char.good .hanzi { color:#0F172A; }
+.analysis-char.warn .hanzi { color:#F59E0B; }
+.analysis-char.bad .hanzi { color:#EF4444; }
+.analysis-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; margin-top:1rem; }
+.analysis-summary-item { padding:.85rem; border-radius:1.15rem; background:rgba(255,255,255,.72); border:1px solid rgba(226,232,240,.84); }
+.analysis-summary-item strong { display:block; font-size:1.35rem; font-weight:950; color:#0F172A; }
+.analysis-summary-item span { color:#64748B; font-size:.72rem; font-weight:850; }
+.analysis-detail-card { padding:1.25rem; }
+.analysis-score-ring { width:86px; height:86px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:conic-gradient(#F59E0B 0 82%, rgba(148,163,184,.18) 82% 100%); box-shadow: inset 0 0 0 9px rgba(255,255,255,.92); }
+.analysis-score-ring span { font-size:1.45rem; font-weight:950; color:#0F172A; }
+.analysis-metric { display:grid; grid-template-columns:92px minmax(0,1fr) 38px; align-items:center; gap:.65rem; padding:.72rem 0; border-bottom:1px solid rgba(226,232,240,.72); }
+.analysis-metric:last-child { border-bottom:0; }
+.analysis-metric label { color:#64748B; font-size:.78rem; font-weight:850; }
+.analysis-metric .metric-bar { height:7px; border-radius:999px; background:rgba(148,163,184,.18); overflow:hidden; }
+.analysis-metric .metric-bar span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#2563EB,#F59E0B); }
+.analysis-metric b { color:#2563EB; font-size:.82rem; font-weight:950; text-align:right; }
+.analysis-tip-card { margin-top:1rem; padding:1rem; border-radius:1.2rem; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.18); color:#92400E; font-size:.86rem; line-height:1.7; font-weight:700; }
+.analysis-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; margin-top:1rem; }
+.analysis-actions button { padding:.85rem .7rem; border-radius:1rem; border:1px solid rgba(226,232,240,.9); background:rgba(255,255,255,.78); color:#334155; font-weight:900; cursor:pointer; transition:all .18s ease; }
+.analysis-actions button:hover { transform:translateY(-2px); color:#2563EB; background:#fff; }
+
+.learn-toast { position: fixed; left: 50%; top: 22px; transform: translateX(-50%); z-index: 999; background:#1E293B; color:#fff; padding:.85rem 1.05rem; border-radius:1rem; box-shadow:0 18px 38px rgba(15,23,42,.18); font-size:.86rem; font-weight:800; display:flex; gap:.5rem; align-items:center; animation: toastIn .22s ease-out; }
+@keyframes toastIn { from { opacity:0; transform: translate(-50%, -8px); } to { opacity:1; transform: translate(-50%, 0); } }
+
+@media (max-width: 1080px) {
+  .learn-hero, .practice-layout, .exam-layout, .analysis-layout { grid-template-columns: 1fr; }
+  .learn-module-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 768px) {
+  body.chinese-deep .mobile-bottom-nav { display: none !important; }
+  body.chinese-deep .page-shell { padding-bottom: calc(14px + var(--safe-bottom)) !important; }
+  .learning-board { min-height: calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)); margin-top: 14px; border-radius: 26px; }
+  .learn-view { padding: 1rem; }
+  .learn-title { font-size:1.55rem; }
+  .learn-stats { grid-template-columns: repeat(3, minmax(0,1fr)); gap:.55rem; }
+  .learn-stat { padding:.7rem .55rem; }
+  .learn-stat strong { font-size:1.15rem; }
+  .learn-module-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap:.75rem; }
+  .module-card { min-height: 148px; padding: .9rem; border-radius:1.38rem; }
+  .module-card p { font-size:.74rem; line-height:1.42; }
+  .module-meta { font-size:.68rem; padding-top:.65rem; gap:.45rem; }
+  .module-cta { padding:.36rem .48rem; }
+  .module-arrow { width:1.95rem; height:1.95rem; font-size:.82rem; }
+  .module-icon { width:2.8rem; height:2.8rem; margin-bottom:.65rem; }
+  .learn-sub-header { top: 0; z-index: 5; padding: .62rem .68rem; margin-bottom: .85rem; border-radius: 1.28rem; background: rgba(255,255,255,.88); border: 1px solid rgba(255,255,255,.94); box-shadow: 0 8px 22px rgba(30,58,138,.07); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  .sub-title h3 { font-size:1.18rem; }
+  .sub-title p { display:none; }
+  .back-btn { width:42px; height:42px; padding:0; border-radius: 1rem; }
+  .back-btn span { display:none; }
+  .rt-line { font-size:1.35rem; }
+  .ctrl-row { gap:.55rem; }
+  .ctrl-btn { width:42px; height:42px; }
+  .ctrl-btn.primary { width:58px; height:58px; }
+  .mistake-list { grid-template-columns: 1fr; }
+  .score-row { grid-template-columns: 82px minmax(0,1fr) 34px; }
+  .analysis-summary { grid-template-columns: repeat(3, minmax(0,1fr)); gap:.55rem; }
+  .analysis-summary-item { padding:.7rem .55rem; }
+  .analysis-summary-item strong { font-size:1.05rem; }
+  .analysis-line { font-size:1.38rem; }
+  .analysis-char { min-width:1.85rem; }
+  .analysis-char .hanzi { font-size:1.18rem; }
+  .analysis-actions { grid-template-columns:1fr; }
+}
+@media (max-width: 430px) {
+  .learn-view { padding: .85rem; }
+  .learn-main-card, .daily-practice, .practice-card, .exam-question-card, .tone-panel, .analysis-sentence-card, .analysis-detail-card { border-radius: 1.35rem; padding: 1rem; }
+  .learn-title { font-size:1.42rem; }
+  .learn-stat span { font-size:.68rem; }
+  .learn-module-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap:.65rem; }
+  .module-icon { width:2.45rem; height:2.45rem; border-radius:1rem; font-size:1.05rem; }
+  .module-card h3 { font-size:.88rem; }
+  .module-card { min-height:150px; }
+  .rt-pinyin { font-size:.76rem; }
+}
+
+</style>
+</head>
+<body>
+<aside class="desktop-sidebar glass fixed left-0 top-0 z-40 h-screen w-64 border-r border-white/50 flex flex-col">
+  <div class="p-8 pb-4 flex items-center gap-3">
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md overflow-hidden flex-shrink-0">
+      <img src="selene_logo.png" alt="Selene" class="logo-img">
+    </div>
+    <div>
+      <h1 class="text-slate-800 font-extrabold text-lg leading-tight">Selene</h1>
+      <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
+    </div>
+  </div>
+  <nav class="flex-1 px-4 mt-6 space-y-2 overflow-y-auto custom-scrollbar">
+    <a href="chinese.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all active bg-white text-slate-900 border-blue-100 shadow-sm">
+          <i class="fas fa-language w-6 text-center text-lg text-blue-600"></i><span class="font-bold">中文学习</span>
+        </a>
+    <a href="chat.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-comments w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">情感陪伴</span>
+        </a>
+    <a href="internship.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-briefcase w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">实习助手</span>
+        </a>
+    <a href="career.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-building-user w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">留华就业</span>
+        </a>
+    <a href="user.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-user w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">个人中心</span>
+        </a>
+  </nav>
+  <div class="p-4 border-t border-slate-200/50">
+    <a href="login.html" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
+      <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
+    </a>
+  </div>
+</aside>
+
+<main class="page-shell">
+  <div class="mobile-topbar">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-2xl bg-slate-800 overflow-hidden flex-shrink-0"><img src="selene_logo.png" alt="Selene" class="logo-img"></div>
+      <div class="min-w-0"><h1 class="text-slate-800 font-extrabold leading-tight truncate">中文学习</h1><p class="text-slate-500 text-xs font-medium truncate">场景化中文与职场表达训练</p></div>
+    </div>
+    <a href="user.html" class="w-10 h-10 rounded-2xl bg-white/70 border border-white flex items-center justify-center text-slate-600"><i class="fas fa-user"></i></a>
+  </div>
+
+  <header class="desktop-header mb-6 flex items-center justify-between">
+    <div>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/55 border border-white/80 text-blue-600 text-xs font-bold mb-3">
+        <i class="fas fa-language"></i><span>Selene</span>
+      </div>
+      <h2 class="text-3xl font-extrabold text-slate-800">中文学习</h2>
+      <p class="text-slate-500 font-medium mt-1">场景化中文与职场表达训练</p>
+    </div>
+  </header>
+
+  
+<section class="learning-board glass">
+  <div class="learning-app">
+    <div class="learn-view active" id="learn-home">
+      <div class="learn-hero">
+        <div class="daily-practice learn-card" onclick="openChineseModule('shadow')">
+          <div>
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="learn-kicker" style="margin-bottom:.55rem;"><i class="fas fa-fire"></i><span>今日练习目标</span></div>
+                <h3 class="text-slate-900 font-black text-xl leading-tight">影子跟读 · 第 5 课</h3>
+                <p class="text-slate-500 text-sm font-semibold mt-2">在北京的生活 · HSK 4 中级场景</p>
+              </div>
+              <div class="ring-wrap">
+                <svg width="74" height="74" viewBox="0 0 74 74">
+                  <circle cx="37" cy="37" r="29" fill="none" stroke="rgba(148,163,184,.18)" stroke-width="7"></circle>
+                  <circle cx="37" cy="37" r="29" fill="none" stroke="#2563EB" stroke-width="7" stroke-dasharray="182" stroke-dashoffset="66" stroke-linecap="round"></circle>
+                </svg>
+                <div class="ring-value">64%</div>
+              </div>
+            </div>
+            <div class="progress-track mt-5"><div class="progress-fill" style="width:64%"></div></div>
+          </div>
+          <div class="grid grid-cols-3 gap-3 mt-4">
+            <div><strong class="text-slate-900 text-2xl font-black">8</strong><p class="text-slate-500 text-xs font-bold">句已完成</p></div>
+            <div><strong class="text-slate-900 text-2xl font-black">4</strong><p class="text-slate-500 text-xs font-bold">句待练习</p></div>
+            <div><strong class="text-blue-600 text-2xl font-black">87</strong><p class="text-slate-500 text-xs font-bold">平均分</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="learn-module-grid">
+        <article class="module-card module-blue" onclick="openChineseModule('shadow')" role="button" tabindex="0" aria-label="进入影子跟读模块">
+          <div class="module-icon bg-blue-100 text-blue-600"><i class="fas fa-microphone-lines"></i></div>
+          <h3>影子跟读</h3>
+          <p>听范读、调语速、录音跟读，完成整句中文口语训练。</p>
+          <div class="module-meta"><span class="module-arrow"><i class="fas fa-arrow-right"></i></span></div>
+        </article>
+        <article class="module-card module-amber" onclick="openChineseModule('mistake')" role="button" tabindex="0" aria-label="进入发音错题本模块">
+          <div class="module-icon bg-blue-100 text-blue-600"><i class="fas fa-book-open"></i></div>
+          <h3>发音错题本 <span class="inline-flex ml-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-600 text-[11px] font-black align-middle">7</span></h3>
+          <p>收录声调、声母和韵母问题，按复习节奏提醒巩固。</p>
+          <div class="module-meta"><span class="module-arrow"><i class="fas fa-arrow-right"></i></span></div>
+        </article>
+        <article class="module-card module-indigo" onclick="openChineseModule('analysis')" role="button" tabindex="0" aria-label="进入逐字发音分析模块">
+          <div class="module-icon bg-blue-100 text-blue-600"><i class="fas fa-spell-check"></i></div>
+          <h3>逐字发音分析</h3>
+          <p>按汉字拆解发音表现，定位声调、口型和流畅度问题。</p>
+          <div class="module-meta"><span class="module-arrow"><i class="fas fa-arrow-right"></i></span></div>
+        </article>
+        <article class="module-card module-purple" onclick="openChineseModule('exam')" role="button" tabindex="0" aria-label="进入HSKK模拟考模块">
+          <div class="module-icon bg-purple-100 text-purple-600"><i class="fas fa-file-pen"></i></div>
+          <h3>HSKK 模拟考</h3>
+          <p>模拟朗读、复述和回答题型，生成口语考试评分反馈。</p>
+          <div class="module-meta"><span class="module-arrow"><i class="fas fa-arrow-right"></i></span></div>
+        </article>
+      </div>
+
+      <div class="tone-panel learn-card">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h3 class="text-slate-900 font-black text-lg">本周发音弱点雷达</h3>
+            <p class="text-slate-500 text-sm font-semibold mt-1">最近30次练习数据，第三声需要重点加强</p>
+          </div>
+          <span class="hidden sm:inline-flex px-3 py-1.5 rounded-full bg-white/75 border border-slate-200 text-slate-500 text-xs font-black">AI 发音分析</span>
+        </div>
+        <div class="tone-row"><span class="tone-label">第1声</span><div class="tone-bar"><span style="width:88%;background:#10B981"></span></div><span class="tone-score" style="color:#10B981">88%</span></div>
+        <div class="tone-row"><span class="tone-label">第2声</span><div class="tone-bar"><span style="width:72%;background:#F59E0B"></span></div><span class="tone-score" style="color:#F59E0B">72%</span></div>
+        <div class="tone-row"><span class="tone-label">第3声</span><div class="tone-bar"><span style="width:55%;background:#EF4444"></span></div><span class="tone-score" style="color:#EF4444">55%</span></div>
+        <div class="tone-row"><span class="tone-label">第4声</span><div class="tone-bar"><span style="width:91%;background:#10B981"></span></div><span class="tone-score" style="color:#10B981">91%</span></div>
+      </div>
+    </div>
+
+    <div class="learn-view" id="learn-shadow">
+      <div class="learn-sub-header">
+        <button class="back-btn" onclick="openChineseModule('home')"><i class="fas fa-chevron-left"></i><span>返回中文学习</span></button>
+        <div class="sub-title text-center flex-1"><h3>影子跟读</h3><p>可调速范读 → 录音跟读 → AI逐字发音分析</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="practice-layout">
+        <div class="practice-card learn-card">
+          <div class="learn-kicker"><i class="fas fa-book"></i><span>HSK 4 · 第 5 课</span></div>
+          <h3 class="text-slate-900 font-black text-2xl">在北京的生活</h3>
+          <div class="lesson-tags"><span>日常对话</span><span>约3分钟</span><span>中级</span></div>
+          <div class="reading-text">
+            <div class="rt-line">
+              <span class="rt-word highlighted">我</span>
+              <span class="rt-word">在</span>
+              <span class="rt-word">北</span>
+              <span class="rt-word">京</span>
+              <span class="rt-word">大</span>
+              <span class="rt-word">学</span>
+              <span class="rt-word">学</span>
+              <span class="rt-word">习</span>
+              <span class="rt-word">中</span>
+              <span class="rt-word">文</span>
+            </div>
+            <div class="rt-pinyin">wǒ &nbsp; zài &nbsp; Běi&nbsp;jīng &nbsp; Dà&nbsp;xué &nbsp; xué&nbsp;xí &nbsp; zhōng&nbsp;wén</div>
+            <div class="rt-translation">I study Chinese at Peking University</div>
+          </div>
+          <div class="mt-4">
+            <p class="text-slate-500 text-xs font-black mb-2">跟读速度</p>
+            <div class="speed-btns">
+              <button class="spd-btn" onclick="setSpeed(this)">0.5×</button>
+              <button class="spd-btn active" onclick="setSpeed(this)">0.75×</button>
+              <button class="spd-btn" onclick="setSpeed(this)">1.0×</button>
+              <button class="spd-btn" onclick="setSpeed(this)">1.25×</button>
+            </div>
+          </div>
+          <div class="wave-card">
+            <p class="text-slate-500 text-xs font-black">波形对比（蓝=范读，橙=你的录音，绿=吻合）</p>
+            <div class="wave-bars" id="waveBars"></div>
+          </div>
+          <div class="ctrl-row">
+            <button class="ctrl-btn" title="上一句"><i class="fas fa-backward-step"></i></button>
+            <button class="ctrl-btn" title="播放范读" onclick="playNative(this)"><i class="fas fa-play"></i></button>
+            <button class="ctrl-btn primary" id="recordBtn" title="开始录音" onclick="toggleRecord(this)"><i class="fas fa-microphone"></i></button>
+            <button class="ctrl-btn" title="回放录音" onclick="playback(this)"><i class="fas fa-volume-high"></i></button>
+            <button class="ctrl-btn" title="下一句"><i class="fas fa-forward-step"></i></button>
+          </div>
+        </div>
+
+        <div>
+          <div class="result-card learn-card" id="resultCard">
+            <div class="result-head">
+              <div>
+                <h4 class="text-slate-900 font-black">发音分析结果</h4>
+                <p class="text-slate-500 text-xs font-bold mt-1">「我在北京大学学习中文」</p>
+              </div>
+              <div class="score-big" id="totalScore">82</div>
+            </div>
+            <div class="char-analysis">
+              <div class="ca-item ok"><div class="ca-char">我</div><div class="ca-pin">wǒ</div><div class="ca-st">准确</div></div>
+              <div class="ca-item ok"><div class="ca-char">在</div><div class="ca-pin">zài</div><div class="ca-st">准确</div></div>
+              <div class="ca-item err" onclick="showTip('北 běi：第3声应先降后升，你发得更像第4声，需要把尾音轻轻抬起来。')"><div class="ca-char">北</div><div class="ca-pin">běi</div><div class="ca-st">声调</div></div>
+              <div class="ca-item ok"><div class="ca-char">京</div><div class="ca-pin">jīng</div><div class="ca-st">准确</div></div>
+              <div class="ca-item warn" onclick="showTip('大 dà：降调收尾略短，可以把尾音落得更清楚一点。')"><div class="ca-char">大</div><div class="ca-pin">dà</div><div class="ca-st">偏短</div></div>
+              <div class="ca-item ok"><div class="ca-char">学</div><div class="ca-pin">xué</div><div class="ca-st">准确</div></div>
+            </div>
+            <div class="tip-box" id="tipBox">💡 点击上方汉字查看该字详细发音建议。</div>
+            <button class="add-mistake-btn" onclick="addMistake()"><i class="fas fa-book-open"></i> 将「北」加入错题本</button>
+          </div>
+          <div class="learn-card p-5 mt-4">
+            <h4 class="text-slate-900 font-black mb-3">练习建议</h4>
+            <div class="space-y-3 text-sm text-slate-600 font-semibold leading-relaxed">
+              <p><i class="fas fa-circle-check text-emerald-500 mr-2"></i>先听范读，再以 0.75× 速度跟读，适合稳定声调。</p>
+              <p><i class="fas fa-circle-exclamation text-amber-500 mr-2"></i>第三声是本周薄弱项，建议录音后查看逐字分析。</p>
+              <p><i class="fas fa-rotate-right text-blue-500 mr-2"></i>错误音节会自动进入发音错题本，方便后续复习。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learn-view" id="learn-mistake">
+      <div class="learn-sub-header">
+        <button class="back-btn" onclick="openChineseModule('home')"><i class="fas fa-chevron-left"></i><span>返回中文学习</span></button>
+        <div class="sub-title text-center flex-1"><h3>发音错题本</h3><p>7个音节待复习 · 今日推荐4个</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="learn-card p-5 mb-4">
+        <button class="review-all-btn" onclick="showLearningToast('已进入今日复习模式')"><i class="fas fa-bullseye mr-2"></i>开始今日复习（4个）</button>
+        <div class="mistake-toolbar">
+          <button class="ftab active" onclick="setMistakeTab(this)">全部 (7)</button>
+          <button class="ftab" onclick="setMistakeTab(this)">今日到期 (4)</button>
+          <button class="ftab" onclick="setMistakeTab(this)">声调错误 (5)</button>
+          <button class="ftab" onclick="setMistakeTab(this)">声母错误 (2)</button>
+          <button class="ftab" onclick="setMistakeTab(this)">已掌握 (12)</button>
+        </div>
+      </div>
+      <div class="mistake-list">
+        <div class="mistake-item"><div class="mi-top"><div class="mi-char-big"><div class="mi-char">北</div><div class="mi-pin">běi</div></div><div><div class="mi-info-title">第3声发成第4声</div><div class="mi-info-sub">出现3次 · 错误率67%</div></div></div><div class="mi-bottom"><div class="mi-bar-wrap"><div class="mi-bar-label">掌握程度</div><div class="mi-bar"><span class="mi-bar-fill" style="width:33%"></span></div></div><span class="mi-tag due">今日复习</span></div></div>
+        <div class="mistake-item"><div class="mi-top"><div class="mi-char-big"><div class="mi-char">热</div><div class="mi-pin">rè</div></div><div><div class="mi-info-title">声母 r 发音偏差</div><div class="mi-info-sub">出现2次 · 错误率80%</div></div></div><div class="mi-bottom"><div class="mi-bar-wrap"><div class="mi-bar-label">掌握程度</div><div class="mi-bar"><span class="mi-bar-fill" style="width:20%"></span></div></div><span class="mi-tag due">今日复习</span></div></div>
+        <div class="mistake-item"><div class="mi-top"><div class="mi-char-big"><div class="mi-char">语</div><div class="mi-pin">yǔ</div></div><div><div class="mi-info-title">第3声发音不到位</div><div class="mi-info-sub">出现4次 · 错误率50%</div></div></div><div class="mi-bottom"><div class="mi-bar-wrap"><div class="mi-bar-label">掌握程度</div><div class="mi-bar"><span class="mi-bar-fill" style="width:50%"></span></div></div><span class="mi-tag due">今日复习</span></div></div>
+        <div class="mistake-item"><div class="mi-top"><div class="mi-char-big"><div class="mi-char">学</div><div class="mi-pin">xué</div></div><div><div class="mi-info-title">第2声声调偏低</div><div class="mi-info-sub">出现2次 · 近期已改善</div></div></div><div class="mi-bottom"><div class="mi-bar-wrap"><div class="mi-bar-label">掌握程度</div><div class="mi-bar"><span class="mi-bar-fill" style="width:78%;background:linear-gradient(90deg,#10B981,#16A34A)"></span></div></div><span class="mi-tag ok">即将掌握</span></div></div>
+        <div class="mistake-item"><div class="mi-top"><div class="mi-char-big"><div class="mi-char">出</div><div class="mi-pin">chū</div></div><div><div class="mi-info-title">ch 与 c 混淆</div><div class="mi-info-sub">出现2次 · 错误率60%</div></div></div><div class="mi-bottom"><div class="mi-bar-wrap"><div class="mi-bar-label">掌握程度</div><div class="mi-bar"><span class="mi-bar-fill" style="width:40%"></span></div></div><span class="mi-tag soon">明天复习</span></div></div>
+      </div>
+    </div>
+
+    <div class="learn-view" id="learn-analysis">
+      <div class="learn-sub-header">
+        <button class="back-btn" onclick="openChineseModule('home')"><i class="fas fa-chevron-left"></i><span>返回中文学习</span></button>
+        <div class="sub-title text-center flex-1"><h3>逐字发音分析</h3><p>逐字拆解声调、准确度、口型与流畅度</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="analysis-layout">
+        <div class="analysis-sentence-card learn-card">
+          <div class="learn-kicker"><i class="fas fa-spell-check"></i><span>AI Pronunciation Lab</span></div>
+          <h3 class="text-slate-900 font-black text-2xl">句子逐字诊断</h3>
+          <p class="text-slate-500 text-sm font-semibold mt-2 leading-relaxed">点击任意汉字查看该字的发音问题、纠正建议和复练方式。</p>
+          <div class="analysis-text-card">
+            <div class="analysis-line" id="analysisLine">
+              <span class="analysis-char good active" onclick="selectAnalysisChar(this,'我','wǒ','准确','声调稳定，第三声起伏自然。','94')"><span class="hanzi">我</span><span class="pinyin">wǒ</span></span>
+              <span class="analysis-char good" onclick="selectAnalysisChar(this,'在','zài','准确','第四声下降清晰，节奏自然。','91')"><span class="hanzi">在</span><span class="pinyin">zài</span></span>
+              <span class="analysis-char bad" onclick="selectAnalysisChar(this,'北','běi','声调错误','第三声需要先降后升，你的尾音抬升不够，容易听成第四声。','58')"><span class="hanzi">北</span><span class="pinyin">běi</span></span>
+              <span class="analysis-char good" onclick="selectAnalysisChar(this,'京','jīng','准确','第一声保持平稳，韵母 ing 较清楚。','90')"><span class="hanzi">京</span><span class="pinyin">jīng</span></span>
+              <span class="analysis-char warn" onclick="selectAnalysisChar(this,'大','dà','收尾偏短','第四声需要更完整地下落，尾音不要过早切断。','73')"><span class="hanzi">大</span><span class="pinyin">dà</span></span>
+              <span class="analysis-char good" onclick="selectAnalysisChar(this,'学','xué','准确','第二声上扬较自然，声母 x 发音清楚。','88')"><span class="hanzi">学</span><span class="pinyin">xué</span></span>
+              <span class="analysis-char warn" onclick="selectAnalysisChar(this,'习','xí','略轻','音量偏轻，建议保持第二声上扬幅度。','78')"><span class="hanzi">习</span><span class="pinyin">xí</span></span>
+              <span class="analysis-char good" onclick="selectAnalysisChar(this,'中','zhōng','准确','第一声平稳，zh 发音位置较准确。','89')"><span class="hanzi">中</span><span class="pinyin">zhōng</span></span>
+              <span class="analysis-char good" onclick="selectAnalysisChar(this,'文','wén','准确','第二声上扬自然，整体较流畅。','92')"><span class="hanzi">文</span><span class="pinyin">wén</span></span>
+            </div>
+            <div class="rt-translation mt-3">我在北京大学学习中文 · I study Chinese at Peking University</div>
+          </div>
+          <div class="analysis-summary">
+            <div class="analysis-summary-item"><strong>82</strong><span>综合得分</span></div>
+            <div class="analysis-summary-item"><strong class="text-rose-500">2</strong><span>重点问题</span></div>
+            <div class="analysis-summary-item"><strong class="text-blue-600">7/9</strong><span>可理解字数</span></div>
+          </div>
+        </div>
+        <div class="analysis-detail-card learn-card">
+          <div class="flex items-center justify-between gap-4 mb-4">
+            <div>
+              <h4 class="text-slate-900 font-black text-lg">当前汉字诊断</h4>
+              <p class="text-slate-500 text-xs font-bold mt-1">点击左侧汉字可切换分析对象</p>
+            </div>
+            <div class="analysis-score-ring"><span id="analysisScore">94</span></div>
+          </div>
+          <div class="flex items-center gap-3 p-4 rounded-2xl bg-white/75 border border-slate-200/80 mb-3">
+            <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-black" id="analysisChar">我</div>
+            <div class="min-w-0">
+              <div class="text-slate-900 font-black text-lg"><span id="analysisPinyin">wǒ</span> · <span id="analysisStatus">准确</span></div>
+              <p class="text-slate-500 text-sm font-semibold mt-1" id="analysisAdvice">声调稳定，第三声起伏自然。</p>
+            </div>
+          </div>
+          <div class="analysis-metric"><label>声调</label><div class="metric-bar"><span style="width:82%"></span></div><b>82</b></div>
+          <div class="analysis-metric"><label>声母</label><div class="metric-bar"><span style="width:90%"></span></div><b>90</b></div>
+          <div class="analysis-metric"><label>韵母</label><div class="metric-bar"><span style="width:86%"></span></div><b>86</b></div>
+          <div class="analysis-metric"><label>流畅度</label><div class="metric-bar"><span style="width:78%"></span></div><b>78</b></div>
+          <div class="analysis-tip-card" id="analysisTip"><i class="fas fa-lightbulb mr-2"></i>建议先慢速跟读，再单独练习问题汉字，最后回到完整句子复读。</div>
+          <div class="analysis-actions">
+            <button onclick="showLearningToast('已加入发音错题本')"><i class="fas fa-book-open mr-2"></i>加入错题本</button>
+            <button onclick="openChineseModule('shadow')"><i class="fas fa-microphone-lines mr-2"></i>回到跟读练习</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learn-view" id="learn-exam">
+      <div class="learn-sub-header">
+        <button class="back-btn" onclick="openChineseModule('home')"><i class="fas fa-chevron-left"></i><span>返回中文学习</span></button>
+        <div class="sub-title text-center flex-1"><h3>HSKK 口语模拟</h3><p>真实题型演练 · AI评分反馈</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="exam-layout">
+        <div class="exam-question-card learn-card">
+          <div class="eqc-num">HSKK 中级 · 第一部分</div>
+          <div class="exam-type-tabs">
+            <button class="ett active" onclick="switchExamType(this)">朗读</button>
+            <button class="ett" onclick="switchExamType(this)">复述</button>
+            <button class="ett" onclick="switchExamType(this)">回答</button>
+          </div>
+          <p class="eqc-instruction">请朗读下列句子，注意声调和语速。准备时间20秒，录音时间40秒。</p>
+          <div class="eqc-content">最近天气变化很大，<br>早晚温差比较明显，<br>大家要注意保暖。</div>
+          <div class="eqc-timer">
+            <i class="fas fa-clock text-amber-500 text-xl"></i>
+            <div><div class="timer-label">剩余录音时间</div><div class="timer-text" id="examTimer">00:35</div></div>
+          </div>
+          <button class="exam-rec-btn" id="examRecBtn" onclick="toggleExamRec(this)"><i class="fas fa-microphone mr-2"></i>开始朗读录音</button>
+        </div>
+        <div class="learn-card p-5">
+          <h4 class="text-slate-900 font-black text-lg mb-3">上一题 AI 评分详情</h4>
+          <div class="score-row"><span class="sr-label">发音准确度</span><div class="sr-bar"><span class="sr-fill" style="width:82%"></span></div><span class="sr-score">82</span></div>
+          <div class="score-row"><span class="sr-label">声调正确率</span><div class="sr-bar"><span class="sr-fill" style="width:76%"></span></div><span class="sr-score">76</span></div>
+          <div class="score-row"><span class="sr-label">语速流畅度</span><div class="sr-bar"><span class="sr-fill" style="width:88%"></span></div><span class="sr-score">88</span></div>
+          <div class="score-row"><span class="sr-label">综合得分</span><div class="sr-bar"><span class="sr-fill" style="width:82%"></span></div><span class="sr-score" style="color:#F59E0B">82</span></div>
+          <div class="mt-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 text-sm text-slate-600 font-semibold leading-relaxed">
+            <i class="fas fa-lightbulb text-blue-500 mr-2"></i>建议继续加强第三声和长句停顿，回答题可以先用“我认为……”开头，降低紧张感。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="mobile-bottom-nav">
+  <a href="chinese.html" class="mobile-tab text-blue-600 bg-white shadow-sm">
+        <i class="fas fa-language"></i><span>中文学习</span>
+      </a>
+  <a href="chat.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-comments"></i><span>情感陪伴</span>
+      </a>
+  <a href="internship.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-briefcase"></i><span>实习助手</span>
+      </a>
+  <a href="career.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-building-user"></i><span>留华就业</span>
+      </a>
+  <a href="user.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-user"></i><span>个人中心</span>
+      </a>
+</nav>
+
+<script>
+const learnViews = ['home','shadow','mistake','analysis','exam'];
+
+function openChineseModule(name) {
+  learnViews.forEach(v => {
+    const el = document.getElementById('learn-' + v);
+    if (el) el.classList.toggle('active', v === name);
+  });
+  document.body.classList.toggle('chinese-deep', name !== 'home');
+  const board = document.querySelector('.learning-board');
+  if (board) board.scrollTop = 0;
+  const activeView = document.getElementById('learn-' + name);
+  if (activeView) activeView.scrollTop = 0;
+  if (name === 'shadow') initWaveBars();
+}
+
+function initWaveBars(mode='native') {
+  const wrap = document.getElementById('waveBars');
+  if (!wrap || wrap.dataset.ready === mode) return;
+  const heights = [12,18,28,44,52,34,48,56,40,32,50,24,38,54,30,22,46,36,28,48,20,42];
+  wrap.innerHTML = heights.map((h, i) => `<span class="bar ${mode === 'record' ? (i % 3 === 0 ? 'match' : 'user') : ''}" style="height:${h}px"></span>`).join('');
+  wrap.dataset.ready = mode;
+}
+
+function setSpeed(btn) {
+  document.querySelectorAll('.spd-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showLearningToast('跟读速度已调整为 ' + btn.textContent.trim());
+}
+
+function playNative(btn) {
+  initWaveBars('native');
+  showLearningToast('正在播放范读');
+  btn.innerHTML = '<i class="fas fa-pause"></i>';
+  setTimeout(() => { btn.innerHTML = '<i class="fas fa-play"></i>'; }, 900);
+}
+
+function playback(btn) {
+  initWaveBars('record');
+  showLearningToast('正在回放你的录音');
+}
+
+function toggleRecord(btn) {
+  const icon = btn.querySelector('i');
+  btn.classList.add('recording');
+  if (icon) icon.className = 'fas fa-stop';
+  initWaveBars('record');
+  showLearningToast('录音中，请跟读句子');
+  setTimeout(() => {
+    btn.classList.remove('recording');
+    if (icon) icon.className = 'fas fa-microphone';
+    const result = document.getElementById('resultCard');
+    if (result) result.classList.add('show');
+    showLearningToast('AI发音分析已生成');
+  }, 1200);
+}
+
+function showTip(text) {
+  const tip = document.getElementById('tipBox');
+  if (tip) tip.textContent = '💡 ' + text;
+}
+
+function selectAnalysisChar(el, char, pinyin, status, advice, score) {
+  document.querySelectorAll('.analysis-char').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const charEl = document.getElementById('analysisChar');
+  const pinyinEl = document.getElementById('analysisPinyin');
+  const statusEl = document.getElementById('analysisStatus');
+  const adviceEl = document.getElementById('analysisAdvice');
+  const scoreEl = document.getElementById('analysisScore');
+  const tipEl = document.getElementById('analysisTip');
+  if (charEl) charEl.textContent = char;
+  if (pinyinEl) pinyinEl.textContent = pinyin;
+  if (statusEl) statusEl.textContent = status;
+  if (adviceEl) adviceEl.textContent = advice;
+  if (scoreEl) scoreEl.textContent = score;
+  if (tipEl) tipEl.innerHTML = '<i class="fas fa-lightbulb mr-2"></i>' + advice;
+}
+
+function addMistake() {
+  showLearningToast('已将「北」加入发音错题本');
+}
+
+function setMistakeTab(btn) {
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showLearningToast('已切换到：' + btn.textContent.trim());
+}
+
+function switchExamType(btn) {
+  document.querySelectorAll('.ett').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const type = btn.textContent.trim();
+  const inst = document.querySelector('.eqc-instruction');
+  const content = document.querySelector('.eqc-content');
+  if (type === '复述') {
+    inst.textContent = '请先听一段短文，然后用中文复述主要内容。准备时间30秒，录音时间60秒。';
+    content.innerHTML = '听力材料：小李来中国以后，<br>每天坚持练习中文口语，<br>现在已经能和同学自然交流。';
+  } else if (type === '回答') {
+    inst.textContent = '请根据题目进行自由回答，注意表达完整、逻辑清楚。准备时间30秒，录音时间90秒。';
+    content.innerHTML = '你为什么想学习中文？<br>请结合自己的学习或生活经历回答。';
+  } else {
+    inst.textContent = '请朗读下列句子，注意声调和语速。准备时间20秒，录音时间40秒。';
+    content.innerHTML = '最近天气变化很大，<br>早晚温差比较明显，<br>大家要注意保暖。';
+  }
+}
+
+let examTimerId = null;
+function toggleExamRec(btn) {
+  if (btn.classList.contains('recording')) {
+    stopExamRecording(btn, true);
+    return;
+  }
+  btn.classList.add('recording');
+  btn.innerHTML = '<i class="fas fa-stop mr-2"></i>录音中，点击结束';
+  let seconds = 35;
+  const timer = document.getElementById('examTimer');
+  if (examTimerId) clearInterval(examTimerId);
+  examTimerId = setInterval(() => {
+    seconds -= 1;
+    if (timer) timer.textContent = '00:' + String(Math.max(seconds, 0)).padStart(2, '0');
+    if (seconds <= 0) stopExamRecording(btn, false);
+  }, 1000);
+  showLearningToast('模拟考录音已开始');
+}
+
+function stopExamRecording(btn, manual) {
+  if (examTimerId) clearInterval(examTimerId);
+  examTimerId = null;
+  btn.classList.remove('recording');
+  btn.innerHTML = '<i class="fas fa-microphone mr-2"></i>重新录音';
+  showLearningToast(manual ? '录音已结束，AI正在评分' : '录音时间到，AI正在评分');
+}
+
+function showLearningToast(message) {
+  document.querySelectorAll('.learn-toast').forEach(t => t.remove());
+  const toast = document.createElement('div');
+  toast.className = 'learn-toast';
+  toast.innerHTML = `<i class="fas fa-circle-info text-blue-300"></i><span>${message}</span>`;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity .35s ease, transform .35s ease';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -8px)';
+    setTimeout(() => toast.remove(), 380);
+  }, 1600);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initWaveBars();
+  document.querySelectorAll('.rt-word').forEach(word => {
+    word.addEventListener('click', () => {
+      document.querySelectorAll('.rt-word').forEach(w => w.classList.remove('highlighted'));
+      word.classList.add('highlighted');
+      showLearningToast('已选中「' + word.textContent.trim() + '」进行发音观察');
+    });
+  });
+});
+
+document.querySelectorAll('.module-card[role="button"]').forEach(card => {
+  card.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      card.click();
+    }
+  });
+});
+</script>
+
+</body>
+</html>

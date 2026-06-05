@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Selene - 留华就业</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: { colors: { primary: { 50:'#EFF6FF',100:'#DBEAFE',200:'#BFDBFE',300:'#93C5FD',400:'#60A5FA',500:'#3B82F6',600:'#2563EB',700:'#1D4ED8',800:'#1E40AF',900:'#1E3A8A' }, accent: { 400:'#FBBF24',500:'#F59E0B',600:'#D97706' } }, fontFamily: { sans: ['Noto Sans SC','PingFang SC','Microsoft YaHei','sans-serif'] } } } };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; box-sizing: border-box; }
+:root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+html, body { width: 100%; min-height: 100%; }
+body { margin: 0; background: linear-gradient(120deg, #E0F2FE 0%, #EEF2FF 48%, #FEF3C7 100%); background-attachment: fixed; color: #1E293B; overflow: hidden; }
+.glass { background: rgba(255,255,255,.66); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.82); box-shadow: 0 8px 32px rgba(30,58,138,.06); }
+.nav-item:hover { transform: translateX(6px); }
+.nav-item.active:hover { transform: none; }
+.logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, .34); border-radius: 999px; }
+.mobile-topbar, .mobile-bottom-nav { display: none; }
+.page-shell { min-height: 100dvh; margin-left: 16rem; padding: 1.5rem; }
+.blank-board { min-height: calc(100dvh - 9.5rem); border-radius: 2rem; }
+@media (max-width: 768px) {
+  body { overflow: hidden; -webkit-text-size-adjust: 100%; }
+  .desktop-sidebar { display: none !important; }
+  .mobile-topbar { display: flex; position: sticky; top: 0; z-index: 30; padding: calc(10px + var(--safe-top)) 14px 10px; align-items: center; justify-content: space-between; background: rgba(255,255,255,.58); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid rgba(226,232,240,.58); }
+  .mobile-bottom-nav { display: grid; position: fixed; left: 10px; right: 10px; bottom: calc(10px + var(--safe-bottom)); z-index: 40; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 4px; padding: 6px; border-radius: 24px; background: rgba(255,255,255,.78); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,.88); box-shadow: 0 14px 34px rgba(30,58,138,.12); }
+  .mobile-tab { min-width: 0; height: 54px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; text-decoration: none; }
+  .mobile-tab i { font-size: 17px; }
+  .page-shell { margin-left: 0; padding: 0 12px calc(86px + var(--safe-bottom)); height: 100dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .desktop-header { display: none !important; }
+  .blank-board { min-height: calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)); border-radius: 26px; margin-top: 14px; }
+}
+
+/* ===== Career in China redesigned module ===== */
+.career-board {
+  min-height: calc(100dvh - 9.5rem);
+  border-radius: 2rem;
+  overflow: hidden;
+  padding: 1.3rem;
+  overflow-y: auto;
+}
+.career-wrap { max-width:1180px; margin:0 auto; }
+.career-hero { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr); gap:1rem; margin-bottom:1rem; }
+.career-card {
+  background:rgba(255,255,255,.74); border:1px solid rgba(255,255,255,.9);
+  border-radius:1.65rem; box-shadow:0 12px 32px rgba(30,58,138,.07);
+}
+.career-main {
+  padding:1.45rem;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(37,99,235,.18), transparent 32%),
+    radial-gradient(circle at 96% 20%, rgba(16,185,129,.15), transparent 30%),
+    rgba(255,255,255,.72);
+}
+.career-kicker {
+  display:inline-flex; align-items:center; gap:.45rem;
+  padding:.38rem .72rem; border-radius:999px;
+  background:rgba(37,99,235,.09); border:1px solid rgba(37,99,235,.16);
+  color:#2563EB; font-size:.75rem; font-weight:900; margin-bottom:.8rem;
+}
+.career-title { color:#0F172A; font-size:1.85rem; line-height:1.16; font-weight:950; letter-spacing:-.02em; }
+.career-sub { margin-top:.7rem; color:#64748B; line-height:1.72; font-size:.94rem; font-weight:650; }
+.career-actions { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1.05rem; }
+.career-btn {
+  border:0; cursor:pointer; border-radius:1rem; padding:.78rem .95rem;
+  font-weight:950; display:inline-flex; align-items:center; gap:.48rem;
+  transition:transform .18s ease, background .18s ease;
+}
+.career-btn.primary { background:#1E293B; color:#fff; box-shadow:0 12px 24px rgba(15,23,42,.13); }
+.career-btn.soft { background:rgba(255,255,255,.76); color:#334155; border:1px solid rgba(226,232,240,.9); }
+.career-btn:hover { transform:translateY(-2px); }
+.path-card { padding:1.15rem; }
+.path-stage { display:flex; gap:.78rem; align-items:flex-start; padding:.7rem 0; border-bottom:1px solid rgba(226,232,240,.7); }
+.path-stage:last-child { border-bottom:0; }
+.path-dot { width:2.2rem; height:2.2rem; border-radius:999px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#DBEAFE; color:#2563EB; font-weight:950; }
+.path-stage.active .path-dot { background:#1E293B; color:#fff; }
+.path-stage h4 { color:#0F172A; font-size:.88rem; font-weight:950; }
+.path-stage p { color:#64748B; font-size:.76rem; line-height:1.5; font-weight:650; margin-top:.18rem; }
+
+.career-feature-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.85rem; margin-bottom:1rem; }
+.career-feature {
+  padding:1rem; min-height:150px; cursor:pointer; transition:all .22s ease;
+  position:relative; overflow:hidden; border-color:rgba(147,197,253,.42);
+  background:linear-gradient(135deg,#EAF3FF 0%,#F8FBFF 65%,#FFFFFF 100%);
+}
+.career-feature:hover { transform:translateY(-4px); box-shadow:0 18px 38px rgba(30,58,138,.12); }
+.career-feature.active { border-color:rgba(37,99,235,.42); box-shadow:0 18px 38px rgba(37,99,235,.13); }
+.cf-icon { width:3rem; height:3rem; border-radius:1.15rem; background:#DBEAFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:1.18rem; margin-bottom:.75rem; }
+.career-feature h3 { color:#0F172A; font-weight:950; font-size:1rem; }
+.career-feature p { color:#64748B; margin-top:.35rem; line-height:1.55; font-size:.8rem; font-weight:650; }
+.cf-meta { margin-top:auto; padding-top:.75rem; display:flex; justify-content:space-between; align-items:center; color:#2563EB; font-size:.76rem; font-weight:950; }
+
+.career-workspace { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(310px,.9fr); gap:1rem; }
+.career-view { display:none; animation: careerFade .22s ease-out; }
+.career-view.active { display:block; }
+@keyframes careerFade { from{opacity:0; transform:translateY(7px);} to{opacity:1; transform:none;} }
+.panel-pad { padding:1.15rem; }
+.section-head { display:flex; align-items:center; justify-content:space-between; gap:.8rem; margin-bottom:.9rem; }
+.section-head h3 { color:#0F172A; font-size:1.12rem; font-weight:950; }
+.section-head p { color:#64748B; font-size:.8rem; font-weight:650; margin-top:.2rem; }
+.career-pill { display:inline-flex; align-items:center; gap:.35rem; padding:.38rem .62rem; border-radius:999px; background:rgba(16,185,129,.09); border:1px solid rgba(16,185,129,.14); color:#059669; font-size:.72rem; font-weight:900; white-space:nowrap; }
+
+.career-job-list { display:grid; gap:.75rem; }
+.career-job { padding:.95rem; border-radius:1.25rem; background:rgba(248,250,252,.84); border:1px solid rgba(226,232,240,.86); transition:all .18s ease; cursor:pointer; }
+.career-job:hover { transform:translateY(-2px); background:#fff; box-shadow:0 12px 24px rgba(30,58,138,.06); }
+.cj-top { display:flex; justify-content:space-between; gap:.8rem; align-items:flex-start; }
+.cj-title { color:#0F172A; font-weight:950; }
+.cj-company { color:#64748B; font-size:.8rem; font-weight:700; margin-top:.18rem; }
+.cj-badge { flex-shrink:0; padding:.38rem .55rem; border-radius:999px; background:rgba(37,99,235,.09); color:#2563EB; font-size:.72rem; font-weight:950; }
+.cj-tags { display:flex; flex-wrap:wrap; gap:.42rem; margin-top:.75rem; }
+.cj-tags span { padding:.32rem .5rem; border-radius:999px; background:#fff; border:1px solid rgba(226,232,240,.9); color:#64748B; font-size:.7rem; font-weight:850; }
+
+.policy-check { display:grid; gap:.7rem; }
+.policy-item { display:grid; grid-template-columns:2.3rem minmax(0,1fr) auto; gap:.7rem; align-items:center; padding:.82rem; border-radius:1.15rem; background:#fff; border:1px solid rgba(226,232,240,.88); }
+.policy-icon { width:2.3rem; height:2.3rem; border-radius:.92rem; background:rgba(37,99,235,.08); color:#2563EB; display:flex; align-items:center; justify-content:center; }
+.policy-item h4 { color:#0F172A; font-size:.88rem; font-weight:950; }
+.policy-item p { color:#64748B; font-size:.74rem; font-weight:650; margin-top:.15rem; line-height:1.45; }
+.policy-status { padding:.32rem .5rem; border-radius:999px; font-size:.68rem; font-weight:950; white-space:nowrap; }
+.policy-status.ready { background:rgba(16,185,129,.09); color:#059669; }
+.policy-status.todo { background:rgba(245,158,11,.11); color:#D97706; }
+
+.roadmap { display:grid; gap:.75rem; }
+.roadmap-item { padding:.9rem; border-radius:1.15rem; background:#fff; border:1px solid rgba(226,232,240,.88); }
+.roadmap-top { display:flex; justify-content:space-between; gap:.8rem; }
+.roadmap-item h4 { color:#0F172A; font-weight:950; font-size:.9rem; }
+.roadmap-item p { color:#64748B; font-size:.76rem; line-height:1.55; margin-top:.25rem; font-weight:650; }
+.roadmap-time { flex-shrink:0; color:#2563EB; font-size:.72rem; font-weight:950; }
+.enterprise-card { padding:.88rem; border-radius:1.15rem; background:rgba(37,99,235,.07); border:1px solid rgba(37,99,235,.15); }
+.enterprise-card h4 { color:#0F172A; font-size:.9rem; font-weight:950; }
+.enterprise-card p { color:#64748B; font-size:.76rem; line-height:1.55; margin-top:.25rem; font-weight:650; }
+.profile-metric { display:grid; grid-template-columns:90px minmax(0,1fr) 38px; gap:.65rem; align-items:center; padding:.62rem 0; border-bottom:1px solid rgba(226,232,240,.7); }
+.profile-metric:last-child { border-bottom:0; }
+.profile-metric label { color:#64748B; font-size:.76rem; font-weight:850; }
+.profile-bar { height:7px; border-radius:999px; background:rgba(148,163,184,.18); overflow:hidden; }
+.profile-bar span { display:block; height:100%; background:linear-gradient(90deg,#2563EB,#10B981); border-radius:999px; }
+.profile-metric b { color:#059669; font-size:.8rem; font-weight:950; text-align:right; }
+.career-toast {
+  position:fixed; left:50%; top:calc(22px + var(--safe-top)); transform:translateX(-50%);
+  z-index:120; background:#1E293B; color:white; border-radius:1rem; padding:.82rem 1rem;
+  box-shadow:0 18px 38px rgba(15,23,42,.18); font-size:.86rem; font-weight:850;
+  display:flex; align-items:center; gap:.55rem;
+}
+@media (max-width:1120px) {
+  .career-feature-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .career-hero, .career-workspace { grid-template-columns:1fr; }
+}
+@media (max-width:768px) {
+  .career-board { min-height:calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)); margin-top:14px; border-radius:26px; padding:.9rem; }
+  .career-title { font-size:1.45rem; }
+  .career-sub { font-size:.84rem; }
+  .career-actions { gap:.5rem; }
+  .career-btn { padding:.68rem .78rem; font-size:.82rem; border-radius:.9rem; }
+  .career-feature-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
+  .career-feature { min-height:142px; padding:.85rem; border-radius:1.25rem; }
+  .cf-icon { width:2.55rem; height:2.55rem; border-radius:1rem; font-size:1rem; margin-bottom:.55rem; }
+  .career-feature h3 { font-size:.88rem; }
+  .career-feature p { font-size:.72rem; line-height:1.43; }
+  .cf-meta { font-size:.68rem; padding-top:.55rem; }
+  .panel-pad { padding:.92rem; }
+  .section-head { align-items:flex-start; }
+  .policy-item { grid-template-columns:2.1rem minmax(0,1fr); }
+  .policy-status { grid-column: 2 / -1; width:max-content; }
+  .profile-metric { grid-template-columns:82px minmax(0,1fr) 34px; }
+}
+@media (max-width:390px) {
+  .career-board { padding:.72rem; }
+  .career-feature { min-height:148px; }
+  .career-feature p { display:none; }
+}
+
+/* ===== Career deep interaction override: module home + subpages ===== */
+body.career-deep .mobile-bottom-nav { display:none !important; }
+@media (max-width:768px) {
+  body.career-deep .page-shell { padding-bottom: calc(14px + var(--safe-bottom)) !important; }
+}
+
+.career-home-view.hidden { display:none; }
+.career-deep-view { display:none; animation: careerFade .24s ease-out; }
+.career-deep-view.active { display:block; }
+
+.career-home-grid { display:grid; grid-template-columns: minmax(0,1.05fr) minmax(300px,.95fr); gap:1rem; margin-bottom:1rem; }
+.career-overview-card {
+  padding:1.15rem;
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:1.55rem;
+  box-shadow:0 12px 32px rgba(30,58,138,.07);
+}
+.career-overview-card h4 { color:#0F172A; font-size:1rem; font-weight:950; }
+.career-overview-card p { color:#64748B; font-size:.8rem; line-height:1.58; font-weight:650; margin-top:.25rem; }
+.career-mini-list { display:grid; gap:.65rem; margin-top:.9rem; }
+.career-mini-item { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.72rem; border-radius:1rem; background:rgba(248,250,252,.86); border:1px solid rgba(226,232,240,.86); }
+.career-mini-item span:first-child { color:#334155; font-size:.78rem; font-weight:900; }
+.career-mini-item span:last-child { color:#2563EB; font-size:.78rem; font-weight:950; }
+
+.career-feature-grid.deep-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.career-feature.deep-entry {
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  padding:1.2rem;
+}
+.career-feature.deep-entry .cf-meta { margin-top:auto; }
+.career-feature.deep-entry:active { transform:translateY(-1px) scale(.99); }
+
+.career-sub-header {
+  position: sticky; top: 0; z-index: 10;
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  padding:.78rem .9rem; margin-bottom:1rem;
+  border-radius:1.35rem;
+  background:rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 10px 28px rgba(30,58,138,.08);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+}
+.career-back-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:.72rem .95rem; border-radius:1rem;
+  border:1px solid rgba(226,232,240,.82);
+  background:rgba(255,255,255,.82); color:#334155;
+  box-shadow:0 8px 22px rgba(30,58,138,.07);
+  font-weight:950; cursor:pointer; transition:all .18s ease;
+}
+.career-back-btn:hover { transform:translateX(-2px); color:#2563EB; background:#fff; }
+.career-sub-title { flex:1; text-align:center; min-width:0; }
+.career-sub-title h3 { color:#0F172A; font-weight:950; font-size:1.35rem; }
+.career-sub-title p { color:#64748B; font-size:.82rem; font-weight:650; margin-top:.16rem; }
+
+.career-deep-layout { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(310px,.92fr); gap:1rem; }
+.career-deep-card {
+  background:rgba(255,255,255,.74); border:1px solid rgba(255,255,255,.9);
+  border-radius:1.55rem; box-shadow:0 12px 32px rgba(30,58,138,.07);
+  padding:1.15rem;
+}
+.deep-card-title { display:flex; align-items:flex-start; justify-content:space-between; gap:.8rem; margin-bottom:.9rem; }
+.deep-card-title h4 { color:#0F172A; font-size:1.08rem; font-weight:950; }
+.deep-card-title p { color:#64748B; font-size:.8rem; font-weight:650; margin-top:.18rem; line-height:1.5; }
+.deep-badge { flex-shrink:0; display:inline-flex; align-items:center; gap:.34rem; padding:.38rem .62rem; border-radius:999px; background:rgba(37,99,235,.09); border:1px solid rgba(37,99,235,.14); color:#2563EB; font-size:.72rem; font-weight:950; white-space:nowrap; }
+
+.deep-filter-row { display:flex; gap:.5rem; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:.3rem; margin-bottom:.85rem; }
+.deep-filter { flex:0 0 auto; border:1px solid rgba(226,232,240,.9); background:#fff; color:#64748B; padding:.5rem .72rem; border-radius:999px; font-size:.75rem; font-weight:900; }
+.deep-filter.active { background:rgba(37,99,235,.09); border-color:rgba(37,99,235,.25); color:#2563EB; }
+
+.job-card-rich { padding:1rem; border-radius:1.25rem; background:rgba(248,250,252,.86); border:1px solid rgba(226,232,240,.86); margin-bottom:.8rem; transition:all .18s ease; cursor:pointer; }
+.job-card-rich:hover { transform:translateY(-2px); background:#fff; box-shadow:0 12px 24px rgba(30,58,138,.07); }
+.job-title-row { display:flex; align-items:flex-start; justify-content:space-between; gap:.8rem; }
+.job-title-row h5 { color:#0F172A; font-size:.98rem; font-weight:950; }
+.job-title-row p { color:#64748B; font-size:.77rem; font-weight:700; margin-top:.15rem; }
+.job-score { width:3.25rem; height:3.25rem; border-radius:1rem; background:#DBEAFE; color:#2563EB; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; font-weight:950; }
+.job-score small { font-size:.62rem; font-weight:850; color:#3B82F6; margin-top:.05rem; }
+.job-reason { margin-top:.72rem; padding:.72rem; border-radius:1rem; background:#fff; border:1px solid rgba(226,232,240,.8); color:#475569; font-size:.78rem; font-weight:650; line-height:1.55; }
+.job-actions { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.72rem; }
+.job-actions button, .deep-action-btn {
+  border:0; cursor:pointer; border-radius:.9rem; padding:.62rem .78rem; font-weight:950; font-size:.78rem;
+  display:inline-flex; align-items:center; gap:.38rem; transition:all .18s ease;
+}
+.job-actions button.primary, .deep-action-btn.primary { background:#1E293B; color:#fff; }
+.job-actions button.soft, .deep-action-btn.soft { background:#fff; color:#334155; border:1px solid rgba(226,232,240,.9); }
+.job-actions button:hover, .deep-action-btn:hover { transform:translateY(-1px); }
+
+.checklist { display:grid; gap:.62rem; }
+.check-item { display:grid; grid-template-columns:2.2rem minmax(0,1fr) auto; gap:.65rem; align-items:center; padding:.75rem; border-radius:1rem; background:#fff; border:1px solid rgba(226,232,240,.85); }
+.check-icon { width:2.2rem; height:2.2rem; border-radius:.85rem; display:flex; align-items:center; justify-content:center; background:#DBEAFE; color:#2563EB; }
+.check-item h5 { color:#0F172A; font-size:.84rem; font-weight:950; }
+.check-item p { color:#64748B; font-size:.72rem; font-weight:650; margin-top:.12rem; line-height:1.4; }
+.status { padding:.3rem .5rem; border-radius:999px; font-size:.66rem; font-weight:950; white-space:nowrap; }
+.status.ok { color:#059669; background:rgba(16,185,129,.09); }
+.status.todo { color:#D97706; background:rgba(245,158,11,.11); }
+.status.warn { color:#DC2626; background:rgba(239,68,68,.09); }
+
+.policy-stepper { display:grid; gap:.72rem; }
+.policy-step-rich { display:grid; grid-template-columns:2.4rem minmax(0,1fr); gap:.72rem; padding:.85rem; border-radius:1.15rem; background:#fff; border:1px solid rgba(226,232,240,.86); }
+.step-num { width:2.4rem; height:2.4rem; border-radius:999px; display:flex; align-items:center; justify-content:center; background:#1E293B; color:#fff; font-weight:950; }
+.policy-step-rich h5 { color:#0F172A; font-size:.9rem; font-weight:950; }
+.policy-step-rich p { color:#64748B; font-size:.75rem; line-height:1.55; font-weight:650; margin-top:.2rem; }
+.material-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.62rem; }
+.material-pill { padding:.72rem; border-radius:1rem; background:#F8FAFC; border:1px solid rgba(226,232,240,.86); color:#334155; font-size:.76rem; font-weight:850; display:flex; align-items:center; gap:.5rem; }
+.material-pill i { color:#2563EB; }
+
+.path-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.5rem; margin-bottom:.85rem; }
+.path-tab { border:1px solid rgba(226,232,240,.9); background:#fff; color:#64748B; border-radius:1rem; padding:.7rem .45rem; font-size:.74rem; font-weight:950; cursor:pointer; }
+.path-tab.active { color:#2563EB; background:rgba(37,99,235,.09); border-color:rgba(37,99,235,.25); }
+.deep-roadmap { position:relative; display:grid; gap:.75rem; }
+.deep-roadmap-item { padding:.9rem; border-radius:1.15rem; background:#fff; border:1px solid rgba(226,232,240,.86); }
+.deep-roadmap-item h5 { color:#0F172A; font-size:.9rem; font-weight:950; }
+.deep-roadmap-item p { color:#64748B; font-size:.76rem; line-height:1.55; font-weight:650; margin-top:.22rem; }
+.path-time { display:inline-flex; color:#2563EB; background:rgba(37,99,235,.08); padding:.3rem .5rem; border-radius:999px; font-size:.68rem; font-weight:950; margin-bottom:.42rem; }
+
+.enterprise-list { display:grid; gap:.72rem; }
+.enterprise-rich { padding:.9rem; border-radius:1.15rem; background:#fff; border:1px solid rgba(226,232,240,.86); }
+.enterprise-rich h5 { color:#0F172A; font-size:.9rem; font-weight:950; }
+.enterprise-rich p { color:#64748B; font-size:.76rem; line-height:1.55; font-weight:650; margin-top:.25rem; }
+.enterprise-tags { display:flex; flex-wrap:wrap; gap:.38rem; margin-top:.58rem; }
+.enterprise-tags span { padding:.28rem .46rem; border-radius:999px; background:rgba(37,99,235,.08); color:#2563EB; font-size:.66rem; font-weight:900; }
+
+.match-meter { padding:1rem; border-radius:1.25rem; background:linear-gradient(135deg,#EAF3FF,#FFFFFF); border:1px solid rgba(147,197,253,.45); margin-bottom:.85rem; }
+.meter-big { font-size:2.35rem; font-weight:950; color:#2563EB; line-height:1; }
+.meter-label { color:#64748B; font-size:.76rem; font-weight:850; margin-top:.2rem; }
+.deep-tip { padding:.86rem; border-radius:1rem; background:rgba(245,158,11,.09); border:1px solid rgba(245,158,11,.18); color:#92400E; font-size:.78rem; font-weight:700; line-height:1.6; }
+
+@media (max-width:1120px) {
+  .career-home-grid, .career-deep-layout { grid-template-columns:1fr; }
+}
+@media (max-width:768px) {
+  .career-sub-header { top:0; padding:.62rem .68rem; border-radius:1.28rem; margin-bottom:.85rem; }
+  .career-back-btn { width:42px; height:42px; padding:0; border-radius:1rem; }
+  .career-back-btn span { display:none; }
+  .career-sub-title h3 { font-size:1.16rem; }
+  .career-sub-title p { display:none; }
+  .career-feature-grid.deep-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }
+  .career-feature.deep-entry { min-height:146px; padding:.85rem; border-radius:1.25rem; }
+  .career-feature.deep-entry p { font-size:.72rem; line-height:1.43; }
+  .career-home-grid { gap:.75rem; }
+  .career-deep-layout { gap:.75rem; }
+  .career-deep-card { padding:.92rem; border-radius:1.3rem; }
+  .deep-card-title { align-items:flex-start; }
+  .deep-card-title h4 { font-size:1rem; }
+  .deep-badge { font-size:.66rem; }
+  .check-item { grid-template-columns:2.05rem minmax(0,1fr); }
+  .check-icon { width:2.05rem; height:2.05rem; }
+  .check-item .status { grid-column:2 / -1; width:max-content; }
+  .material-grid { grid-template-columns:1fr; }
+  .path-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .job-title-row { align-items:flex-start; }
+  .job-score { width:3rem; height:3rem; }
+}
+@media (max-width:390px) {
+  .career-feature.deep-entry { min-height:140px; }
+  .career-feature.deep-entry p { display:none; }
+}
+
+</style>
+</head>
+<body>
+<aside class="desktop-sidebar glass fixed left-0 top-0 z-40 h-screen w-64 border-r border-white/50 flex flex-col">
+  <div class="p-8 pb-4 flex items-center gap-3">
+    <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center shadow-md overflow-hidden flex-shrink-0">
+      <img src="selene_logo.png" alt="Selene" class="logo-img">
+    </div>
+    <div>
+      <h1 class="text-slate-800 font-extrabold text-lg leading-tight">Selene</h1>
+      <p class="text-slate-500 font-medium text-xs">智能陪伴平台</p>
+    </div>
+  </div>
+  <nav class="flex-1 px-4 mt-6 space-y-2 overflow-y-auto custom-scrollbar">
+    <a href="chinese.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-language w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">中文学习</span>
+        </a>
+    <a href="chat.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-comments w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">情感陪伴</span>
+        </a>
+    <a href="internship.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-briefcase w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">实习助手</span>
+        </a>
+    <a href="career.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all active bg-white text-slate-900 border-blue-100 shadow-sm">
+          <i class="fas fa-building-user w-6 text-center text-lg text-blue-600"></i><span class="font-bold">留华就业</span>
+        </a>
+    <a href="user.html" class="nav-item group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all text-slate-500 hover:text-slate-900 border-transparent hover:bg-white/60">
+          <i class="fas fa-user w-6 text-center text-lg text-slate-400 group-hover:text-blue-600"></i><span class="font-medium">个人中心</span>
+        </a>
+  </nav>
+  <div class="p-4 border-t border-slate-200/50">
+    <a href="login.html" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/50 border border-rose-100 text-rose-500 hover:bg-white hover:shadow-sm transition-all font-medium">
+      <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
+    </a>
+  </div>
+</aside>
+
+<main class="page-shell">
+  <div class="mobile-topbar">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-2xl bg-slate-800 overflow-hidden flex-shrink-0"><img src="selene_logo.png" alt="Selene" class="logo-img"></div>
+      <div class="min-w-0"><h1 class="text-slate-800 font-extrabold leading-tight truncate">留华就业</h1><p class="text-slate-500 text-xs font-medium truncate">岗位匹配、政策咨询与留华发展</p></div>
+    </div>
+    <a href="user.html" class="w-10 h-10 rounded-2xl bg-white/70 border border-white flex items-center justify-center text-slate-600"><i class="fas fa-user"></i></a>
+  </div>
+
+  <header class="desktop-header mb-6 flex items-center justify-between">
+    <div>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/55 border border-white/80 text-blue-600 text-xs font-bold mb-3">
+        <i class="fas fa-building-user"></i><span>Selene</span>
+      </div>
+      <h2 class="text-3xl font-extrabold text-slate-800">留华就业</h2>
+      <p class="text-slate-500 font-medium mt-1">岗位匹配、政策咨询与留华发展</p>
+    </div>
+  </header>
+
+  
+
+<section class="career-board glass">
+  <div class="career-wrap">
+    <div class="career-home-view" id="career-home">
+      <div class="career-hero">
+        <div class="path-card career-card">
+          <div class="career-kicker" style="margin-bottom:.55rem;"><i class="fas fa-user-check"></i><span>当前画像</span></div>
+          <h3 class="text-slate-900 font-black text-xl mb-3">硕士毕业生 · 上海就业路径</h3>
+          <div class="path-stage active"><div class="path-dot">1</div><div><h4>职业画像已生成</h4><p>结合专业、语言、国籍优势与目标城市进行初步判断。</p></div></div>
+          <div class="path-stage"><div class="path-dot">2</div><div><h4>岗位与政策双匹配</h4><p>优先匹配有外籍人才招聘经验的企业和岗位。</p></div></div>
+          <div class="path-stage"><div class="path-dot">3</div><div><h4>入职材料协同</h4><p>提醒学生与企业HR同步准备工作许可和居留材料。</p></div></div>
+        </div>
+      </div>
+
+      <div class="career-feature-grid deep-grid">
+        <article class="career-feature career-card deep-entry" onclick="openCareerModule('jobs')" role="button" tabindex="0" aria-label="进入岗位匹配模块">
+          <div class="cf-icon"><i class="fas fa-briefcase"></i></div>
+          <h3>岗位匹配</h3>
+          <p>按专业、语言、国籍优势和留华意愿推荐长期岗位。</p>
+          <div class="cf-meta"><span>查看匹配岗位</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+        <article class="career-feature career-card deep-entry" onclick="openCareerModule('policy')" role="button" tabindex="0" aria-label="进入政策咨询模块">
+          <div class="cf-icon"><i class="fas fa-passport"></i></div>
+          <h3>政策咨询</h3>
+          <p>梳理工作许可、实习加注、居留许可与材料清单。</p>
+          <div class="cf-meta"><span>查看清单</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+        <article class="career-feature career-card deep-entry" onclick="openCareerModule('path')" role="button" tabindex="0" aria-label="进入职业路径模块">
+          <div class="cf-icon"><i class="fas fa-route"></i></div>
+          <h3>职业路径</h3>
+          <p>区分本科、硕士、STEM与小语种人才发展路线。</p>
+          <div class="cf-meta"><span>规划路线</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+        <article class="career-feature career-card deep-entry" onclick="openCareerModule('enterprise')" role="button" tabindex="0" aria-label="进入企业连接模块">
+          <div class="cf-icon"><i class="fas fa-handshake"></i></div>
+          <h3>企业连接</h3>
+          <p>帮助企业降低外籍人才招聘和沟通成本。</p>
+          <div class="cf-meta"><span>企业资源</span><i class="fas fa-arrow-right"></i></div>
+        </article>
+      </div>
+
+      <div class="career-home-grid">
+        <div class="career-overview-card">
+          <h4>本周推荐方向</h4>
+          <p>根据当前画像，系统建议优先尝试“海外市场、跨境电商、国际教育项目”三类岗位。</p>
+          <div class="career-mini-list">
+            <div class="career-mini-item"><span>可投岗位</span><span>18 个</span></div>
+            <div class="career-mini-item"><span>高匹配企业</span><span>6 家</span></div>
+            <div class="career-mini-item"><span>待补材料</span><span>2 项</span></div>
+          </div>
+        </div>
+        <div class="career-overview-card">
+          <h4>留华准备度</h4>
+          <p>用于判断从“求职意愿”到“合规入职”的准备情况。</p>
+          <div class="profile-metric"><label>中文能力</label><div class="profile-bar"><span style="width:72%"></span></div><b>72</b></div>
+          <div class="profile-metric"><label>专业匹配</label><div class="profile-bar"><span style="width:84%"></span></div><b>84</b></div>
+          <div class="profile-metric"><label>政策准备</label><div class="profile-bar"><span style="width:61%"></span></div><b>61</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="career-deep-view" id="career-jobs">
+      <div class="career-sub-header">
+        <button class="career-back-btn" onclick="closeCareerModule()"><i class="fas fa-chevron-left"></i><span>返回留华就业</span></button>
+        <div class="career-sub-title"><h3>岗位匹配</h3><p>根据专业、语言、城市和政策准备度推荐留华岗位</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="career-deep-layout">
+        <div class="career-deep-card">
+          <div class="deep-card-title">
+            <div><h4>就业岗位</h4><p>优先展示有外籍人才招聘意愿和国际业务场景的岗位。</p></div>
+            <span class="deep-badge"><i class="fas fa-check-circle"></i> 18个可投</span>
+          </div>
+          <div class="deep-filter-row">
+            <button class="deep-filter active">全部</button><button class="deep-filter">上海</button><button class="deep-filter">跨境电商</button><button class="deep-filter">出海业务</button><button class="deep-filter">可转工作许可</button>
+          </div>
+          <div class="job-card-rich" onclick="careerToast('已收藏：海外市场专员')">
+            <div class="job-title-row"><div><h5>海外市场专员</h5><p>出海科技企业 · 上海 · 15-22K</p></div><div class="job-score">95<small>匹配</small></div></div>
+            <div class="job-reason"><b>匹配原因：</b>英语优势明显，专业背景与海外增长岗位相关，企业有外籍员工招聘经验，可提供工作许可流程协助。</div>
+            <div class="job-actions"><button class="primary" onclick="event.stopPropagation();careerToast('已提交岗位申请')"><i class="fas fa-paper-plane"></i> 一键投递</button><button class="soft" onclick="event.stopPropagation();careerToast('已生成投递话术')"><i class="fas fa-message"></i> 生成沟通话术</button></div>
+          </div>
+          <div class="job-card-rich" onclick="careerToast('已收藏：跨境电商运营')">
+            <div class="job-title-row"><div><h5>跨境电商运营</h5><p>外贸集团 · 杭州/上海 · 12-18K</p></div><div class="job-score">89<small>匹配</small></div></div>
+            <div class="job-reason"><b>匹配原因：</b>多语种与海外市场理解是优势，岗位适合从实习转为正式用工，中文表达仍需强化。</div>
+            <div class="job-actions"><button class="primary" onclick="event.stopPropagation();careerToast('已提交岗位申请')"><i class="fas fa-paper-plane"></i> 一键投递</button><button class="soft" onclick="event.stopPropagation();careerToast('已加入面试训练')"><i class="fas fa-microphone"></i> 面试训练</button></div>
+          </div>
+          <div class="job-card-rich" onclick="careerToast('已收藏：国际教育项目助理')">
+            <div class="job-title-row"><div><h5>国际教育项目助理</h5><p>高校合作机构 · 上海 · 10-15K</p></div><div class="job-score">86<small>匹配</small></div></div>
+            <div class="job-reason"><b>匹配原因：</b>留学生身份本身具备场景理解优势，适合高校国际化服务、跨文化沟通和项目运营方向。</div>
+            <div class="job-actions"><button class="primary" onclick="event.stopPropagation();careerToast('已提交岗位申请')"><i class="fas fa-paper-plane"></i> 一键投递</button><button class="soft" onclick="event.stopPropagation();careerToast('已查看企业要求')"><i class="fas fa-building"></i> 企业要求</button></div>
+          </div>
+        </div>
+        <aside class="career-deep-card">
+          <div class="match-meter"><div class="meter-big">82%</div><div class="meter-label">当前留华就业匹配度</div></div>
+          <div class="deep-card-title"><div><h4>投递前检查</h4><p>减少“岗位合适但材料不完整”的情况。</p></div></div>
+          <div class="checklist">
+            <div class="check-item"><div class="check-icon"><i class="fas fa-file-lines"></i></div><div><h5>中英文简历</h5><p>已完成基础版本，建议补充项目量化结果。</p></div><span class="status ok">已完成</span></div>
+            <div class="check-item"><div class="check-icon"><i class="fas fa-language"></i></div><div><h5>中文面试表达</h5><p>自我介绍和离职/留华动机仍需训练。</p></div><span class="status todo">待提升</span></div>
+            <div class="check-item"><div class="check-icon"><i class="fas fa-passport"></i></div><div><h5>签证状态说明</h5><p>建议准备给企业HR的简短说明话术。</p></div><span class="status warn">需确认</span></div>
+          </div>
+          <div class="deep-tip mt-3"><i class="fas fa-lightbulb mr-2"></i>建议优先投递标注“工作许可支持”的企业，沟通成本更低。</div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="career-deep-view" id="career-policy">
+      <div class="career-sub-header">
+        <button class="career-back-btn" onclick="closeCareerModule()"><i class="fas fa-chevron-left"></i><span>返回留华就业</span></button>
+        <div class="career-sub-title"><h3>政策咨询</h3><p>拆解实习加注、工作许可、居留许可与材料清单</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="career-deep-layout">
+        <div class="career-deep-card">
+          <div class="deep-card-title"><div><h4>留华就业合规流程</h4><p>平台提供流程指引，不替代官方审批；具体结果以主管部门审核为准。</p></div><span class="deep-badge"><i class="fas fa-shield-halved"></i> 合规提醒</span></div>
+          <div class="policy-stepper">
+            <div class="policy-step-rich"><div class="step-num">1</div><div><h5>确认身份与毕业状态</h5><p>判断当前是学习居留、实习阶段还是毕业求职阶段，不同阶段对应不同办理路径。</p></div></div>
+            <div class="policy-step-rich"><div class="step-num">2</div><div><h5>匹配企业与岗位条件</h5><p>确认企业是否具备外籍人才用工经验，岗位是否与专业背景、学历和城市政策相匹配。</p></div></div>
+            <div class="policy-step-rich"><div class="step-num">3</div><div><h5>准备工作许可材料</h5><p>通常涉及学历证明、无犯罪记录、体检、聘用合同、企业资质等材料。</p></div></div>
+            <div class="policy-step-rich"><div class="step-num">4</div><div><h5>办理工作类居留许可</h5><p>工作许可获批后，再按要求办理或转换工作类居留许可。</p></div></div>
+          </div>
+        </div>
+        <aside class="career-deep-card">
+          <div class="deep-card-title"><div><h4>材料清单</h4><p>按当前“硕士毕业生·上海就业”路径生成。</p></div></div>
+          <div class="material-grid">
+            <div class="material-pill"><i class="fas fa-graduation-cap"></i> 学历/学位证明</div>
+            <div class="material-pill"><i class="fas fa-file-contract"></i> 企业聘用合同</div>
+            <div class="material-pill"><i class="fas fa-id-card"></i> 护照与居留许可</div>
+            <div class="material-pill"><i class="fas fa-notes-medical"></i> 体检证明</div>
+            <div class="material-pill"><i class="fas fa-shield"></i> 无犯罪记录</div>
+            <div class="material-pill"><i class="fas fa-building"></i> 企业资质材料</div>
+          </div>
+          <div class="deep-tip mt-3"><i class="fas fa-triangle-exclamation mr-2"></i>实习和正式就业不是同一流程，校外实习通常需要学校与出入境加注支持。</div>
+          <button class="deep-action-btn primary w-full justify-center mt-3" onclick="careerToast('已生成政策材料清单')"><i class="fas fa-download"></i> 生成清单</button>
+        </aside>
+      </div>
+    </div>
+
+    <div class="career-deep-view" id="career-path">
+      <div class="career-sub-header">
+        <button class="career-back-btn" onclick="closeCareerModule()"><i class="fas fa-chevron-left"></i><span>返回留华就业</span></button>
+        <div class="career-sub-title"><h3>职业路径</h3><p>按学历、专业、城市和语言优势生成长期留华路线</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="career-deep-layout">
+        <div class="career-deep-card">
+          <div class="deep-card-title"><div><h4>路径类型</h4><p>选择不同身份画像，查看阶段性发展路线。</p></div><button class="deep-action-btn primary" onclick="careerToast('已更新职业路径')"><i class="fas fa-wand-magic-sparkles"></i> 更新</button></div>
+          <div class="path-tabs"><button class="path-tab active" onclick="setPathTab(this,'硕士')">硕士</button><button class="path-tab" onclick="setPathTab(this,'本科')">本科</button><button class="path-tab" onclick="setPathTab(this,'STEM')">STEM</button><button class="path-tab" onclick="setPathTab(this,'小语种')">小语种</button></div>
+          <div class="deep-roadmap" id="pathRoadmap">
+            <div class="deep-roadmap-item"><span class="path-time">毕业前 0-3个月</span><h5>确定目标行业与城市</h5><p>优先选择有国际业务场景的城市和企业，明确岗位方向，完成双语简历和项目案例梳理。</p></div>
+            <div class="deep-roadmap-item"><span class="path-time">求职期 3-6个月</span><h5>完成面试与聘用意向</h5><p>重点准备中文面试、岗位动机、签证状态说明，以及企业可能关注的入职合规问题。</p></div>
+            <div class="deep-roadmap-item"><span class="path-time">入职期 6-12个月</span><h5>办理工作许可与居留手续</h5><p>与企业HR协同准备材料，完成入职手续，并持续提升职场中文与跨文化沟通能力。</p></div>
+          </div>
+        </div>
+        <aside class="career-deep-card">
+          <div class="deep-card-title"><div><h4>能力提升建议</h4><p>围绕留华路径补足短板。</p></div></div>
+          <div class="checklist">
+            <div class="check-item"><div class="check-icon"><i class="fas fa-comments"></i></div><div><h5>职场中文</h5><p>训练会议表达、汇报、微信沟通。</p></div><span class="status todo">提升中</span></div>
+            <div class="check-item"><div class="check-icon"><i class="fas fa-chart-line"></i></div><div><h5>项目量化</h5><p>用数据呈现实习/课程项目成果。</p></div><span class="status ok">可优化</span></div>
+            <div class="check-item"><div class="check-icon"><i class="fas fa-network-wired"></i></div><div><h5>企业连接</h5><p>优先建立目标行业HR与校友资源。</p></div><span class="status todo">待拓展</span></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="career-deep-view" id="career-enterprise">
+      <div class="career-sub-header">
+        <button class="career-back-btn" onclick="closeCareerModule()"><i class="fas fa-chevron-left"></i><span>返回留华就业</span></button>
+        <div class="career-sub-title"><h3>企业连接</h3><p>连接外籍人才、高校就业服务与企业国际化招聘需求</p></div>
+        <div class="w-[42px]"></div>
+      </div>
+      <div class="career-deep-layout">
+        <div class="career-deep-card">
+          <div class="deep-card-title"><div><h4>企业资源池</h4><p>聚合出海、外贸、跨境电商、国际教育等外籍人才需求场景。</p></div><span class="deep-badge"><i class="fas fa-users"></i> B端入口</span></div>
+          <div class="enterprise-list">
+            <div class="enterprise-rich"><h5>跨境电商与外贸企业</h5><p>适合多语种运营、海外客服、市场调研、内容本地化等岗位。</p><div class="enterprise-tags"><span>岗位多</span><span>语言优势</span><span>转正机会</span></div></div>
+            <div class="enterprise-rich"><h5>出海科技与游戏公司</h5><p>适合海外市场、用户运营、本地化测试、社区运营等岗位。</p><div class="enterprise-tags"><span>国际业务</span><span>成长快</span><span>技能导向</span></div></div>
+            <div class="enterprise-rich"><h5>国际教育与高校合作机构</h5><p>适合留学生服务、项目运营、跨文化沟通和招生支持等岗位。</p><div class="enterprise-tags"><span>跨文化</span><span>稳定性</span><span>高校协同</span></div></div>
+          </div>
+        </div>
+        <aside class="career-deep-card">
+          <div class="deep-card-title"><div><h4>企业端服务流程</h4><p>体现平台商业闭环与B端价值。</p></div></div>
+          <div class="policy-stepper">
+            <div class="policy-step-rich"><div class="step-num">1</div><div><h5>企业发布外籍人才岗位</h5><p>标注语言、国籍市场、签证支持、工作许可经验等要求。</p></div></div>
+            <div class="policy-step-rich"><div class="step-num">2</div><div><h5>AI筛选候选人</h5><p>基于画像、简历、语言能力和政策准备度进行推荐。</p></div></div>
+            <div class="policy-step-rich"><div class="step-num">3</div><div><h5>协同高校就业服务</h5><p>形成留学生求职数据、企业需求与高校服务闭环。</p></div></div>
+          </div>
+          <button class="deep-action-btn primary w-full justify-center mt-3" onclick="careerToast('已生成企业推荐名单')"><i class="fas fa-handshake"></i> 生成企业名单</button>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</main>
+
+<nav class="mobile-bottom-nav">
+  <a href="chinese.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-language"></i><span>中文学习</span>
+      </a>
+  <a href="chat.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-comments"></i><span>情感陪伴</span>
+      </a>
+  <a href="internship.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-briefcase"></i><span>实习助手</span>
+      </a>
+  <a href="career.html" class="mobile-tab text-blue-600 bg-white shadow-sm">
+        <i class="fas fa-building-user"></i><span>留华就业</span>
+      </a>
+  <a href="user.html" class="mobile-tab text-slate-500">
+        <i class="fas fa-user"></i><span>个人中心</span>
+      </a>
+</nav>
+
+
+<script>
+function openCareerModule(name) {
+  const home = document.getElementById('career-home');
+  if (home) home.classList.add('hidden');
+  document.querySelectorAll('.career-deep-view').forEach(v => v.classList.remove('active'));
+  const view = document.getElementById('career-' + name);
+  if (view) view.classList.add('active');
+  document.body.classList.add('career-deep');
+  const board = document.querySelector('.career-board');
+  if (board) board.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function closeCareerModule() {
+  document.querySelectorAll('.career-deep-view').forEach(v => v.classList.remove('active'));
+  const home = document.getElementById('career-home');
+  if (home) home.classList.remove('hidden');
+  document.body.classList.remove('career-deep');
+  const board = document.querySelector('.career-board');
+  if (board) board.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function setPathTab(btn, type) {
+  document.querySelectorAll('.path-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const roadmap = document.getElementById('pathRoadmap');
+  const data = {
+    '硕士': [
+      ['毕业前 0-3个月','确定目标行业与城市','优先选择有国际业务场景的城市和企业，明确岗位方向，完成双语简历和项目案例梳理。'],
+      ['求职期 3-6个月','完成面试与聘用意向','重点准备中文面试、岗位动机、签证状态说明，以及企业可能关注的入职合规问题。'],
+      ['入职期 6-12个月','办理工作许可与居留手续','与企业HR协同准备材料，完成入职手续，并持续提升职场中文与跨文化沟通能力。']
+    ],
+    '本科': [
+      ['毕业前 0-6个月','先积累实习与项目经历','通过实习、志愿服务或校内项目补足工作经验，明确目标岗位和城市。'],
+      ['毕业后 6-12个月','选择可培养型岗位','优先考虑国际教育、运营助理、海外客服等对经验要求相对友好的岗位。'],
+      ['长期 1-3年','向专业岗位迁移','积累中国职场经验后，再向市场、运营、商务或技术支持岗位升级。']
+    ],
+    'STEM': [
+      ['毕业前 0-3个月','突出技术项目成果','梳理代码、模型、工程或实验项目，用量化指标证明能力。'],
+      ['求职期 3-6个月','匹配研发与技术支持岗位','优先投递技术研发、数据分析、海外技术支持和产品本地化岗位。'],
+      ['入职后 6-12个月','建立技术+跨文化优势','在技术能力之外强化中文协作、项目汇报和跨国团队沟通。']
+    ],
+    '小语种': [
+      ['毕业前 0-3个月','锁定国别市场岗位','结合母语和中国企业出海目的地，选择区域市场、销售和运营岗位。'],
+      ['求职期 3-6个月','强化商务中文表达','准备客户沟通、商务谈判、会议纪要和微信沟通表达。'],
+      ['入职后 6-12个月','成长为区域市场桥梁','承担本地化、市场反馈、客户关系和跨文化解释角色。']
+    ]
+  };
+  roadmap.innerHTML = data[type].map(item => `
+    <div class="deep-roadmap-item"><span class="path-time">${item[0]}</span><h5>${item[1]}</h5><p>${item[2]}</p></div>
+  `).join('');
+}
+function careerToast(message) {
+  document.querySelectorAll('.career-toast').forEach(t => t.remove());
+  const toast = document.createElement('div');
+  toast.className = 'career-toast';
+  toast.innerHTML = '<i class="fas fa-circle-info text-blue-300"></i><span>' + message + '</span>';
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity .32s ease, transform .32s ease';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -8px)';
+    setTimeout(() => toast.remove(), 350);
+  }, 1500);
+}
+</script>
+
+
+</body>
+</html>
